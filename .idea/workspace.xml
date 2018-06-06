@@ -207,6 +207,7 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="-7" y="0" width="1152" height="1047" extended-state="0" />
+    <editor active="true" />
     <layout>
       <window_info anchor="bottom" id="TODO" order="11" />
       <window_info anchor="right" id="sbt" order="2" />
