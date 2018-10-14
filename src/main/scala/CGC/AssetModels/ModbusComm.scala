@@ -12,19 +12,16 @@ object ModbusComm {
   def props(config: ModbusConfig): Props =
     Props(new ModbusComm(config))
 
-  case class ModbusRegsiter(name: String,
-                            address: Int,
-                            datatype: ModbusDataType,
-                            access: ModbusAccessType,
-                            group: Int,
-                            block: Int)
-
   case class ModbusConfig(hostName: String,
                           port: Int,
                           id: Int,
                           timeout: Int,
                           maxRetryAttempts: Int,
-                          registers: Array[ModbusRegsiter])
+                          registers: List[ModbusRegsiter])
+
+  case class ModbusRegsiter(name: String,
+                            address: Int,
+                            datatype: ModbusDataType)
 
   sealed trait ModbusDataType
   case object U16 extends ModbusDataType
@@ -40,9 +37,10 @@ object ModbusComm {
   case object ReadWrite extends ModbusAccessType
 
   sealed trait ModbusMessage
-  case class reqPollSlave(requestId: Long) extends ModbusMessage
-  case class respPollSlave(requestId: Long, response: Option[Array[Int]]) extends ModbusMessage
-  case object completeTimeout extends ModbusMessage
+  case class ReqPollSlave(requestId: Long) extends ModbusMessage
+  case class RespPollSlave(requestId: Long, response: Option[List[Int]]) extends ModbusMessage
+  case class ConnectionTimedOut(requestId: Long)
+  case object CompleteTimeout extends ModbusMessage
 }
 
 class ModbusComm(config: ModbusComm.ModbusConfig) extends Actor with ActorLogging {
@@ -71,7 +69,7 @@ class ModbusComm(config: ModbusComm.ModbusConfig) extends Actor with ActorLoggin
     }
   }
 
-  def transactMessage(connection: TCPMasterConnection, registers: Array[ModbusRegsiter]): Option[Array[Int]] = {
+  def transactMessage(connection: TCPMasterConnection, registers: List[ModbusRegsiter]): Option[List[Int]] = {
     log.info("Polling: {}", config.hostName)
     val startingRegister: Int = 0
     val numberOfRegisters: Int = 2
@@ -85,45 +83,63 @@ class ModbusComm(config: ModbusComm.ModbusConfig) extends Actor with ActorLoggin
     try {
       transaction.execute()
       val values = transaction.getResponse.asInstanceOf[ReadMultipleRegistersResponse]
-      Some(values.getRegisters map (_.getValue))
+      log.info("{} raw response: " + values.getRegisters.map(_.getValue).toList.toString)
+      Some(values.getRegisters.map(_.getValue).toList)
     } catch {
       case e: Exception => None
     }
   }
 
   def connectionManager(config: ModbusConfig, retryAttempt: Int): Unit = {
-    if (retryAttempt <= config.maxRetryAttempts) {
+    log.info("Querying connection manager")
+    if (retryAttempt < config.maxRetryAttempts) {
       getConnection(config.hostName, config.port, config.timeout) match {
         case Some(c) => context.become(idle(Some(c)))
         case None => connectionManager(config, retryAttempt + 1)
       }
     } else {
+      log.info("Max Retry Attempts hit, timing out...")
       context.become(communicationFailed)
-      system.scheduler.scheduleOnce(3.seconds, context.self, completeTimeout)
+      system.scheduler.scheduleOnce(3.seconds, context.self, CompleteTimeout)
       // schedule a message that is return
     }
-    context.self forward reqPollSlave
   }
-
 
   /** Actor Reveive Message Functions */
   def receive: Receive = {
     idle(None)
   }
 
+  /** Actor timeout state. Actor will not attempt to transact messages
+    * until the timeout state has passed.
+    * @return
+    */
   def communicationFailed: Receive = {
-    case completeTimeout => context.become(idle(None))
+    case CompleteTimeout => context.become(idle(None))
+
+    case ReqPollSlave(id) => sender() ! ConnectionTimedOut(id)
   }
 
+  /** Standard operating state for the Communications Actor
+    * will reviece poll requests and attempt to transact the message
+    * with the target device
+    * @param connection The TCP Master Connection object wrapped in an Option
+    * @return
+    */
   def idle(connection: Option[TCPMasterConnection]): Receive = {
-
     /** Poll the slave for information and return Option[Array[Int]] */
-    case reqPollSlave(id) =>
-
-      if ( connection match {
+    case ReqPollSlave(id) =>
+      if (connection match {
         case Some(c) => c.isConnected
         case None => false
-      }) transactMessage(connection.get, config.registers)
-      else { connectionManager(config, 0) }
+      }) {
+        // valid connection: attempt to transact a message
+        val response = transactMessage(connection.get, config.registers)
+        sender() ! RespPollSlave(id, response)
+      } else {
+        // invalid connection: request reconnect through the connection manager
+        connectionManager(config, 0)
+        context.self forward ReqPollSlave(id)
+      }
   }
 }
