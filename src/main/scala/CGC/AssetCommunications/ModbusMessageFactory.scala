@@ -10,8 +10,8 @@ object ModbusMessageFactory {
     * @return
     */
   def createReqReadHoldingRegisterMessage(requestId: Long, messageTemplate: ReadHoldingRegistersTemplate):
-  ModbusComm.ReqReadHoldingRegisters = {
-    ModbusComm.ReqReadHoldingRegisters(
+  ModbusCommActor.ReqReadHoldingRegisters = {
+    ModbusCommActor.ReqReadHoldingRegisters(
       requestId,
       messageTemplate.startAddress,
       messageTemplate.numberOfRegisters)
@@ -24,8 +24,8 @@ object ModbusMessageFactory {
     *                  this group.
     * @return
     */
-  def createReadHoldingRegisterMessageTemplates(modbusMap: List[ModbusComm.ModbusRegsiter],
-                                        groupName: String): Set[ReadHoldingRegistersTemplate] = {
+  def createReadHoldingRegisterMessageTemplates(modbusMap: List[ModbusCommActor.ModbusRegsiter],
+                                                groupName: String): Set[ReadHoldingRegistersTemplate] = {
     /** Blocks are a consecutive set of registers with size no larger than the maximum size defined in the
       * Modbus specification. The size is not enforced here, we assume the blocks in the specifcation file have
       * been sized correctly.
@@ -41,17 +41,22 @@ object ModbusMessageFactory {
       addressList: List[Int] <- blockAddressLists
       startAddress: Int = addressList.min
       lastAddress: Int = addressList.max
-      lastAddressType: ModbusComm.ModbusDatatype = modbusMap.filter(_.address == lastAddress).map(_.datatype).head
+      lastAddressType: ModbusCommActor.ModbusDatatype = modbusMap.filter(_.address == lastAddress).map(_.datatype).head
       numberOfRegisters: Int = lastAddress + modbusDatatypeWords(lastAddressType) - startAddress
     } yield ReadHoldingRegistersTemplate(startAddress, numberOfRegisters)
   }
 
-  def modbusDatatypeWords(datatype: ModbusComm.ModbusDatatype): Int = datatype match {
-    case ModbusComm.U16 => 1
-    case ModbusComm.U32 => 2
-    case ModbusComm.I16 => 1
-    case ModbusComm.I32 => 2
-    case ModbusComm.F32 => 2
-    case ModbusComm.F64 => 4
+  /**
+    *
+    * @param datatype
+    * @return
+    */
+  def modbusDatatypeWords(datatype: ModbusCommActor.ModbusDatatype): Int = datatype match {
+    case ModbusCommActor.U16 => 1
+    case ModbusCommActor.U32 => 2
+    case ModbusCommActor.I16 => 1
+    case ModbusCommActor.I32 => 2
+    case ModbusCommActor.F32 => 2
+    case ModbusCommActor.F64 => 4
   }
 }
