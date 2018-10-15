@@ -1,12 +1,14 @@
-package CGC.AssetModels
-
-import akka.actor.{ Actor, ActorLogging, Props }
-import scala.concurrent.duration._
+package CGC.AssetCommunications
 
 import java.net.InetAddress
+
+import CGC.AssetCommunications.ModbusComm.ModbusMessage
+import akka.actor.{Actor, ActorLogging, Props}
 import net.wimpi.modbus.io.ModbusTCPTransaction
-import net.wimpi.modbus.msg.{ ModbusRequest, ReadMultipleRegistersRequest, ReadMultipleRegistersResponse }
+import net.wimpi.modbus.msg.{ModbusRequest, ReadMultipleRegistersRequest, ReadMultipleRegistersResponse}
 import net.wimpi.modbus.net.TCPMasterConnection
+
+import scala.concurrent.duration._
 
 object ModbusComm {
   def props(config: ModbusConfig): Props =
@@ -16,38 +18,44 @@ object ModbusComm {
                           port: Int,
                           id: Int,
                           timeout: Int,
-                          maxRetryAttempts: Int,
-                          registers: List[ModbusRegsiter])
+                          maxRetryAttempts: Int)
 
   case class ModbusRegsiter(name: String,
                             address: Int,
-                            datatype: ModbusDataType)
+                            datatype: ModbusDatatype,
+                            access: ModbusAccessType,
+                            group: String,
+                            block: Int)
 
-  sealed trait ModbusDataType
-  case object U16 extends ModbusDataType
-  case object U32 extends ModbusDataType
-  case object I16 extends ModbusDataType
-  case object I32 extends ModbusDataType
-  case object F32 extends ModbusDataType
-  case object F64 extends ModbusDataType
+  sealed trait ModbusDatatype
+  case object U16 extends ModbusDatatype
+  case object U32 extends ModbusDatatype
+  case object I16 extends ModbusDatatype
+  case object I32 extends ModbusDatatype
+  case object F32 extends ModbusDatatype
+  case object F64 extends ModbusDatatype
 
   sealed trait ModbusAccessType
-  case object Read extends ModbusAccessType
-  case object Write extends ModbusAccessType
+  case object Read      extends ModbusAccessType
+  case object Write     extends ModbusAccessType
   case object ReadWrite extends ModbusAccessType
 
   sealed trait ModbusMessage
-  case class ReqPollSlave(requestId: Long) extends ModbusMessage
-  case class RespPollSlave(requestId: Long, response: Option[List[Int]]) extends ModbusMessage
-  case class ConnectionTimedOut(requestId: Long)
-  case object CompleteTimeout extends ModbusMessage
+  case class ReqReadHoldingRegisters(requestId: Long, startAddress: Int, numberOfRegisters: Int ) extends ModbusMessage
+  case class RespReadHoldingRegisters(requestId: Long, response: Option[List[Int]])               extends ModbusMessage
+
+  case class ReqWriteHoldingRegister(requestId: Long, address: Int, value: Int) extends ModbusMessage
+  case class RespWriteHoldingRegister(requestId: Long)                          extends ModbusMessage
+
+  case class ConnectionTimedOut(requestId: Long) extends ModbusMessage
+  case object CompleteTimeout                    extends ModbusMessage
 }
 
 class ModbusComm(config: ModbusComm.ModbusConfig) extends Actor with ActorLogging {
 
   val system = akka.actor.ActorSystem("ModbusComm")
-  import system.dispatcher
   import ModbusComm._
+  import system.dispatcher
 
 
   override def preStart(): Unit =
@@ -69,12 +77,17 @@ class ModbusComm(config: ModbusComm.ModbusConfig) extends Actor with ActorLoggin
     }
   }
 
-  def transactMessage(connection: TCPMasterConnection, registers: List[ModbusRegsiter]): Option[List[Int]] = {
+  /** transactMessages attempts to poll the TCPMasterConnection with the registers in the list
+    *
+    * @param connection TCPMasterConnection
+    * @param startAddress
+    * @param numberOfRegisters
+    * @return Option[List[Int]] this needs to be changed to a typed parameter
+    */
+  def readHoldingRegisters(connection: TCPMasterConnection, startAddress: Int, numberOfRegisters: Int): Option[List[Int]] = {
     log.info("Polling: {}", config.hostName)
-    val startingRegister: Int = 0
-    val numberOfRegisters: Int = 2
 
-    val request = new ReadMultipleRegistersRequest(startingRegister, numberOfRegisters)
+    val request = new ReadMultipleRegistersRequest(startAddress, numberOfRegisters)
     request.setUnitID(config.id)
 
     val transaction = new ModbusTCPTransaction(connection)
@@ -98,7 +111,7 @@ class ModbusComm(config: ModbusComm.ModbusConfig) extends Actor with ActorLoggin
         case None => connectionManager(config, retryAttempt + 1)
       }
     } else {
-      log.info("Max Retry Attempts hit, timing out...")
+      log.info("Maximum connection retry attempts exceeded, entering timeout state")
       context.become(communicationFailed)
       system.scheduler.scheduleOnce(3.seconds, context.self, CompleteTimeout)
       // schedule a message that is return
@@ -117,7 +130,7 @@ class ModbusComm(config: ModbusComm.ModbusConfig) extends Actor with ActorLoggin
   def communicationFailed: Receive = {
     case CompleteTimeout => context.become(idle(None))
 
-    case ReqPollSlave(id) => sender() ! ConnectionTimedOut(id)
+    case ReqReadHoldingRegisters(id, _, _) => sender() ! ConnectionTimedOut(id)
   }
 
   /** Standard operating state for the Communications Actor
@@ -128,18 +141,18 @@ class ModbusComm(config: ModbusComm.ModbusConfig) extends Actor with ActorLoggin
     */
   def idle(connection: Option[TCPMasterConnection]): Receive = {
     /** Poll the slave for information and return Option[Array[Int]] */
-    case ReqPollSlave(id) =>
+    case ReqReadHoldingRegisters(id, startAddress, numberOfRegisters) =>
       if (connection match {
         case Some(c) => c.isConnected
         case None => false
       }) {
         // valid connection: attempt to transact a message
-        val response = transactMessage(connection.get, config.registers)
-        sender() ! RespPollSlave(id, response)
+        val response = readHoldingRegisters(connection.get, startAddress, numberOfRegisters)
+        sender() ! RespReadHoldingRegisters(id, response)
       } else {
         // invalid connection: request reconnect through the connection manager
         connectionManager(config, 0)
-        context.self forward ReqPollSlave(id)
+        context.self forward ReqReadHoldingRegisters(id, startAddress, numberOfRegisters)
       }
   }
 }
