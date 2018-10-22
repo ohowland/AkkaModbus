@@ -1,4 +1,4 @@
-package CGC.AssetCommunications
+package CGC.Modbus
 
 import akka.actor.{Actor, ActorLogging, ActorRef, Props, Terminated}
 
@@ -16,6 +16,7 @@ object Read {
   ): Props = Props(new Read(requestId, targetActor, messageList, modbusMap, requester, timeout))
 
   case object CollectionTimeout
+  case class QueryResponse(requestId: Long, status: Map[String, Double])
 }
 
 class Read(
@@ -85,7 +86,7 @@ class Read(
     val newDataSoFar = dataSoFar ++ valueMap
     if (newPendingMessageIds.isEmpty) {
       context.unwatch(targetActor)
-      requester ! AssetActor.StatusMessage(requestId, newDataSoFar)
+      requester ! QueryResponse(requestId, newDataSoFar) // get rid of this dependency.
       context.stop(self)
     } else {
       context.become(waitingForReplies(newDataSoFar, newPendingMessageIds))

@@ -1,5 +1,6 @@
-package CGC.AssetCommunications
+package CGC.Modbus
 
+import CGC.Modbus.Read.QueryResponse
 import akka.actor.ActorSystem
 import akka.testkit.{TestKit, TestProbe}
 import org.scalatest._
@@ -41,7 +42,7 @@ class ModbusReadActorSpec(_system: ActorSystem) extends TestKit(_system)
       modbusActor.expectMsgType[Comm.ReqReadHoldingRegisters]
       queryActor.tell(Comm.RespReadHoldingRegisters(1, Some(List(11, 22))), modbusActor.ref)
 
-      requester.expectMsg(AssetActor.StatusMessage(
+      requester.expectMsg(QueryResponse(
         requestId = 1,
         status = Map(
           "test1" -> 11,

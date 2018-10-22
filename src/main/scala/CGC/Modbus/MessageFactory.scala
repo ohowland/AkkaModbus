@@ -1,4 +1,4 @@
-package CGC.AssetCommunications
+package CGC.Modbus
 
 import scala.math.pow
 

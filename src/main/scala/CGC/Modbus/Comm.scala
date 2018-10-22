@@ -1,8 +1,8 @@
-package CGC.AssetCommunications
+package CGC.Modbus
 
 import java.net.InetAddress
 
-import CGC.AssetCommunications.Comm.ModbusMessage
+import CGC.Modbus.Comm.ModbusMessage
 import akka.actor.{Actor, ActorLogging, Props}
 import net.wimpi.modbus.io.ModbusTCPTransaction
 import net.wimpi.modbus.msg.{ModbusRequest, ReadMultipleRegistersRequest, ReadMultipleRegistersResponse}

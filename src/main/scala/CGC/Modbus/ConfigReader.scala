@@ -1,8 +1,8 @@
-package CGC.AssetCommunications
+package CGC.Modbus
 
 import java.net.URL
 
-object ModbusMapReader {
+object ConfigReader {
   def readCSVToRegisterList(path: URL): List[Comm.ModbusRegsiter] = {
     val bufferedSource = io.Source.fromURL(path)
     for {

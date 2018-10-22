@@ -1,4 +1,4 @@
-package CGC.AssetCommunications
+package CGC.Modbus
 
 import akka.actor.ActorSystem
 import akka.testkit.{TestKit, TestProbe}
