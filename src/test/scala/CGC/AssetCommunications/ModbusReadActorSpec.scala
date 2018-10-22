@@ -18,18 +18,18 @@ class ModbusReadActorSpec(_system: ActorSystem) extends TestKit(_system)
       val requester = TestProbe()
       val modbusActor = TestProbe()
 
-      val testRegister1 = ModbusCommActor.ModbusRegsiter(
+      val testRegister1 = Comm.ModbusRegsiter(
         "test1",
         1,
-        ModbusCommActor.U16,
-        ModbusCommActor.Read,
+        Comm.U16,
+        Comm.Read,
         "status",
         1)
 
       val testModbusMap = List(testRegister1)
-      val reqMessageTemplates = ModbusMessageFactory.createModbusMessageTemplates(testModbusMap, "status")
+      val reqMessageTemplates = MessageFactory.createModbusMessageTemplates(testModbusMap, "status")
 
-      val queryActor = system.actorOf(ModbusReadActor.props(
+      val queryActor = system.actorOf(Read.props(
         requestId = 1,
         targetActor = modbusActor.ref,
         messageList = reqMessageTemplates,
@@ -38,8 +38,8 @@ class ModbusReadActorSpec(_system: ActorSystem) extends TestKit(_system)
         timeout = 3.seconds
       ))
 
-      modbusActor.expectMsgType[ModbusCommActor.ReqReadHoldingRegisters]
-      queryActor.tell(ModbusCommActor.RespReadHoldingRegisters(1, Some(List(11, 22))), modbusActor.ref)
+      modbusActor.expectMsgType[Comm.ReqReadHoldingRegisters]
+      queryActor.tell(Comm.RespReadHoldingRegisters(1, Some(List(11, 22))), modbusActor.ref)
 
       requester.expectMsg(AssetActor.StatusMessage(
         requestId = 1,

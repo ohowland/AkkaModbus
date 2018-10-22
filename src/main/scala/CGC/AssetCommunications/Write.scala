@@ -1,5 +1,5 @@
 package CGC.AssetCommunications
 
-class ModbusWriteActor {
+class Write {
 
 }

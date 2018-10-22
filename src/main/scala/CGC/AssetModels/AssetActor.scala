@@ -1,4 +1,4 @@
-package CGC.AssetCommunications
+package CGC.AssetModels
 
 import akka.actor.{Actor, ActorLogging, Props}
 

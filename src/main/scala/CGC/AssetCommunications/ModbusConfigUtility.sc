@@ -1,13 +1,13 @@
-import CGC.AssetCommunications.ModbusMessageFactory._
+import CGC.AssetCommunications.MessageFactory._
 
 
 // Load a Modbus Map
-import CGC.AssetCommunications.ModbusCSVReader
+import CGC.AssetCommunications.ModbusMapReader
 val fileURL = getClass.getResource("/testModbusMap.csv")
-val modbusMap = ModbusCSVReader.readCSVToRegisterList(fileURL)
+val modbusMap = ModbusMapReader.readCSVToRegisterList(fileURL)
 
 // Create templates for the ReqReadHoldingRegister mesage
-import CGC.AssetCommunications.ModbusMessageFactory
+import CGC.AssetCommunications.MessageFactory
 val msgs = createModbusMessageTemplates(modbusMap, "status")
 
 // Generate fake ReqReadHoldingRegister response data, List[Short]

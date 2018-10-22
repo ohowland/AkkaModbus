@@ -2,7 +2,7 @@ package CGC.AssetCommunications
 
 import java.net.InetAddress
 
-import CGC.AssetCommunications.ModbusCommActor.ModbusMessage
+import CGC.AssetCommunications.Comm.ModbusMessage
 import akka.actor.{Actor, ActorLogging, Props}
 import net.wimpi.modbus.io.ModbusTCPTransaction
 import net.wimpi.modbus.msg.{ModbusRequest, ReadMultipleRegistersRequest, ReadMultipleRegistersResponse}
@@ -10,9 +10,9 @@ import net.wimpi.modbus.net.TCPMasterConnection
 
 import scala.concurrent.duration._
 
-object ModbusCommActor {
+object Comm {
   def props(config: ModbusConfig): Props =
-    Props(new ModbusCommActor(config))
+    Props(new Comm(config))
 
   case class ModbusConfig(hostName: String,
                           port: Int,
@@ -51,10 +51,10 @@ object ModbusCommActor {
   case object CompleteTimeout                    extends ModbusMessage
 }
 
-class ModbusCommActor(config: ModbusCommActor.ModbusConfig) extends Actor with ActorLogging {
+class Comm(config: Comm.ModbusConfig) extends Actor with ActorLogging {
 
   val system = akka.actor.ActorSystem("ModbusComm")
-  import ModbusCommActor._
+  import Comm._
   import system.dispatcher
 
 

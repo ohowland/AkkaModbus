@@ -5,33 +5,33 @@ import akka.actor.{Actor, ActorLogging, ActorRef, Props, Terminated}
 import scala.concurrent.duration.FiniteDuration
 import scala.util.Random
 
-object ModbusReadActor {
+object Read {
   def props(
              requestId: Long,
              targetActor: ActorRef,
-             messageList: Set[ModbusMessageFactory.ModbusMessageTemplate],
-             modbusMap: List[ModbusCommActor.ModbusRegsiter],
+             messageList: Set[MessageFactory.ModbusMessageTemplate],
+             modbusMap: List[Comm.ModbusRegsiter],
              requester: ActorRef,
              timeout: FiniteDuration
-  ): Props = Props(new ModbusReadActor(requestId, targetActor, messageList, modbusMap, requester, timeout))
+  ): Props = Props(new Read(requestId, targetActor, messageList, modbusMap, requester, timeout))
 
   case object CollectionTimeout
 }
 
-class ModbusReadActor(
-                       requestId: Long,
-                       targetActor: ActorRef,
-                       messageList: Set[ModbusMessageFactory.ModbusMessageTemplate],
-                       modbusMap: List[ModbusCommActor.ModbusRegsiter],
-                       requester: ActorRef,
-                       timeout: FiniteDuration
+class Read(
+            requestId: Long,
+            targetActor: ActorRef,
+            messageList: Set[MessageFactory.ModbusMessageTemplate],
+            modbusMap: List[Comm.ModbusRegsiter],
+            requester: ActorRef,
+            timeout: FiniteDuration
                      ) extends Actor with ActorLogging {
 
-  import ModbusReadActor._
+  import Read._
   import context.dispatcher
 
   val queryTimeoutTimer = context.system.scheduler.scheduleOnce(timeout, self, CollectionTimeout)
-  var idToMessage: Map[Long, ModbusMessageFactory.ModbusMessageTemplate] = Map.empty
+  var idToMessage: Map[Long, MessageFactory.ModbusMessageTemplate] = Map.empty
 
   override def preStart(): Unit = {
     context.watch(targetActor)
@@ -54,7 +54,7 @@ class ModbusReadActor(
                          dataSoFar: Map[String, Double],
                          pendingMessageIds: Set[Long]
                        ): Receive = {
-    case ModbusCommActor.RespReadHoldingRegisters(messageId: Long, registers: Option[List[Int]]) =>
+    case Comm.RespReadHoldingRegisters(messageId: Long, registers: Option[List[Int]]) =>
       val valueMap: Map[String, Double] = registers match {
         case Some(response) =>
           val template = idToMessage(messageId)
@@ -65,11 +65,11 @@ class ModbusReadActor(
       receivedResponse(messageId, valueMap, pendingMessageIds, dataSoFar)
 
     case Terminated(failedActor) =>
-      requester ! ModbusCommActor.ConnectionTimedOut(requestId)
+      requester ! Comm.ConnectionTimedOut(requestId)
       context.stop(self)
 
     case CollectionTimeout =>
-      requester ! ModbusCommActor.ConnectionTimedOut(requestId)
+      requester ! Comm.ConnectionTimedOut(requestId)
       context.stop(self)
   }
 
