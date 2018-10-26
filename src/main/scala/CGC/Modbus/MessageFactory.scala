@@ -4,41 +4,59 @@ import scala.math.pow
 
 object MessageFactory {
 
+  /**
+    * Defines the data required for a modbus read multiple holding registers command.
+    *
+    * @param startAddress      is the start address for the modbus block read (inclusive)
+    * @param numberOfRegisters is the number of registers to read, including the first.
+    */
   case class ReadSpecification(startAddress: Int, numberOfRegisters: Int)
 
-  def createModbusMessageTemplates(modbusMap: List[Comm.ModbusRegsiter],
-                                   groupName: String): Set[ModbusMessageTemplate] = {
-    /** Blocks are a consecutive set of registers with size no larger than the maximum size defined in the
-      * Modbus specification. The size is not enforced here, we assume the blocks in the specifcation file have
-      * been sized correctly.
-      */
-    val blocks = modbusMap.filter(_.group == groupName).map(_.block).toSet
-
-    val blockRegisterLists = for {
-      block <- blocks
-      registerList = modbusMap.filter(_.block == block)
-    } yield registerList
-
-    for {
-      registerList: List[Comm.ModbusRegsiter] <- blockRegisterLists
-      startAddress: Int = registerList.map(_.address).min
-      lastAddress: Int = registerList.map(_.address).max
-      lastAddressType: Comm.ModbusDatatype = modbusMap.filter(_.address == lastAddress).map(_.datatype).head
-      numberOfRegisters: Int = lastAddress + modbusDatatypeWords(lastAddressType) - startAddress
-    } yield ModbusMessageTemplate(ReadSpecification(startAddress, numberOfRegisters), registerList, "big")
-  }
-
-  case class ModbusMessageTemplate(rs: ReadSpecification,
-                                   registers: List[Comm.ModbusRegsiter],
+  /**
+    * Defines the a template that contains the data required to create a modbus polling request, and decode the
+    * returned data.
+    *
+    * @param specification data required to fulfill a Modbus read multiple holding registers command.
+    * @param registers     a list of Modbus register classes which defines all holding registers in this message's domain.
+    * @param endianness    the endianess of the message.
+    */
+  case class ModbusMessageTemplate(specification: ReadSpecification,
+                                   registers: List[ModbusTypes.ModbusRegsiter],
                                    endianness: String) {
-
+    /**
+      * Returns map of register name to register value as Map[String, Double].
+      *
+      * The decode method operates on the List[Int] returned by a read holding registers modbus call.
+      * Messages created from a template are then decoded by the same template.
+      *
+      * @param response : A list of holding register values returned by a modbus poll
+      */
     def decode(response: List[Int]): Map[String, Double] = {
 
+      /**
+        * Returns a single Double type from a list of two byte values.
+        *
+        * The 2 byte 'words' are the Modbus standard holding register size. Words must be processed into
+        * the correct type once read from the target device.
+        *
+        * @param words      List of 2 byte holding register values
+        * @param endianness The order in which the list is interpreted. Two acceptible values: "big" and "little".
+        */
       def buildDouble(words: List[Int], endianness: String): Double = {
 
-        def buildDoubleIter(words: List[Int], word_position: Int, aggregate: Double): Double = {
-          if (word_position >= words.size) aggregate
-          else buildDoubleIter(words, word_position + 1, words(word_position).toDouble * pow(2, 16 * word_position) + aggregate)
+        /**
+          * Aggregates and returns the value of a Double by recusivly reading through a list of 2 byte words.
+          *
+          * @param words         is a list of 2 byte holding register values
+          * @param word_position indexes current 2 bytes into their position in the double.
+          * @param accumulator   accumulates the final value while recursing.
+          * @return Double composed from a list of 2 byte words.
+          */
+        def buildDoubleIter(words: List[Int], word_position: Int, accumulator: Double): Double = {
+          if (word_position >= words.size) accumulator
+          else buildDoubleIter(words,
+            word_position + 1,
+            words(word_position).toDouble * pow(2, 16 * word_position) + accumulator)
         }
 
         val orderedWords = endianness match {
@@ -48,35 +66,90 @@ object MessageFactory {
         buildDoubleIter(orderedWords, 0, 0.0)
       }
 
-      val startingAddress: Int = registers.head.address
+      /**
+        * Returns a subset list of the response parameter based on index and datatype size.
+        *
+        * @param response a list of 2 byte holding registers returned from a modbus read holding registers command.
+        * @param datatype the target datatype
+        * @param index    the start index in the response for the current
+        * @return subset integer list of response
+        */
+      def sliceHoldingRegisters(response: List[Int], datatype: ModbusTypes.ModbusDatatype, index: Int): List[Int] =
+        response.slice(index, index + modbusDatatypeWords(datatype))
+
+      // the decode method takes each register, finds its location in the response list, and converts the
+      // correct number of sequential words into a double
       (for {
         register <- registers
-        index = register.address - startingAddress
-        value: List[Int] = register.datatype match {
-          case Comm.U16 => List(response(index))
-          case Comm.I16 => List(response(index))
-          case Comm.U32 => List(response(index), response(index + 1))
-          case Comm.I32 => List(response(index), response(index + 1))
-          case Comm.F32 => List(response(index), response(index + 1))
-          case Comm.F64 => List(response(index), response(index + 1), response(index + 2), response(index + 3))
-        }
+        value = sliceHoldingRegisters(response, register.datatype, register.address - registers.head.address)
       } yield register.name -> buildDouble(value, endianness)).toMap
-    }
-
-    def build(requestId: Long): Comm.ReqReadHoldingRegisters = {
-      Comm.ReqReadHoldingRegisters(
-        requestId,
-        rs.startAddress,
-        rs.numberOfRegisters)
     }
   }
 
-  def modbusDatatypeWords(datatype: Comm.ModbusDatatype): Int = datatype match {
-    case Comm.U16 => 1
-    case Comm.U32 => 2
-    case Comm.I16 => 1
-    case Comm.I32 => 2
-    case Comm.F32 => 2
-    case Comm.F64 => 4
+  /**
+    * Returns a ModbusMessageTemplate class configured with required data to complete a read holding registers
+    * request.
+    *
+    * @param modbusMap is a list of ModbusRegisters which define communcation with a device.
+    * @param groupName is used to select registers from the modbusMap based on the field ModbusRegister.group
+    */
+  def createModbusMessageTemplates(modbusMap: List[ModbusTypes.ModbusRegsiter],
+                                   groupName: String,
+                                   endianness: String): List[ModbusMessageTemplate] = {
+    /**
+      * Returns a set of all blocks in the Modbus map for a given groupName.
+      *
+      * @param modbusMap is a list of ModbusRegisters which define communcation with a device.
+      * @param groupName is used to select registers from the modbusMap based on the field ModbusRegister.group.
+      */
+    def findBlocks(modbusMap: List[ModbusTypes.ModbusRegsiter], groupName: String): Set[Int] =
+      modbusMap.filter(_.group == groupName).map(_.block).toSet
+
+    /**
+      * Returns a bucketed list of modbus registers based on register block number.
+      *
+      * Example:
+      * List(List(register1.block == 1, register2.block == 1),
+      * List(register13.block == 2),
+      * List(register22.block == 6))
+      *
+      * @param modbusMap is a list of ModbusRegisters which define communcation with a device.
+      * @param blocks    is a set of all block numbers contained in the modbusMap.
+      */
+    def bucketRegisterListByBlock(modbusMap: List[ModbusTypes.ModbusRegsiter],
+                                  blocks: Set[Int]): List[List[ModbusTypes.ModbusRegsiter]] = {
+      (for {
+        block <- blocks
+        registerList = modbusMap.filter(_.block == block)
+      } yield registerList).toList
+    }
+
+    /**
+      * Returns a ReadSpecification for the registerlist
+      *
+      * @param registerList
+      * @return
+      */
+    def buildReadSpecification(registerList: List[ModbusTypes.ModbusRegsiter]): ReadSpecification = {
+      val startAddress: Int = registerList.map(_.address).min
+      val lastAddress: Int = registerList.map(_.address).max
+      val lastAddressType: ModbusTypes.ModbusDatatype = modbusMap.filter(_.address == lastAddress).map(_.datatype).head
+      val numberOfRegisters: Int = lastAddress + modbusDatatypeWords(lastAddressType) - startAddress
+      ReadSpecification(startAddress, numberOfRegisters)
+    }
+
+    for {
+      registerBlock <- bucketRegisterListByBlock(modbusMap, findBlocks(modbusMap, groupName))
+    } yield ModbusMessageTemplate(buildReadSpecification(registerBlock), registerBlock, endianness)
+  }
+
+  // converts the datatype to a word value (2 bytes), used in defining transaction lengths.
+  def modbusDatatypeWords(datatype: ModbusTypes.ModbusDatatype): Int = datatype match {
+    case ModbusTypes.U16 => 1
+    case ModbusTypes.U32 => 2
+    case ModbusTypes.I16 => 1
+    case ModbusTypes.I32 => 2
+    case ModbusTypes.F32 => 2
+    case ModbusTypes.F64 => 4
   }
 }

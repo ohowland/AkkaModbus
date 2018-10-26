@@ -11,34 +11,14 @@ import net.wimpi.modbus.net.TCPMasterConnection
 import scala.concurrent.duration._
 
 object Comm {
-  def props(config: ModbusConfig): Props =
-    Props(new Comm(config))
+  def props(config: ModbusConfig): Props = Props(new Comm(config))
+
 
   case class ModbusConfig(hostName: String,
                           port: Int,
                           id: Int,
                           timeout: Int,
                           maxRetryAttempts: Int)
-
-  case class ModbusRegsiter(name: String,
-                            address: Int,
-                            datatype: ModbusDatatype,
-                            access: ModbusAccessType,
-                            group: String,
-                            block: Int)
-
-  sealed trait ModbusDatatype
-  case object U16 extends ModbusDatatype
-  case object U32 extends ModbusDatatype
-  case object I16 extends ModbusDatatype
-  case object I32 extends ModbusDatatype
-  case object F32 extends ModbusDatatype
-  case object F64 extends ModbusDatatype
-
-  sealed trait ModbusAccessType
-  case object Read      extends ModbusAccessType
-  case object Write     extends ModbusAccessType
-  case object ReadWrite extends ModbusAccessType
 
   sealed trait ModbusMessage
   case class ReqReadHoldingRegisters(requestId: Long, startAddress: Int, numberOfRegisters: Int ) extends ModbusMessage
@@ -55,8 +35,8 @@ class Comm(config: Comm.ModbusConfig) extends Actor with ActorLogging {
 
   val system = akka.actor.ActorSystem("ModbusComm")
   import Comm._
+  import ModbusTypes._
   import system.dispatcher
-
 
   override def preStart(): Unit =
     log.info("Modbus Communication Actor started for target host: {}", config.hostName)
@@ -96,7 +76,7 @@ class Comm(config: Comm.ModbusConfig) extends Actor with ActorLogging {
     try {
       transaction.execute()
       val values = transaction.getResponse.asInstanceOf[ReadMultipleRegistersResponse]
-      log.info("{} raw response: " + values.getRegisters.map(_.getValue).toList.toString)
+      //log.info("{} raw response: " + values.getRegisters.map(_.getValue).toList.toString)
       Some(values.getRegisters.map(_.getValue).toList)
     } catch {
       case e: Exception => None

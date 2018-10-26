@@ -6,14 +6,12 @@ import scala.concurrent.duration.FiniteDuration
 import scala.util.Random
 
 object Read {
-  def props(
-             requestId: Long,
-             targetActor: ActorRef,
-             messageList: Set[MessageFactory.ModbusMessageTemplate],
-             modbusMap: List[Comm.ModbusRegsiter],
-             requester: ActorRef,
-             timeout: FiniteDuration
-  ): Props = Props(new Read(requestId, targetActor, messageList, modbusMap, requester, timeout))
+  def props(requestId: Long,
+            targetActor: ActorRef,
+            messages: Set[MessageFactory.ModbusMessageTemplate],
+            requester: ActorRef,
+            timeout: FiniteDuration
+  ): Props = Props(new Read(requestId, targetActor, messages, requester, timeout))
 
   case object CollectionTimeout
   case class QueryResponse(requestId: Long, status: Map[String, Double])
@@ -22,8 +20,7 @@ object Read {
 class Read(
             requestId: Long,
             targetActor: ActorRef,
-            messageList: Set[MessageFactory.ModbusMessageTemplate],
-            modbusMap: List[Comm.ModbusRegsiter],
+            messages: Set[MessageFactory.ModbusMessageTemplate],
             requester: ActorRef,
             timeout: FiniteDuration
                      ) extends Actor with ActorLogging {
@@ -32,15 +29,17 @@ class Read(
   import context.dispatcher
 
   val queryTimeoutTimer = context.system.scheduler.scheduleOnce(timeout, self, CollectionTimeout)
-  var idToMessage: Map[Long, MessageFactory.ModbusMessageTemplate] = Map.empty
+  var idToMessageTemplate: Map[Long, MessageFactory.ModbusMessageTemplate] = Map.empty
 
   override def preStart(): Unit = {
     context.watch(targetActor)
 
-    messageList.foreach { messageTemplate =>
+    messages.foreach { messageTemplate =>
       val thisMessageId = Random.nextLong()
-      val message = messageTemplate.build(thisMessageId)
-      idToMessage = idToMessage + (thisMessageId -> messageTemplate)
+      val message = Comm.ReqReadHoldingRegisters(thisMessageId, 
+                                                 messageTemplate.specification.startAddress,   
+                                                 messageTemplate.specification.numberOfRegisters)
+      idToMessageTemplate = idToMessageTemplate + (thisMessageId -> messageTemplate)
       targetActor ! message
     }
   }
@@ -49,21 +48,16 @@ class Read(
     queryTimeoutTimer.cancel()
   }
 
-  override def receive: Receive = waitingForReplies(Map.empty, idToMessage.keySet)
+  override def receive: Receive = waitingForReplies(Map.empty, idToMessageTemplate.keySet)
 
-  def waitingForReplies(
-                         dataSoFar: Map[String, Double],
-                         pendingMessageIds: Set[Long]
-                       ): Receive = {
+  def waitingForReplies(dataSoFar: Map[String, Double], pendingMessageIds: Set[Long]): Receive = {
+    
     case Comm.RespReadHoldingRegisters(messageId: Long, registers: Option[List[Int]]) =>
-      val valueMap: Map[String, Double] = registers match {
-        case Some(response) =>
-          val template = idToMessage(messageId)
-          template.decode(response)
-        case None =>
-          Map.empty
+      val incomingValueMap: Map[String, Double] = registers match {
+        case Some(response) => idToMessageTemplate(messageId).decode(response)
+        case None => Map.empty
       }
-      receivedResponse(messageId, valueMap, pendingMessageIds, dataSoFar)
+      receivedResponse(messageId, incomingValueMap, pendingMessageIds, dataSoFar)
 
     case Terminated(failedActor) =>
       requester ! Comm.ConnectionTimedOut(requestId)
@@ -74,16 +68,14 @@ class Read(
       context.stop(self)
   }
 
-  def receivedResponse(
-                        requestId:  Long,
-                        valueMap: Map[String, Double],
-                        pendingMessageIds: Set[Long],
-                        dataSoFar: Map[String, Double]
-                      ): Unit = {
+  def receivedResponse(requestId:  Long,
+                       incomingValueMap: Map[String, Double],
+                       pendingMessageIds: Set[Long],
+                       dataSoFar: Map[String, Double]): Unit = {
 
     val newPendingMessageIds = pendingMessageIds - requestId
 
-    val newDataSoFar = dataSoFar ++ valueMap
+    val newDataSoFar = dataSoFar ++ incomingValueMap
     if (newPendingMessageIds.isEmpty) {
       context.unwatch(targetActor)
       requester ! QueryResponse(requestId, newDataSoFar) // get rid of this dependency.

@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/scalacgc.iml" filepath="$PROJECT_DIR$/.idea/modules/scalacgc.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/CGC.iml" filepath="$PROJECT_DIR$/.idea/modules/CGC.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/scalacgc-build.iml" filepath="$PROJECT_DIR$/.idea/modules/scalacgc-build.iml" />
     </modules>
   </component>
