@@ -1,0 +1,6 @@
+[0m[[0m[31merror[0m] [0m[0m/home/owen/dev/ScalaCGC/src/test/scala/CGC/Modbus/ReadSpec.scala:35:60: type mismatch;[0m
+[0m[[0m[31merror[0m] [0m[0m found   : Some[List[Int]][0m
+[0m[[0m[31merror[0m] [0m[0m required: List[Int][0m
+[0m[[0m[31merror[0m] [0m[0m      queryActor.tell(Comm.RespReadHoldingRegisters(1, Some(List(11, 22))), modbusActor.ref)[0m
+[0m[[0m[31merror[0m] [0m[0m                                                           ^[0m
+[0m[[0m[31merror[0m] [0m[0mone error found[0m

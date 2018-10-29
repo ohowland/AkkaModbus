@@ -1,10 +1,12 @@
 package CGC.Modbus
 
-import java.net.InetAddress
-
+import scala.concurrent.{ Future }
+import scala.concurrent.ExecutionContext.Implicits.global
 import akka.actor.{Actor, ActorLogging, Props}
+import akka.pattern.pipe
+import java.net.InetAddress
 import net.wimpi.modbus.io.ModbusTCPTransaction
-import net.wimpi.modbus.msg.{ModbusRequest, ReadMultipleRegistersRequest, ReadMultipleRegistersResponse}
+import net.wimpi.modbus.msg.{ReadMultipleRegistersRequest, ReadMultipleRegistersResponse}
 import net.wimpi.modbus.net.TCPMasterConnection
 
 import scala.concurrent.duration._
@@ -13,29 +15,19 @@ object Comm {
   def props(config: ModbusConfig): Props = Props(new Comm(config))
 
 
-  case class ModbusConfig(hostName: String,
-                          port: Int,
-                          id: Int,
-                          timeout: Int,
-                          maxRetryAttempts: Int)
+  case class ModbusConfig(hostName: String, port: Int, id: Int, timeout: Int)
 
   sealed trait ModbusMessage
   case class ReqReadHoldingRegisters(requestId: Long, startAddress: Int, numberOfRegisters: Int ) extends ModbusMessage
-  case class RespReadHoldingRegisters(requestId: Long, response: Option[List[Int]])               extends ModbusMessage
+  case class RespReadHoldingRegisters(requestId: Long, response: List[Int]) extends ModbusMessage
 
-  case class ReqWriteHoldingRegister(requestId: Long, address: Int, value: Int) extends ModbusMessage
-  case class RespWriteHoldingRegister(requestId: Long)                          extends ModbusMessage
-
-  case class ConnectionTimedOut(requestId: Long) extends ModbusMessage
-  case object CompleteTimeout                    extends ModbusMessage
+  case class ReqWriteHoldingRegisters(requestId: Long, startAddress: Int, registers: List[Int]) extends ModbusMessage
+  case class RespWriteHoldingRegisters(requestId: Long) extends ModbusMessage
 }
 
 class Comm(config: Comm.ModbusConfig) extends Actor with ActorLogging {
 
-  val system = akka.actor.ActorSystem("ModbusComm")
   import Comm._
-  import ModbusTypes._
-  import system.dispatcher
 
   override def preStart(): Unit =
     log.info("Modbus Communication Actor started for target host: {}", config.hostName)
@@ -43,93 +35,63 @@ class Comm(config: Comm.ModbusConfig) extends Actor with ActorLogging {
   override def postStop(): Unit =
     log.info("Modbus Communication Actor stopped for target host: {}", config.hostName)
 
-  def getConnection(hostName: String, port: Int, timeout: Int): Option[TCPMasterConnection] = {
-    try {
-      val host = InetAddress.getByName(hostName)
-      val connection = new TCPMasterConnection(host)
-      connection.setPort(port)
-      connection.setTimeout(timeout)
-      connection.connect()
-      Some(connection)
-    } catch {
-      case e: Exception => None
-    }
+  def getConnection(hostName: String, port: Int, timeout: Int): Future[TCPMasterConnection] = Future {
+    val connection = new TCPMasterConnection(InetAddress.getByName(hostName))
+    connection.setPort(port)
+    connection.setTimeout(timeout)
+    connection.connect()
+    connection
   }
 
-  /** transactMessages attempts to poll the TCPMasterConnection with the registers in the list
+  /** readHoldingRegisters returns a Future to contain the Modbus poll response values defined by startAddress
+    * and numberOfRegisters
     *
     * @param connection TCPMasterConnection
     * @param startAddress
     * @param numberOfRegisters
-    * @return Option[List[Int]] this needs to be changed to a typed parameter
+    * @return List[Int]
     */
-  def readHoldingRegisters(connection: TCPMasterConnection, startAddress: Int, numberOfRegisters: Int): Option[List[Int]] = {
-    log.info("Polling: {}", config.hostName)
+  def getHoldingRegisters(connection: TCPMasterConnection,
+                          startAddress: Int,
+                          numberOfRegisters: Int): Future[List[Int]] = {
 
     val request = new ReadMultipleRegistersRequest(startAddress, numberOfRegisters)
     request.setUnitID(config.id)
 
     val transaction = new ModbusTCPTransaction(connection)
-    transaction.setRequest(request.asInstanceOf[ModbusRequest]) // What does this do?
-    transaction.execute()
+    transaction.setReconnecting(false) // Close the connection after request
+    transaction.setRequest(request)
 
-    val values = transaction.getResponse.asInstanceOf[ReadMultipleRegistersResponse]
-    //log.info("{} raw response: " + values.getRegisters.map(_.getValue).toList.toString)
-
-    values.getRegisters.foldLeft(List.empty[Int]) { (intList, register) => register.getValue :: intList }
-    //Some(values.getRegisters.map(_.getValue).toList)
-  }
-
-  def connectionManager(config: ModbusConfig, retryAttempt: Int): Unit = {
-    log.info("Querying connection manager")
-    if (retryAttempt < config.maxRetryAttempts) {
-      getConnection(config.hostName, config.port, config.timeout) match {
-        case Some(c) => context.become(idle(Some(c)))
-        case None => connectionManager(config, retryAttempt + 1)
-      }
-    } else {
-      log.info("Maximum connection retry attempts exceeded, entering timeout state")
-      context.become(communicationFailed)
-      system.scheduler.scheduleOnce(3.seconds, context.self, CompleteTimeout)
-      // schedule a message that is return
+    val response: Future[List[Int]] = Future {
+      transaction.execute()
+      transaction.getResponse
+    }.map { response =>
+      response.asInstanceOf[ReadMultipleRegistersResponse].getRegisters.foldLeft(List.empty[Int]) { (intList, register) => register.getValue :: intList }
     }
+    response
   }
 
-  /** Actor Reveive Message Functions */
   def receive: Receive = {
-    idle(None)
-  }
+    /**
+      * Returns a RespHoldingRegisters message composed of the holding registers specifed by startAddress
+      * to numberOfRegisters to sender.
+      *
+      * Notes:
+      * Future.map returns a Future[T] where T is the value returned by map. This is how chained futures are created.
+      * Future.foreach always returns Unit. This seems to be how you end a chain of futures..
+      */
+    case ReqReadHoldingRegisters(requestId: Long, startAddress: Int, numberOfRegisters: Int) =>
 
-  /** Actor timeout state. Actor will not attempt to transact messages
-    * until the timeout state has passed.
-    * @return
-    */
-  def communicationFailed: Receive = {
-    case CompleteTimeout => context.become(idle(None))
-
-    case ReqReadHoldingRegisters(id, _, _) => sender() ! ConnectionTimedOut(id)
-  }
-
-  /** Standard operating state for the Communications Actor
-    * will reviece poll requests and attempt to transact the message
-    * with the target device
-    * @param connection The TCP Master Connection object wrapped in an Option
-    * @return
-    */
-  def idle(connection: Option[TCPMasterConnection]): Receive = {
-    /** Poll the slave for information and return Option[Array[Int]] */
-    case ReqReadHoldingRegisters(id, startAddress, numberOfRegisters) =>
-      if (connection match {
-        case Some(c) => c.isConnected
-        case None => false
-      }) {
-        // valid connection: attempt to transact a message
-        val response = readHoldingRegisters(connection.get, startAddress, numberOfRegisters)
-        sender() ! RespReadHoldingRegisters(id, response)
-      } else {
-        // invalid connection: request reconnect through the connection manager
-        connectionManager(config, 0)
-        context.self forward ReqReadHoldingRegisters(id, startAddress, numberOfRegisters)
+      def convertToRespReadHoldingRegisters(response: Future[List[Int]]): Future[RespReadHoldingRegisters] = {
+        response.map( RespReadHoldingRegisters(requestId, _) )
       }
+
+      val connectionFuture = getConnection(config.hostName, config.port, config.timeout)
+      val response = connectionFuture.flatMap { connection =>
+        getHoldingRegisters(connection , startAddress, numberOfRegisters)
+      }
+      pipe(convertToRespReadHoldingRegisters(response)) to sender()
+
+    case ReqWriteHoldingRegisters(requestId: Long, startAddress: Int, registers: List[Int]) => ???
   }
 }

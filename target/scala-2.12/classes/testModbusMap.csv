@@ -1,0 +1,6 @@
+name,address,datatype,group,block
+test1,10,U16,status,0
+test2,11,U32,status,0
+test3,15,I16,status,1
+test4,16,F32,status,1
+test5,20,F64,status,2

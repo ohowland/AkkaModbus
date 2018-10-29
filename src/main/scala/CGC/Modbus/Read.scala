@@ -17,13 +17,11 @@ object Read {
   case class QueryResponse(requestId: Long, status: Map[String, Double])
 }
 
-class Read(
-            requestId: Long,
-            targetActor: ActorRef,
-            messages: Set[MessageFactory.ModbusMessageTemplate],
-            requester: ActorRef,
-            timeout: FiniteDuration
-                     ) extends Actor with ActorLogging {
+class Read(requestId: Long,
+           targetActor: ActorRef,
+           messages: Set[MessageFactory.ModbusMessageTemplate],
+           requester: ActorRef,
+           timeout: FiniteDuration) extends Actor with ActorLogging {
 
   import Read._
   import context.dispatcher
@@ -52,19 +50,19 @@ class Read(
 
   def waitingForReplies(dataSoFar: Map[String, Double], pendingMessageIds: Set[Long]): Receive = {
     
-    case Comm.RespReadHoldingRegisters(messageId: Long, registers: Option[List[Int]]) =>
+    case Comm.RespReadHoldingRegisters(messageId: Long, registers: List[Int]) =>
       val incomingValueMap: Map[String, Double] = registers match {
-        case Some(response) => idToMessageTemplate(messageId).decode(response)
-        case None => Map.empty
+        case Nil => Map.empty
+        case response => idToMessageTemplate(messageId).decode(response)
       }
       receivedResponse(messageId, incomingValueMap, pendingMessageIds, dataSoFar)
 
     case Terminated(failedActor) =>
-      requester ! Comm.ConnectionTimedOut(requestId)
+      //TODO: tell sender() the actor failed
       context.stop(self)
 
     case CollectionTimeout =>
-      requester ! Comm.ConnectionTimedOut(requestId)
+      //TODO: tell sender() the actor timed out
       context.stop(self)
   }
 
