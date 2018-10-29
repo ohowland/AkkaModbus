@@ -2,7 +2,6 @@ package CGC.Modbus
 
 import java.net.InetAddress
 
-import CGC.Modbus.Comm.ModbusMessage
 import akka.actor.{Actor, ActorLogging, Props}
 import net.wimpi.modbus.io.ModbusTCPTransaction
 import net.wimpi.modbus.msg.{ModbusRequest, ReadMultipleRegistersRequest, ReadMultipleRegistersResponse}
@@ -72,15 +71,13 @@ class Comm(config: Comm.ModbusConfig) extends Actor with ActorLogging {
 
     val transaction = new ModbusTCPTransaction(connection)
     transaction.setRequest(request.asInstanceOf[ModbusRequest]) // What does this do?
+    transaction.execute()
 
-    try {
-      transaction.execute()
-      val values = transaction.getResponse.asInstanceOf[ReadMultipleRegistersResponse]
-      //log.info("{} raw response: " + values.getRegisters.map(_.getValue).toList.toString)
-      Some(values.getRegisters.map(_.getValue).toList)
-    } catch {
-      case e: Exception => None
-    }
+    val values = transaction.getResponse.asInstanceOf[ReadMultipleRegistersResponse]
+    //log.info("{} raw response: " + values.getRegisters.map(_.getValue).toList.toString)
+
+    values.getRegisters.foldLeft(List.empty[Int]) { (intList, register) => register.getValue :: intList }
+    //Some(values.getRegisters.map(_.getValue).toList)
   }
 
   def connectionManager(config: ModbusConfig, retryAttempt: Int): Unit = {

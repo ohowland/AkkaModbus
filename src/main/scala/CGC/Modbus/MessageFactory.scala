@@ -1,8 +1,14 @@
 package CGC.Modbus
 
 import scala.math.pow
+import akka.actor.{ Actor, ActorLogging, Props}
 
 object MessageFactory {
+  def props(modbusMap: List[ModbusTypes.ModbusRegsiter]): Props = Props(new MessageFactory(modbusMap))
+
+  // Message Interface for the Factory
+  case class ReqCreateMessageTemplate(groupName: String)
+  case class RespCreateMessageTemplate(groupName: String, template: List[ModbusMessageTemplate])
 
   /**
     * Defines the data required for a modbus read multiple holding registers command.
@@ -143,13 +149,31 @@ object MessageFactory {
     } yield ModbusMessageTemplate(buildReadSpecification(registerBlock), registerBlock, endianness)
   }
 
-  // converts the datatype to a word value (2 bytes), used in defining transaction lengths.
-  def modbusDatatypeWords(datatype: ModbusTypes.ModbusDatatype): Int = datatype match {
+  /** converts the datatype to a word value (2 bytes), used in defining transaction lengths.
+    *
+    * @param datatype
+    * @return
+    */
+  private def modbusDatatypeWords(datatype: ModbusTypes.ModbusDatatype): Int = datatype match {
     case ModbusTypes.U16 => 1
     case ModbusTypes.U32 => 2
     case ModbusTypes.I16 => 1
     case ModbusTypes.I32 => 2
     case ModbusTypes.F32 => 2
     case ModbusTypes.F64 => 4
+  }
+
+}
+
+class MessageFactory(modbusMap: List[ModbusTypes.ModbusRegsiter]) extends Actor
+  with ActorLogging {
+
+  import MessageFactory._
+
+  val endianness = "big"
+
+  def receive: Receive = {
+    case ReqCreateMessageTemplate(groupName) =>
+      sender() ! RespCreateMessageTemplate(groupName, createModbusMessageTemplates(modbusMap, groupName, endianness))
   }
 }

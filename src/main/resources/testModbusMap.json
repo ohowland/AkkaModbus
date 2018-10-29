@@ -1,0 +1,9 @@
+{
+  "register1": {
+    "name": "register1",
+    "address": 1,
+    "datatype": "U16",
+    "group": "status",
+    "block": 0
+  }
+}

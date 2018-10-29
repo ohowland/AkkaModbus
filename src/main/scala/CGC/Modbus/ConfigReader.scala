@@ -10,13 +10,11 @@ object ConfigReader {
       Array(name, address, datatype, group, block) = line.split(",").map(_.trim)
       if toModbusDatatype(datatype).isDefined
     } yield ModbusTypes.ModbusRegsiter(name,
-                                      address.toInt,
-                                      toModbusDatatype(datatype).get,
-                                      group,
-                                      block.toInt)
+                                       address.toInt,
+                                       toModbusDatatype(datatype).get,
+                                       group,
+                                       block.toInt)
   }.toList
-
-
 
   def toModbusDatatype(datatype: String): Option[ModbusTypes.ModbusDatatype] = datatype match {
     case "U16" => Some(ModbusTypes.U16)
