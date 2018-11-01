@@ -32,7 +32,7 @@ class ReadSpec(_system: ActorSystem) extends TestKit(_system)
       ))
 
       modbusActor.expectMsgType[Comm.ReqReadHoldingRegisters]
-      queryActor.tell(Comm.RespReadHoldingRegisters(1, List(11, 22)), modbusActor.ref)
+      queryActor.tell(Comm.RespReadHoldingRegisters(1, Some(List(11, 22))), modbusActor.ref)
 
       requester.expectMsg(QueryResponse(
         requestId = 1,

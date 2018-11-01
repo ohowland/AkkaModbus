@@ -1,10 +1,12 @@
 package CGC.Modbus
 
-import scala.concurrent.{ Future }
+import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
 import akka.actor.{Actor, ActorLogging, Props}
 import akka.pattern.pipe
 import java.net.InetAddress
+import scala.util.control.NonFatal
+
 import net.wimpi.modbus.io.ModbusTCPTransaction
 import net.wimpi.modbus.msg.{ReadMultipleRegistersRequest, ReadMultipleRegistersResponse}
 import net.wimpi.modbus.net.TCPMasterConnection
@@ -19,10 +21,7 @@ object Comm {
 
   sealed trait ModbusMessage
   case class ReqReadHoldingRegisters(requestId: Long, startAddress: Int, numberOfRegisters: Int ) extends ModbusMessage
-  case class RespReadHoldingRegisters(requestId: Long, response: List[Int]) extends ModbusMessage
-
-  case class ReqWriteHoldingRegisters(requestId: Long, startAddress: Int, registers: List[Int]) extends ModbusMessage
-  case class RespWriteHoldingRegisters(requestId: Long) extends ModbusMessage
+  case class RespReadHoldingRegisters(requestId: Long, response: Option[List[Int]]=None) extends ModbusMessage
 }
 
 class Comm(config: Comm.ModbusConfig) extends Actor with ActorLogging {
@@ -53,22 +52,20 @@ class Comm(config: Comm.ModbusConfig) extends Actor with ActorLogging {
     */
   def getHoldingRegisters(connection: TCPMasterConnection,
                           startAddress: Int,
-                          numberOfRegisters: Int): Future[List[Int]] = {
+                          numberOfRegisters: Int): Future[Option[List[Int]]] = {
 
-    val request = new ReadMultipleRegistersRequest(startAddress, numberOfRegisters)
-    request.setUnitID(config.id)
+      val request = new ReadMultipleRegistersRequest(startAddress, numberOfRegisters)
+      request.setUnitID(config.id)
 
-    val transaction = new ModbusTCPTransaction(connection)
-    transaction.setReconnecting(false) // Close the connection after request
-    transaction.setRequest(request)
+      val transaction = new ModbusTCPTransaction(connection)
+      transaction.setReconnecting(false) // Close the connection after request
+      transaction.setRequest(request)
 
-    val response: Future[List[Int]] = Future {
-      transaction.execute()
-      transaction.getResponse
-    }.map { response =>
-      response.asInstanceOf[ReadMultipleRegistersResponse].getRegisters.foldLeft(List.empty[Int]) { (intList, register) => register.getValue :: intList }
-    }
-    response
+      val response: Future[List[Int]] = Future {
+        transaction.execute()
+        transaction.getResponse
+      }.map { resp => resp.asInstanceOf[ReadMultipleRegistersResponse].getRegisters.map { reg => reg.getValue }.toList }
+      response.map(Some(_))
   }
 
   def receive: Receive = {
@@ -82,16 +79,18 @@ class Comm(config: Comm.ModbusConfig) extends Actor with ActorLogging {
       */
     case ReqReadHoldingRegisters(requestId: Long, startAddress: Int, numberOfRegisters: Int) =>
 
-      def convertToRespReadHoldingRegisters(response: Future[List[Int]]): Future[RespReadHoldingRegisters] = {
+      val response: Future[Option[List[Int]]] =
+        getConnection(config.hostName, config.port, config.timeout)
+          .flatMap { getHoldingRegisters( _, startAddress, numberOfRegisters) }
+          .recover { case NonFatal(e) => None }
+
+      pipe(convertToRespReadHoldingRegisters(response)) to sender()
+
+      def convertToRespReadHoldingRegisters(response: Future[Option[List[Int]]]): Future[RespReadHoldingRegisters] = {
         response.map( RespReadHoldingRegisters(requestId, _) )
       }
 
-      val connectionFuture = getConnection(config.hostName, config.port, config.timeout)
-      val response = connectionFuture.flatMap { connection =>
-        getHoldingRegisters(connection , startAddress, numberOfRegisters)
-      }
-      pipe(convertToRespReadHoldingRegisters(response)) to sender()
 
-    case ReqWriteHoldingRegisters(requestId: Long, startAddress: Int, registers: List[Int]) => ???
+
   }
 }

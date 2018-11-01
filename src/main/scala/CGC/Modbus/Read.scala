@@ -50,10 +50,10 @@ class Read(requestId: Long,
 
   def waitingForReplies(dataSoFar: Map[String, Double], pendingMessageIds: Set[Long]): Receive = {
     
-    case Comm.RespReadHoldingRegisters(messageId: Long, registers: List[Int]) =>
+    case Comm.RespReadHoldingRegisters(messageId: Long, registers: Option[List[Int]]) =>
       val incomingValueMap: Map[String, Double] = registers match {
-        case Nil => Map.empty
-        case response => idToMessageTemplate(messageId).decode(response)
+        case None => Map.empty
+        case Some(response) => idToMessageTemplate(messageId).decode(response)
       }
       receivedResponse(messageId, incomingValueMap, pendingMessageIds, dataSoFar)
 

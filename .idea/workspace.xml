@@ -2,9 +2,10 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="b3744f55-811a-44f7-b14b-d2c9cff519a7" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/src/main/scala/CGC/Modbus/Futures.sc" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/scala/CGC/Modbus/Comm.scala" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/scala/CGC/Modbus/Comm.scala" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/scala/CGC/Modbus/Read.scala" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/scala/CGC/Modbus/Read.scala" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/scala/CGC/Modbus/CommSpec.scala" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/scala/CGC/Modbus/CommSpec.scala" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/test/scala/CGC/Modbus/MessageFactorySpec.scala" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/scala/CGC/Modbus/MessageFactorySpec.scala" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/test/scala/CGC/Modbus/ReadSpec.scala" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/scala/CGC/Modbus/ReadSpec.scala" afterDir="false" />
     </list>
@@ -26,7 +27,7 @@
     <session id="-501784500">
       <usages-collector id="statistics.lifecycle.project">
         <counts>
-          <entry key="project.closed" value="2" />
+          <entry key="project.closed" value="3" />
           <entry key="project.open.time.15" value="1" />
           <entry key="project.open.time.21" value="1" />
           <entry key="project.open.time.5" value="1" />
@@ -38,15 +39,15 @@
           <entry key="csv" value="3" />
           <entry key="json" value="3" />
           <entry key="sbt" value="1" />
-          <entry key="sc" value="2" />
-          <entry key="scala" value="23" />
+          <entry key="sc" value="3" />
+          <entry key="scala" value="26" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.open">
         <counts>
           <entry key="JSON" value="3" />
           <entry key="PLAIN_TEXT" value="3" />
-          <entry key="Scala" value="25" />
+          <entry key="Scala" value="29" />
           <entry key="sbt" value="1" />
         </counts>
       </usages-collector>
@@ -55,9 +56,9 @@
           <entry key="csv" value="89" />
           <entry key="json" value="99" />
           <entry key="sbt" value="76" />
-          <entry key="sbtShell" value="77" />
-          <entry key="sc" value="1420" />
-          <entry key="scala" value="13251" />
+          <entry key="sbtShell" value="93" />
+          <entry key="sc" value="1777" />
+          <entry key="scala" value="14889" />
           <entry key="txt" value="102" />
         </counts>
       </usages-collector>
@@ -65,9 +66,9 @@
         <counts>
           <entry key="JSON" value="99" />
           <entry key="PLAIN_TEXT" value="191" />
-          <entry key="Scala" value="14671" />
+          <entry key="Scala" value="16666" />
           <entry key="sbt" value="76" />
-          <entry key="sbtShell" value="77" />
+          <entry key="sbtShell" value="93" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.vcs.git.usages" />
@@ -78,16 +79,32 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/main/scala/CGC/Modbus/Comm.scala">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="215">
-              <caret line="91" column="6" selection-start-line="91" selection-start-column="6" selection-end-line="91" selection-end-column="6" />
+            <state relative-caret-position="255">
+              <caret line="85" selection-start-line="85" selection-end-line="85" />
               <folding>
-                <element signature="e#20#63#0" expanded="true" />
+                <element signature="e#20#50#0" expanded="true" />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/main/scala/CGC/Modbus/Futures.sc">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="120">
+              <caret line="8" column="1" selection-start-line="8" selection-start-column="1" selection-end-line="8" selection-end-column="1" />
+            </state>
+          </provider>
+        </entry>
+      </file>
     </leaf>
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Scala Worksheet" />
+      </list>
+    </option>
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -103,18 +120,18 @@
         <option value="$PROJECT_DIR$/src/main/scala/CGC/Modbus/MessageFactory.scala" />
         <option value="$PROJECT_DIR$/src/main/scala/CGC/Modbus/ConfigReader.scala" />
         <option value="$PROJECT_DIR$/src/test/scala/CGC/Modbus/CommSpec.scala" />
+        <option value="$PROJECT_DIR$/src/test/scala/CGC/Modbus/MessageFactorySpec.scala" />
         <option value="$PROJECT_DIR$/src/main/scala/CGC/Modbus/Read.scala" />
         <option value="$PROJECT_DIR$/src/test/scala/CGC/Modbus/ReadSpec.scala" />
-        <option value="$PROJECT_DIR$/src/test/scala/CGC/Modbus/MessageFactorySpec.scala" />
+        <option value="$PROJECT_DIR$/src/main/scala/CGC/Modbus/Futures.sc" />
         <option value="$PROJECT_DIR$/src/main/scala/CGC/Modbus/Comm.scala" />
       </list>
     </option>
   </component>
   <component name="ProjectFrameBounds" extendedState="6">
-    <option name="x" value="10" />
-    <option name="y" value="20" />
-    <option name="width" value="1346" />
-    <option name="height" value="699" />
+    <option name="x" value="7" />
+    <option name="width" value="1342" />
+    <option name="height" value="701" />
   </component>
   <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="ProjectView">
@@ -284,10 +301,10 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="-3" y="0" width="1372" height="742" extended-state="6" />
+    <frame x="-3" y="0" width="1106" height="646" extended-state="6" />
     <editor active="true" />
     <layout>
-      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.12632374" />
+      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.15814394" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Designer" order="2" />
       <window_info id="Favorites" order="3" side_tool="true" />
@@ -298,12 +315,12 @@
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
       <window_info anchor="bottom" id="TODO" order="6" />
-      <window_info anchor="bottom" id="sbt-shell-toolwindow" order="7" visible="true" weight="0.39739415" />
+      <window_info active="true" anchor="bottom" id="sbt-shell-toolwindow" order="7" visible="true" weight="0.13320464" />
       <window_info anchor="bottom" id="Terminal" order="8" />
       <window_info anchor="bottom" id="Event Log" order="9" side_tool="true" />
       <window_info anchor="bottom" id="Version Control" order="10" show_stripe_button="false" />
       <window_info anchor="bottom" id="Build" order="11" weight="0.18078175" />
-      <window_info anchor="bottom" id="Messages" order="12" weight="0.06741573" />
+      <window_info anchor="bottom" id="Messages" order="12" weight="0.29213482" />
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
@@ -396,36 +413,43 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/scala/CGC/Modbus/Read.scala">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="150">
-          <caret line="57" column="37" lean-forward="true" selection-start-line="57" selection-start-column="37" selection-end-line="57" selection-end-column="37" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/test/scala/CGC/Modbus/MessageFactorySpec.scala">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="155">
-          <caret line="20" column="17" selection-start-line="20" selection-start-column="17" selection-end-line="20" selection-end-column="17" />
+        <state relative-caret-position="76">
+          <caret line="21" column="13" selection-start-line="21" selection-start-column="13" selection-end-line="21" selection-end-column="13" />
           <folding>
             <element signature="e#20#95#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/test/scala/CGC/Modbus/ReadSpec.scala">
+    <entry file="file://$PROJECT_DIR$/src/main/scala/CGC/Modbus/Read.scala">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="225">
-          <caret line="34" column="34" lean-forward="true" selection-start-line="34" selection-start-column="34" selection-end-line="34" selection-end-column="34" />
+          <caret line="59" column="35" lean-forward="true" selection-start-line="59" selection-start-column="35" selection-end-line="59" selection-end-column="35" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/test/scala/CGC/Modbus/ReadSpec.scala">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="277">
+          <caret line="28" column="45" lean-forward="true" selection-start-line="28" selection-start-column="45" selection-end-line="28" selection-end-column="45" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/scala/CGC/Modbus/Futures.sc">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="120">
+          <caret line="8" column="1" selection-start-line="8" selection-start-column="1" selection-end-line="8" selection-end-column="1" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/scala/CGC/Modbus/Comm.scala">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="215">
-          <caret line="91" column="6" selection-start-line="91" selection-start-column="6" selection-end-line="91" selection-end-column="6" />
+        <state relative-caret-position="255">
+          <caret line="85" selection-start-line="85" selection-end-line="85" />
           <folding>
-            <element signature="e#20#63#0" expanded="true" />
+            <element signature="e#20#50#0" expanded="true" />
           </folding>
         </state>
       </provider>

@@ -19,7 +19,7 @@ class MessageFactorySpec extends TestKit(ActorSystem("MessageFactorySpec"))
 
   "A Message Factory" must {
     "something" in {
-      succeed()
+      succeed
     }
   }
 }
