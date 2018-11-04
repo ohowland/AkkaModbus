@@ -2,6 +2,7 @@
 <project version="4">
   <component name="WorksheetDefaultProjectSettings">
     <option name="compilerProfileName" value="Default" />
-    <option name="moduleName" value="CGC" />
+    <option name="makeBeforeRun" value="true" />
+    <option name="moduleName" value="scalacgc" />
   </component>
 </project>
