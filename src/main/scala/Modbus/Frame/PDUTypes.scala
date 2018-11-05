@@ -11,6 +11,10 @@ trait PDU {
   def length: Int = 0
 }
 
+object PDU extends PDU{
+  val empty: PDU = PDU
+}
+
 /**
   * Read Multiple Holding Register request, response, and exception PDUs
   */

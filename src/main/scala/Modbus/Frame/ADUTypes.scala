@@ -8,7 +8,7 @@ import akka.util.ByteString
   */
 
 /**
-  * MBAP Header
+  * MBAP Header for the Modbus ADU
   *
   * @param transactionId : Identification of a MODBUS Request / Response transaction.
   * @param length        : Number of following bytes (i.e. the size of the PDU)
@@ -17,6 +17,12 @@ import akka.util.ByteString
 case class MBAP(transactionId: Int, length: Int, unitId: Int) {
   val protocolId: Int = 0 // always 0 for Modbus protocol
 
+  /**
+    * MBAP header structure:
+    * BYTES :       |     2 Bytes    |   2 Bytes   |      2 Bytes       | 1 Byte  |
+    * DESCRIPTION : | Transaction Id | Protocol Id | PDU Length (bytes) | Unit Id |
+    * @return
+    */
   def toByteString: ByteString = {
     val frameBuilder = ByteString.newBuilder
     implicit val byteOrder = java.nio.ByteOrder.BIG_ENDIAN
@@ -30,7 +36,8 @@ case class MBAP(transactionId: Int, length: Int, unitId: Int) {
 
 /**
   * Modbus ADU (Application Data Unit)
-  *
+  * BYTES:       |   7 Bytes   |          N Bytes         |
+  * DESCRIPTION: | MBAP Header | Protocol Data Unit (PDU) |
   * @param header :  Header defined by the Modbus specification
   * @param pdu    :  Protocol data unit defined by the Modbus specification
   */
