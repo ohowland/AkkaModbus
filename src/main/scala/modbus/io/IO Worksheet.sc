@@ -1,6 +1,6 @@
 import java.net.InetSocketAddress
 
-import Modbus.Frame.{ADU, MBAP, PDU, RequestReadHoldingRegisters}
+import modbus.Frame.{ADU, MBAP, PDU, RequestReadHoldingRegisters}
 
 val transactionId = 1
 val unitId = 1

@@ -1,0 +1,66 @@
+package modbus.io
+
+import akka.actor.{Actor, ActorLogging, ActorRef, Props}
+import akka.io.{IO, Tcp}
+import java.net.InetSocketAddress
+import akka.util.ByteString
+
+object Client {
+  def props(remote: InetSocketAddress, listener: ActorRef) =
+    Props(classOf[Client], remote, listener)
+
+  case object ConnectionFailed
+  case object WriteFailed
+  case object ReqCloseConnection
+  case class Write(data: ByteString)
+  case class Response(data: ByteString)
+}
+
+class Client(remote: InetSocketAddress, handler: ActorRef)
+  extends Actor
+  with ActorLogging {
+
+  import Client._
+  import context.system // implicitly used by IO(Tcp)
+  import akka.io.Tcp._
+
+  IO(Tcp) ! Connect(remote)
+
+  override def receive: Receive = {
+
+    case CommandFailed(_: Connect) =>
+      handler ! ConnectionFailed
+      context stop self
+
+    case c @ Connected(remote, local) =>
+      handler ! c
+      val connection = sender()
+      connection ! Register(self, keepOpenOnPeerClosed = true)
+      context become connected(connection)
+  }
+
+  def connected(connection: ActorRef): Receive = {
+
+    case Client.Write(data) =>
+      connection ! Tcp.Write(data)
+
+    case CommandFailed(w: Tcp.Write) =>
+      // O/S buffer was full
+      handler ! WriteFailed
+
+    case Received(data) =>
+      // send data to handler
+      handler ! Response(data)
+
+    case ReqCloseConnection =>
+      connection ! Close
+
+    case _: ConnectionClosed =>
+      log.info(s"closed connection with [$connection]")
+      context stop self
+
+    case SuspendReading =>
+      connection ! SuspendReading
+  }
+
+}

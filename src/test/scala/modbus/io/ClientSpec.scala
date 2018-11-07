@@ -1,8 +1,8 @@
-package Modbus.IO
+package modbus.io
 
 import java.net.InetSocketAddress
 
-import Modbus.Frame._
+import modbus.frame._
 import akka.actor.ActorSystem
 import akka.io.Tcp
 import akka.testkit.{TestKit, TestProbe}
@@ -42,8 +42,8 @@ class ClientSpec(_system: ActorSystem) extends TestKit(_system)
       val testMBAP = ByteString((transactionId >> 8).toByte, transactionId.toByte, 0, 0, 0, testPDU.length + 1, unitId)
 
       val testADU = ByteString(0, transactionId, 0, 0, 0, testPDU.length + 1, unitId) ++ testPDU
-      clientActor ! Client.ReqWrite(testADU)
-      val response = probe.expectMsgType[Client.RespWrite]
+      clientActor ! Client.Write(testADU)
+      val response = probe.expectMsgType[Client.Response]
 
       clientActor ! Client.ReqCloseConnection
       probe.expectMsgType[Tcp.ConnectionClosed]

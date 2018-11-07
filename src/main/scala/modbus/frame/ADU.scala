@@ -1,4 +1,4 @@
-package Modbus.Frame
+package modbus.frame
 
 import akka.util.ByteString
 
@@ -15,7 +15,6 @@ import akka.util.ByteString
   * @param unitId        : Identification of a remote slave (aka Modbus ID)
   */
 case class MBAP(transactionId: Int, length: Int, unitId: Int) {
-  val protocolId: Int = 0 // always 0 for Modbus protocol
 
   /**
     * MBAP header structure:
@@ -27,20 +26,22 @@ case class MBAP(transactionId: Int, length: Int, unitId: Int) {
     val frameBuilder = ByteString.newBuilder
     implicit val byteOrder = java.nio.ByteOrder.BIG_ENDIAN
     frameBuilder.putShort(transactionId)
-    frameBuilder.putShort(protocolId)
+    frameBuilder.putShort(MBAP.protocolId)
     frameBuilder.putShort(length)
     frameBuilder.putByte(unitId.toByte)
     frameBuilder.result()
   }
 }
 
+case object MBAP { val protocolId: Int = 0 }
+
 /**
   * Modbus ADU (Application Data Unit)
   * BYTES:       |   7 Bytes   |          N Bytes         |
   * DESCRIPTION: | MBAP Header | Protocol Data Unit (PDU) |
-  * @param header :  Header defined by the Modbus specification
+  * @param mbap :  Header defined by the Modbus specification
   * @param pdu    :  Protocol data unit defined by the Modbus specification
   */
-case class ADU(header: MBAP, pdu: PDU) {
-  def toByteString: ByteString = header.toByteString ++ pdu.toByteString
+case class ADU(mbap: MBAP, pdu: PDU) {
+  def toByteString: ByteString = mbap.toByteString ++ pdu.toByteString
 }
