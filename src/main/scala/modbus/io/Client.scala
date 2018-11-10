@@ -5,6 +5,12 @@ import akka.io.{IO, Tcp}
 import java.net.InetSocketAddress
 import akka.util.ByteString
 
+/**
+  * The io.Client is responsible for managing the TCP connection actor.
+  *
+  * Messages passed to the Client are passed to the TCP remote connection.
+  * Messages recieved by the Client are passed to the io.Handler
+  */
 object Client {
   def props(remote: InetSocketAddress, listener: ActorRef) =
     Props(classOf[Client], remote, listener)

@@ -2,7 +2,7 @@ package modbus.frame
 
 import org.scalatest._
 
-class DecodeSpec() extends Matchers
+class DecodeFrameSpec() extends Matchers
   with WordSpecLike
   with BeforeAndAfterAll {
 
@@ -18,7 +18,7 @@ class DecodeSpec() extends Matchers
       val testADU: ADU = ADU(testMBAP, testPDU)
 
       val response = testADU.toByteString
-      val adu: ADU = Decode.adu(response)
+      val adu: ADU = DecodeFrame.adu(response)
 
       adu should ===(ADU(
         MBAP(transactionId, testPDU.length + 1, unitId),
@@ -35,7 +35,7 @@ class DecodeSpec() extends Matchers
       val testADU: ADU = ADU(testMBAP, testPDU)
 
       val response = testADU.toByteString
-      val adu: ADU = Decode.adu(response)
+      val adu: ADU = DecodeFrame.adu(response)
 
       adu should ===(ADU(MBAP(transactionId, testPDU.length + 1, unitId), ExceptionReadHoldingRegisters(errorCode)))
     }
@@ -51,7 +51,7 @@ class DecodeSpec() extends Matchers
       val testADU: ADU = ADU(testMBAP, testPDU)
 
       val response = testADU.toByteString
-      val adu: ADU = Decode.adu(response)
+      val adu: ADU = DecodeFrame.adu(response)
 
       adu should ===(ADU(
         MBAP(transactionId, testPDU.length + 1, unitId),
@@ -68,7 +68,7 @@ class DecodeSpec() extends Matchers
       val testADU: ADU = ADU(testMBAP, testPDU)
 
       val response = testADU.toByteString
-      val adu: ADU = Decode.adu(response)
+      val adu: ADU = DecodeFrame.adu(response)
 
       adu should ===(ADU(MBAP(transactionId, 2, unitId), ExceptionWriteHoldingRegisters(errorCode)))
     }

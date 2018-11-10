@@ -1,11 +1,24 @@
 package modbus.frame
 
+import akka.actor.{Actor, ActorRef, Props}
 import akka.util.{ByteIterator, ByteString}
 
-object Decode {
+object DecodeFrame {
+  def props(requester: ActorRef) = Props(new DecodeFrame(requester))
+}
+
+class DecodeFrame(requester: ActorRef) extends Actor {
+
+  import DecodeFrame._
+
   implicit val byteOrder = java.nio.ByteOrder.BIG_ENDIAN
 
-  def adu(data: ByteString): ADU = {
+  def receive: Receive = {
+    case data: ByteString =>
+      requester ! decode(data)
+}
+
+  def decode(data: ByteString): ADU = {
     ADU(decodeMBAP(data take 7), decodePDU(data drop 7))
   }
 

@@ -5,7 +5,7 @@ import akka.testkit.{TestKit, TestProbe}
 import org.scalatest._
 import akka.util.ByteString
 
-  class ADUSpec(_system: ActorSystem) extends TestKit(_system)
+  class FrameSpec(_system: ActorSystem) extends TestKit(_system)
     with Matchers
     with WordSpecLike
     with BeforeAndAfterAll {

@@ -16,4 +16,4 @@ val response = testADU.toByteString
 ExceptionWriteHoldingRegisters.functionCode.toByte.toInt & 0xFF
 
 
-Decode.adu(response)
+DecodeFrame.adu(response)
