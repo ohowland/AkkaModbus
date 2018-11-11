@@ -1,14 +1,19 @@
-package CGC.Modbus
+package modbus.poll
+
+import akka.actor.{Actor, ActorLogging, Props}
 
 import scala.math.pow
-import akka.actor.{ Actor, ActorLogging, Props}
 
 object MessageFactory {
-  def props(modbusMap: List[ModbusTypes.ModbusRegsiter]): Props = Props(new MessageFactory(modbusMap))
+  def props(modbusMap: List[ModbusTypes.ModbusRegister]): Props = Props(new MessageFactory(modbusMap))
 
   // Message Interface for the Factory
-  case class ReqCreateMessageTemplate(groupName: String)
-  case class RespCreateMessageTemplate(groupName: String, template: List[ModbusMessageTemplate])
+  case class ReqCreateReadMessageTemplate(groupName: String)
+  case class RespCreateReadMessageTemplate(groupName: String, template: List[ModbusMessageTemplate])
+
+  trait ModbusMessageTemplate {
+    def decode(response: List[Int]): Map[String, Double] = Map.empty
+  }
 
   /**
     * Defines the data required for a modbus read multiple holding registers command.
@@ -26,9 +31,9 @@ object MessageFactory {
     * @param registers     a list of Modbus register classes which defines all holding registers in this message's domain.
     * @param endianness    the endianess of the message.
     */
-  case class ModbusMessageTemplate(specification: ReadSpecification,
-                                   registers: List[ModbusTypes.ModbusRegsiter],
-                                   endianness: String) {
+  case class ReadModbusMessageTemplate(specification: ReadSpecification,
+                                       registers: List[ModbusTypes.ModbusRegister],
+                                       endianness: String) extends ModbusMessageTemplate {
     /**
       * Returns map of register name to register value as Map[String, Double].
       *
@@ -37,7 +42,7 @@ object MessageFactory {
       *
       * @param response : A list of holding register values returned by a modbus poll
       */
-    def decode(response: List[Int]): Map[String, Double] = {
+    override def decode(response: List[Int]): Map[String, Double] = {
 
       /**
         * Returns a single Double type from a list of two byte values.
@@ -99,16 +104,16 @@ object MessageFactory {
     * @param modbusMap is a list of ModbusRegisters which define communcation with a device.
     * @param groupName is used to select registers from the modbusMap based on the field ModbusRegister.group
     */
-  def createModbusMessageTemplates(modbusMap: List[ModbusTypes.ModbusRegsiter],
-                                   groupName: String,
-                                   endianness: String): List[ModbusMessageTemplate] = {
+  def createReadModbusMessageTemplates(modbusMap: List[ModbusTypes.ModbusRegister],
+                                       groupName: String,
+                                       endianness: String): List[ModbusMessageTemplate] = {
     /**
       * Returns a set of all blocks in the Modbus map for a given groupName.
       *
       * @param modbusMap is a list of ModbusRegisters which define communcation with a device.
       * @param groupName is used to select registers from the modbusMap based on the field ModbusRegister.group.
       */
-    def findBlocks(modbusMap: List[ModbusTypes.ModbusRegsiter], groupName: String): Set[Int] =
+    def findBlocks(modbusMap: List[ModbusTypes.ModbusRegister], groupName: String): Set[Int] =
       modbusMap.filter(_.group == groupName).map(_.block).toSet
 
     /**
@@ -122,8 +127,8 @@ object MessageFactory {
       * @param modbusMap is a list of ModbusRegisters which define communcation with a device.
       * @param blocks    is a set of all block numbers contained in the modbusMap.
       */
-    def bucketRegisterListByBlock(modbusMap: List[ModbusTypes.ModbusRegsiter],
-                                  blocks: Set[Int]): List[List[ModbusTypes.ModbusRegsiter]] = {
+    def bucketRegisterListByBlock(modbusMap: List[ModbusTypes.ModbusRegister],
+                                  blocks: Set[Int]): List[List[ModbusTypes.ModbusRegister]] = {
       (for {
         block <- blocks
         registerList = modbusMap.filter(_.block == block)
@@ -136,7 +141,7 @@ object MessageFactory {
       * @param registerList
       * @return
       */
-    def buildReadSpecification(registerList: List[ModbusTypes.ModbusRegsiter]): ReadSpecification = {
+    def buildReadSpecification(registerList: List[ModbusTypes.ModbusRegister]): ReadSpecification = {
       val startAddress: Int = registerList.map(_.address).min
       val lastAddress: Int = registerList.map(_.address).max
       val lastAddressType: ModbusTypes.ModbusDatatype = modbusMap.filter(_.address == lastAddress).map(_.datatype).head
@@ -146,8 +151,32 @@ object MessageFactory {
 
     for {
       registerBlock <- bucketRegisterListByBlock(modbusMap, findBlocks(modbusMap, groupName))
-    } yield ModbusMessageTemplate(buildReadSpecification(registerBlock), registerBlock, endianness)
+    } yield ReadModbusMessageTemplate(buildReadSpecification(registerBlock), registerBlock, endianness)
   }
+
+  /**
+    * Defines the data required for a modbus write multiple holding registers command.
+    *
+    * @param startAddress      is the start address for the modbus block read (inclusive)
+    * @param numberOfRegisters is the number of registers to read, including the first.
+    */
+  case class WriteSpecification(startAddress: Int, numberOfRegisters: Int)
+
+  case class WriteModbusMessageTemplate(specification: WriteSpecification,
+                                       registers: List[ModbusTypes.ModbusRegister],
+                                       endianness: String) extends ModbusMessageTemplate {
+    def decode = ???
+  }
+  /**
+    * Returns a ModbusMessageTemplate class configured with required data to complete a write holding registers
+    * request.
+    *
+    * @param modbusMap is a list of ModbusRegisters which define communcation with a device.
+    * @param groupName is used to select registers from the modbusMap based on the field ModbusRegister.group
+    */
+  def createWriteModbusMessageTemplate(modbusMap: List[ModbusTypes.ModbusRegister],
+                                       groupName: String,
+                                       endianness: String): List[ModbusMessageTemplate] = ???
 
   /** converts the datatype to a word value (2 bytes), used in defining transaction lengths.
     *
@@ -163,9 +192,11 @@ object MessageFactory {
     case ModbusTypes.F64 => 4
   }
 
+
+
 }
 
-class MessageFactory(modbusMap: List[ModbusTypes.ModbusRegsiter]) extends Actor
+class MessageFactory(modbusMap: List[ModbusTypes.ModbusRegister]) extends Actor
   with ActorLogging {
 
   import MessageFactory._
@@ -173,7 +204,9 @@ class MessageFactory(modbusMap: List[ModbusTypes.ModbusRegsiter]) extends Actor
   val endianness = "big"
 
   def receive: Receive = {
-    case ReqCreateMessageTemplate(groupName) =>
-      sender() ! RespCreateMessageTemplate(groupName, createModbusMessageTemplates(modbusMap, groupName, endianness))
+    case ReqCreateReadMessageTemplate(groupName) =>
+      sender() ! RespCreateReadMessageTemplate(
+        groupName,
+        createReadModbusMessageTemplates(modbusMap, groupName, endianness))
   }
 }

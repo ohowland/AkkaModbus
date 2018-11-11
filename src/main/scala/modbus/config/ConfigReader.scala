@@ -1,15 +1,17 @@
-package CGC.Modbus
+package modbus.config
 
 import java.net.URL
 
+import modbus.poll.ModbusTypes
+
 object ConfigReader {
-  def readCSVToRegisterList(path: URL): List[ModbusTypes.ModbusRegsiter] = {
+  def readCSVToRegisterList(path: URL): List[ModbusTypes.ModbusRegister] = {
     val bufferedSource = io.Source.fromURL(path)
     for {
       line <- bufferedSource.getLines
       Array(name, address, datatype, group, block) = line.split(",").map(_.trim)
       if toModbusDatatype(datatype).isDefined
-    } yield ModbusTypes.ModbusRegsiter(name,
+    } yield ModbusTypes.ModbusRegister(name,
                                        address.toInt,
                                        toModbusDatatype(datatype).get,
                                        group,

@@ -1,4 +1,4 @@
-package CGC.Modbus
+package modbus.poll
 
 object ModbusTypes {
 
@@ -10,7 +10,7 @@ object ModbusTypes {
   case object F32 extends ModbusDatatype
   case object F64 extends ModbusDatatype
   
-  case class ModbusRegsiter(name: String,
+  case class ModbusRegister(name: String,
                             address: Int,
                             datatype: ModbusDatatype,
                             group: String,

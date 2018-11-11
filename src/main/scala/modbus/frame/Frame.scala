@@ -60,6 +60,7 @@ case class MBAP(transactionId: Int, length: Int, unitId: Int) {
 trait PDU {
   def toByteString: ByteString = ByteString.empty
   def length: Int = 0
+  def payload: List[Int] = List.empty
 }
 object PDU extends PDU{
   val empty: PDU = PDU
@@ -110,6 +111,8 @@ case class ResponseReadHoldingRegisters(size: Int, response: List[Int]) extends 
   override def length: Int = {
     this.toByteString.length
   }
+
+  override def payload: List[Int] = response
 }
 
 case object ExceptionReadHoldingRegisters { val functionCode: Int = 0x83 }
@@ -142,7 +145,7 @@ trait WriteHoldingRegisters extends PDU
   * DESCRIPTION : | Fct Code | Start Address | # Registers | Payload Size (N Bytes) | Payload |
   */
 case object RequestWriteHoldingRegisters { val functionCode: Int = 0x10 }
-case class RequestWriteHoldingRegisters(startAddress: Int, numberOfRegisters: Int, payload: List[Int])
+case class RequestWriteHoldingRegisters(startAddress: Int, numberOfRegisters: Int, registers: List[Int])
   extends WriteHoldingRegisters {
   val payloadSize: Int = 2 * numberOfRegisters
   override def toByteString: ByteString = {
@@ -158,6 +161,8 @@ case class RequestWriteHoldingRegisters(startAddress: Int, numberOfRegisters: In
   override def length: Int = {
     this.toByteString.length
   }
+
+  override def payload = registers
 }
 
 case object ResponseWriteHoldingRegisters { val functionCode: Int = 0x10 }

@@ -1,17 +1,29 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="b3744f55-811a-44f7-b14b-d2c9cff519a7" name="Default Changelist" comment="tests for the frame / decode routines">
-      <change beforePath="$PROJECT_DIR$/.idea/modules/scalacgc.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules/scalacgc.iml" afterDir="false" />
+    <list default="true" id="b3744f55-811a-44f7-b14b-d2c9cff519a7" name="Default Changelist" comment="swap">
+      <change afterPath="$PROJECT_DIR$/src/main/scala/modbus/frame/EncodeFrame.scala" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/scala/modbus/poll/Poll.scala" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/scala/modbus/frame/ADU.scala" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/scala/modbus/frame/Frame.scala" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/scala/modbus/frame/Decode.scala" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/scala/modbus/frame/DecodeFrame.scala" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/scala/modbus/frame/Frame Worksheet.sc" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/scala/modbus/frame/Frame Worksheet.sc" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/scala/modbus/frame/PDU.scala" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/scala/modbus/io/Client.scala" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/scala/modbus/io/Client.scala" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/scala/modbus/io/Handler.scala" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/scala/modbus/io/Handler.scala" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/scala/modbus/frame/ADUSpec.scala" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/scala/modbus/frame/FrameSpec.scala" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/scala/modbus/frame/DecodeSpec.scala" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/scala/modbus/frame/DecodeFrameSpec.scala" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/scala/CGC/AssetModels/GridIntertie.scala" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/scala/CGC/asset/GridIntertie.scala" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/scala/CGC/AssetModels/SEL547.scala" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/scala/CGC/asset/SEL547.scala" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/scala/CGC/Modbus/Comm.scala" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/scala/CGC/Modbus/ConfigReader.scala" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/scala/modbus/config/ConfigReader.scala" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/scala/CGC/Modbus/MessageFactory.scala" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/scala/modbus/poll/MessageFactory.scala" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/scala/CGC/Modbus/ModbusConfigUtility.sc" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/scala/CGC/Modbus/ModbusTypes.scala" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/scala/modbus/poll/ModbusTypes.scala" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/scala/CGC/Modbus/Read.scala" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/scala/CGC/Modbus/Write.scala" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/scala/modbus/frame/DecodeFrame.scala" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/scala/modbus/frame/DecodeFrame.scala" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/scala/modbus/frame/Frame.scala" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/scala/modbus/frame/Frame.scala" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/scala/modbus/generator/Generator.scala" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/scala/modbus/generator/Query.scala" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/scala/CGC/AssetModels/GridIntertieSpec.scala" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/scala/CGC/asset/GridIntertieSpec.scala" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/scala/CGC/Modbus/CommSpec.scala" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/scala/CGC/Modbus/MessageFactorySpec.scala" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/scala/modbus/poll/MessageFactorySpec.scala" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/scala/CGC/Modbus/ReadSpec.scala" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/scala/modbus/poll/PollSpec.scala" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/scala/modbus/frame/DecodeFrameSpec.scala" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/scala/modbus/frame/DecodeFrameSpec.scala" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/scala-2.12/classes/CGC/Modbus/ModbusConfigUtility.sc" beforeDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/target/" />
     <ignored path="$PROJECT_DIR$/project/project/target/" />
@@ -81,62 +93,35 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="Frame Worksheet.sc" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/main/scala/modbus/frame/Frame Worksheet.sc">
+      <file leaf-file-name="Poll.scala" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/main/scala/modbus/poll/Poll.scala">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="255">
-              <caret line="15" column="38" selection-start-line="15" selection-start-column="38" selection-end-line="15" selection-end-column="38" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="Frame.scala" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/main/scala/modbus/frame/Frame.scala">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="2941">
-              <caret line="173" column="39" selection-start-line="173" selection-start-column="39" selection-end-line="173" selection-end-column="39" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="DecodeFrame.scala" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/src/main/scala/modbus/frame/DecodeFrame.scala">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="187">
-              <caret line="12" selection-start-line="12" selection-end-line="12" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="FrameSpec.scala" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/test/scala/modbus/frame/FrameSpec.scala">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="136">
-              <caret line="11" selection-start-line="11" selection-end-line="11" />
+            <state relative-caret-position="1020">
+              <caret line="73" lean-forward="true" selection-start-line="73" selection-end-line="73" />
               <folding>
-                <element signature="e#22#51#0" expanded="true" />
+                <element signature="e#21#89#0" expanded="true" />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="Handler.scala" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/main/scala/modbus/io/Handler.scala">
+      <file leaf-file-name="PollSpec.scala" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/test/scala/modbus/poll/PollSpec.scala">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="969">
-              <caret line="62" selection-start-line="62" selection-end-line="62" />
+            <state relative-caret-position="595">
+              <caret line="35" selection-start-line="35" selection-end-line="35" />
               <folding>
-                <element signature="e#19#87#0" expanded="true" />
+                <element signature="e#21#50#0" expanded="true" />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="Client.scala" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/main/scala/modbus/io/Client.scala">
+      <file leaf-file-name="DecodeFrameSpec.scala" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/src/test/scala/modbus/frame/DecodeFrameSpec.scala">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="136">
-              <caret line="11" column="63" selection-start-line="11" selection-start-column="63" selection-end-line="11" selection-end-column="63" />
+            <state relative-caret-position="378">
+              <caret line="70" column="40" selection-start-line="70" selection-start-column="40" selection-end-line="70" selection-end-column="40" />
             </state>
           </provider>
         </entry>
@@ -150,19 +135,17 @@
       </list>
     </option>
   </component>
+  <component name="FindInProjectRecents">
+    <dirStrings>
+      <dir>C:\Users\owen\source\repos\ScalaCGC\src\main\scala\modbus\query</dir>
+    </dirStrings>
+  </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/src/main/scala/CGC/Modbus/Futures.sc" />
-        <option value="$PROJECT_DIR$/src/main/scala/CGC/Modbus/Comm.scala" />
-        <option value="$PROJECT_DIR$/build.sbt" />
-        <option value="$PROJECT_DIR$/src/main/scala/CGC/Comm/ModbusStream/ParsePDU.scala" />
-        <option value="$PROJECT_DIR$/src/main/scala/CGC/Comm/Pdu/PduTypes.scala" />
-        <option value="$PROJECT_DIR$/src/main/scala/CGC/Comm/Frame/Frame.scala" />
-        <option value="$PROJECT_DIR$/src/main/scala/CGC/Comm/Frame/FramePdu.scala" />
         <option value="$PROJECT_DIR$/src/main/scala/CGC/Comm/Frame/AduTypes.scala" />
         <option value="$PROJECT_DIR$/src/main/scala/CGC/Comm/Frame/PduTypes.scala" />
         <option value="$PROJECT_DIR$/src/main/scala/CGC/Comm/Frame/FrameAdu.scala" />
@@ -202,11 +185,18 @@
         <option value="$PROJECT_DIR$/src/main/scala/modbus/frame/Decode.scala" />
         <option value="$PROJECT_DIR$/src/main/scala/modbus/frame/Frame Worksheet.sc" />
         <option value="$PROJECT_DIR$/src/test/scala/modbus/frame/DecodeSpec.scala" />
-        <option value="$PROJECT_DIR$/src/test/scala/modbus/frame/DecodeFrameSpec.scala" />
-        <option value="$PROJECT_DIR$/src/main/scala/modbus/frame/Frame.scala" />
         <option value="$PROJECT_DIR$/src/main/scala/modbus/io/Client.scala" />
         <option value="$PROJECT_DIR$/src/main/scala/modbus/io/Handler.scala" />
         <option value="$PROJECT_DIR$/src/main/scala/modbus/frame/DecodeFrame.scala" />
+        <option value="$PROJECT_DIR$/src/main/scala/modbus/poll/ModbusTypes.scala" />
+        <option value="$PROJECT_DIR$/src/main/scala/modbus/frame/EncodeFrame.scala" />
+        <option value="$PROJECT_DIR$/src/main/scala/modbus/poll/MessageFactory.scala" />
+        <option value="$PROJECT_DIR$/src/main/scala/CGC/Modbus/ConfigReader.scala" />
+        <option value="$PROJECT_DIR$/src/main/scala/modbus/frame/Frame.scala" />
+        <option value="$PROJECT_DIR$/src/test/scala/modbus/poll/ReadSpec.scala" />
+        <option value="$PROJECT_DIR$/src/main/scala/modbus/poll/Poll.scala" />
+        <option value="$PROJECT_DIR$/src/test/scala/modbus/poll/PollSpec.scala" />
+        <option value="$PROJECT_DIR$/src/test/scala/modbus/frame/DecodeFrameSpec.scala" />
       </list>
     </option>
   </component>
@@ -222,6 +212,7 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
+      <pane id="PackagesPane" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -253,6 +244,14 @@
               <item name="src" type="462c0819:PsiDirectoryNode" />
               <item name="main" type="462c0819:PsiDirectoryNode" />
               <item name="scala" type="462c0819:PsiDirectoryNode" />
+              <item name="asset" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="CGC" type="b2602c69:ProjectViewProjectNode" />
+              <item name="ScalaCGC" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="main" type="462c0819:PsiDirectoryNode" />
+              <item name="scala" type="462c0819:PsiDirectoryNode" />
               <item name="modbus" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
@@ -262,7 +261,7 @@
               <item name="main" type="462c0819:PsiDirectoryNode" />
               <item name="scala" type="462c0819:PsiDirectoryNode" />
               <item name="modbus" type="462c0819:PsiDirectoryNode" />
-              <item name="frame" type="462c0819:PsiDirectoryNode" />
+              <item name="poll" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
               <item name="CGC" type="b2602c69:ProjectViewProjectNode" />
@@ -276,30 +275,12 @@
               <item name="src" type="462c0819:PsiDirectoryNode" />
               <item name="test" type="462c0819:PsiDirectoryNode" />
               <item name="scala" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="CGC" type="b2602c69:ProjectViewProjectNode" />
-              <item name="ScalaCGC" type="462c0819:PsiDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="test" type="462c0819:PsiDirectoryNode" />
-              <item name="scala" type="462c0819:PsiDirectoryNode" />
-              <item name="modbus" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="CGC" type="b2602c69:ProjectViewProjectNode" />
-              <item name="ScalaCGC" type="462c0819:PsiDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="test" type="462c0819:PsiDirectoryNode" />
-              <item name="scala" type="462c0819:PsiDirectoryNode" />
-              <item name="modbus" type="462c0819:PsiDirectoryNode" />
-              <item name="frame" type="462c0819:PsiDirectoryNode" />
             </path>
           </expand>
           <select />
         </subPane>
       </pane>
       <pane id="Scope" />
-      <pane id="PackagesPane" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -307,6 +288,7 @@
   </component>
   <component name="RecentsManager">
     <key name="MoveClassesOrPackagesDialog.RECENTS_KEY">
+      <recent name="modbus.poll" />
       <recent name="modbus.io" />
       <recent name="ModbusComm" />
       <recent name="ModbusComm.Stream" />
@@ -329,7 +311,7 @@
       </list>
     </option>
   </component>
-  <component name="RunManager" selected="ScalaTest.ScalaTests in 'frame'">
+  <component name="RunManager" selected="ScalaTest.ScalaTests in 'modbus'">
     <configuration default="true" type="Application" factoryName="Application">
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
     </configuration>
@@ -393,22 +375,6 @@
       <buffered bufClass="Modbus.IO.ClientSpec" />
       <buffered bufClass="Modbus.IO.ClientSpec" />
     </configuration>
-    <configuration name="ScalaTests in 'Modbus'" type="ScalaTestRunConfiguration" factoryName="ScalaTest" temporary="true" nameIsGenerated="true">
-      <module name="scalacgc" />
-      <setting name="path" value="" />
-      <setting name="vmparams" value="" />
-      <setting name="params" value="" />
-      <setting name="workingDirectory" value="file://$PROJECT_DIR$" />
-      <setting name="searchForTest" value="Across module dependencies" />
-      <setting name="showProgressMessages" value="true" />
-      <setting name="useSbt" value="false" />
-      <setting name="useUiWithSbt" value="false" />
-      <envs />
-      <setting name="testKind" value="All in package" />
-      <setting name="package" value="Modbus" />
-      <buffered bufClass="Modbus.Frame.ADUFramerSpec" />
-      <buffered bufClass="Modbus.Frame.ADUFramerSpec" />
-    </configuration>
     <configuration name="ScalaTests in 'frame'" type="ScalaTestRunConfiguration" factoryName="ScalaTest" temporary="true" nameIsGenerated="true">
       <module name="scalacgc" />
       <setting name="path" value="" />
@@ -427,24 +393,48 @@
       <buffered bufClass="modbus.frame.FrameSpec" />
       <buffered bufClass="modbus.frame.FrameSpec" />
     </configuration>
+    <configuration name="ScalaTests in 'modbus'" type="ScalaTestRunConfiguration" factoryName="ScalaTest" temporary="true" nameIsGenerated="true">
+      <module name="scalacgc" />
+      <setting name="path" value="" />
+      <setting name="vmparams" value="" />
+      <setting name="params" value="" />
+      <setting name="workingDirectory" value="file://$PROJECT_DIR$" />
+      <setting name="searchForTest" value="Across module dependencies" />
+      <setting name="showProgressMessages" value="true" />
+      <setting name="useSbt" value="false" />
+      <setting name="useUiWithSbt" value="false" />
+      <envs />
+      <setting name="testKind" value="All in package" />
+      <setting name="package" value="modbus" />
+      <buffered bufClass="modbus.frame.DecodeFrameSpec" />
+      <buffered bufClass="modbus.frame.DecodeFrameSpec" />
+      <buffered bufClass="modbus.frame.FrameSpec" />
+      <buffered bufClass="modbus.frame.FrameSpec" />
+      <buffered bufClass="modbus.io.ClientSpec" />
+      <buffered bufClass="modbus.io.ClientSpec" />
+      <buffered bufClass="modbus.poll.MessageFactorySpec" />
+      <buffered bufClass="modbus.poll.MessageFactorySpec" />
+      <buffered bufClass="modbus.poll.PollSpec" />
+      <buffered bufClass="modbus.poll.PollSpec" />
+    </configuration>
     <configuration name="&lt;template&gt;" type="TestNG" default="true" selected="false">
       <option name="VM_PARAMETERS" value="-ea" />
       <option name="WORKING_DIRECTORY" value="%MODULE_WORKING_DIR%" />
     </configuration>
     <list>
-      <item itemvalue="ScalaTest.ScalaTests in 'Modbus'" />
       <item itemvalue="ScalaTest.ScalaTests in 'IO'" />
       <item itemvalue="ScalaTest.DecodeSpec" />
       <item itemvalue="ScalaTest.ADUSpec" />
       <item itemvalue="ScalaTest.ScalaTests in 'frame'" />
+      <item itemvalue="ScalaTest.ScalaTests in 'modbus'" />
     </list>
     <recent_temporary>
       <list>
+        <item itemvalue="ScalaTest.ScalaTests in 'modbus'" />
         <item itemvalue="ScalaTest.ScalaTests in 'frame'" />
         <item itemvalue="ScalaTest.DecodeSpec" />
         <item itemvalue="ScalaTest.ADUSpec" />
         <item itemvalue="ScalaTest.ScalaTests in 'IO'" />
-        <item itemvalue="ScalaTest.ScalaTests in 'Modbus'" />
       </list>
     </recent_temporary>
   </component>
@@ -513,9 +503,6 @@
     <servers />
   </component>
   <component name="TestHistory">
-    <history-entry file="ADUSpec - 2018.11.07 at 01h 26m 43s.xml">
-      <configuration name="ADUSpec" configurationId="ScalaTestRunConfiguration" />
-    </history-entry>
     <history-entry file="DecodeSpec - 2018.11.07 at 01h 26m 52s.xml">
       <configuration name="DecodeSpec" configurationId="ScalaTestRunConfiguration" />
     </history-entry>
@@ -543,34 +530,36 @@
     <history-entry file="ScalaTests_in_'frame' - 2018.11.08 at 00h 46m 32s.xml">
       <configuration name="ScalaTests in 'frame'" configurationId="ScalaTestRunConfiguration" />
     </history-entry>
+    <history-entry file="ScalaTests_in_'modbus' - 2018.11.11 at 00h 39m 09s.xml">
+      <configuration name="ScalaTests in 'modbus'" configurationId="ScalaTestRunConfiguration" />
+    </history-entry>
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1936" height="1056" extended-state="6" />
-    <editor active="true" />
     <layout>
       <window_info anchor="bottom" id="TODO" order="6" />
+      <window_info anchor="bottom" id="Messages" order="12" weight="0.2911796" />
       <window_info anchor="right" id="sbt" order="4" />
       <window_info anchor="right" id="Palette&#9;" order="3" />
       <window_info anchor="bottom" id="Event Log" order="9" side_tool="true" />
+      <window_info active="true" anchor="bottom" id="Run" order="2" visible="true" weight="0.31243357" />
       <window_info anchor="bottom" id="Version Control" order="10" />
-      <window_info anchor="bottom" id="Run" order="2" weight="0.31243357" />
       <window_info anchor="bottom" id="Terminal" order="8" />
       <window_info id="Designer" order="2" />
-      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.16302083" />
+      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.16302083" />
       <window_info anchor="bottom" id="sbt-shell-toolwindow" order="7" weight="0.29330498" />
       <window_info anchor="bottom" id="Build" order="11" weight="0.18078175" />
+      <window_info anchor="bottom" id="Find" order="1" weight="0.32943678" />
       <window_info id="Learn" order="3" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
-      <window_info id="Favorites" order="3" side_tool="true" />
       <window_info anchor="bottom" id="Debug" order="3" weight="0.4" />
+      <window_info id="Favorites" order="3" side_tool="true" />
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
-      <window_info anchor="bottom" id="Messages" order="12" weight="0.2911796" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
-      <window_info anchor="bottom" id="Find" order="1" weight="0.32943678" />
     </layout>
   </component>
   <component name="VcsContentAnnotationSettings">
@@ -581,7 +570,8 @@
     <MESSAGE value="about to gut the Modbus.Comm actor" />
     <MESSAGE value="separating Modbus IO package" />
     <MESSAGE value="tests for the frame / decode routines" />
-    <option name="LAST_COMMIT_MESSAGE" value="tests for the frame / decode routines" />
+    <MESSAGE value="swap" />
+    <option name="LAST_COMMIT_MESSAGE" value="swap" />
   </component>
   <component name="WorksheetDefaultProjectSettings">
     <option name="compilerProfileName" value="Default" />
@@ -590,31 +580,10 @@
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
-      <option name="time" value="4" />
+      <option name="time" value="7" />
     </breakpoint-manager>
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/src/main/scala/CGC/Modbus/Comm.scala">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1309">
-          <caret line="77" column="7" lean-forward="true" selection-start-line="77" selection-start-column="7" selection-end-line="77" selection-end-column="7" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/scala/CGC/Modbus/Comm.scala">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1547">
-          <caret line="91" lean-forward="true" selection-start-line="91" selection-end-line="91" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/build.sbt">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="255">
-          <caret line="17" selection-start-line="17" selection-end-line="17" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/main/resources/testModbusMap.csv">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="75">
@@ -625,7 +594,7 @@
     <entry file="file://$PROJECT_DIR$/target/scala-2.12/classes/testModbusMap.json">
       <provider selected="true" editor-type-id="text-editor" />
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/scala/CGC/Modbus/ModbusTypes.scala" />
+    <entry file="file://$PROJECT_DIR$/src/main/scala/modbus/poll/ModbusTypes.scala" />
     <entry file="file://$PROJECT_DIR$/src/main/resources/testModbusMap.json" />
     <entry file="file://$PROJECT_DIR$/src/main/scala/CGC/Modbus/ModbusConfigUtility.sc">
       <provider selected="true" editor-type-id="text-editor">
@@ -635,14 +604,14 @@
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/scala/CGC/Modbus/CommRev1.scala" />
-    <entry file="file://$PROJECT_DIR$/src/main/scala/CGC/Modbus/MessageFactory.scala">
+    <entry file="file://$PROJECT_DIR$/src/main/scala/modbus/poll/MessageFactory.scala">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="-720">
           <caret lean-forward="true" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/scala/CGC/Modbus/ConfigReader.scala">
+    <entry file="file://$PROJECT_DIR$/src/main/scala/modbus/config/ConfigReader.scala">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="240">
           <caret line="16" column="10" selection-start-line="16" selection-start-column="10" selection-end-line="16" selection-end-column="10" />
@@ -657,7 +626,7 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/test/scala/CGC/Modbus/ReadSpec.scala" />
+    <entry file="file://$PROJECT_DIR$/src/test/scala/modbus/poll/PollSpec.scala" />
     <entry file="file://$PROJECT_DIR$/src/main/scala/CGC/Modbus/Comm.scala">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="1343">
@@ -665,7 +634,7 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/test/scala/CGC/Modbus/MessageFactorySpec.scala" />
+    <entry file="file://$PROJECT_DIR$/src/test/scala/modbus/poll/MessageFactorySpec.scala" />
     <entry file="file://$PROJECT_DIR$/src/main/resources/testModbusMap.csv">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="75">
@@ -675,13 +644,6 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/target/scala-2.12/classes/testModbusMap.json">
       <provider selected="true" editor-type-id="text-editor" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/scala/CGC/Modbus/ModbusTypes.scala">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="45">
-          <caret line="3" lean-forward="true" selection-start-line="3" selection-end-line="3" />
-        </state>
-      </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/resources/testModbusMap.json">
       <provider selected="true" editor-type-id="text-editor">
@@ -698,28 +660,7 @@
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/scala/CGC/Modbus/CommRev1.scala" />
-    <entry file="file://$PROJECT_DIR$/src/main/scala/CGC/Modbus/MessageFactory.scala">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-720">
-          <caret lean-forward="true" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/scala/CGC/Modbus/ConfigReader.scala">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="240">
-          <caret line="16" column="10" selection-start-line="16" selection-start-column="10" selection-end-line="16" selection-end-column="10" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/scala/CGC/Modbus/Comm.scala">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="255">
-          <caret line="85" selection-start-line="85" selection-end-line="85" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/test/scala/CGC/Modbus/MessageFactorySpec.scala">
+    <entry file="file://$PROJECT_DIR$/src/test/scala/modbus/poll/MessageFactorySpec.scala">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="357">
           <caret line="23" column="3" selection-start-line="23" selection-start-column="3" selection-end-line="23" selection-end-column="3" />
@@ -743,42 +684,15 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/test/scala/CGC/Modbus/ReadSpec.scala">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="493">
-          <caret line="34" column="40" selection-start-line="34" selection-start-column="40" selection-end-line="34" selection-end-column="40" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/main/scala/Modbus/Stream/ParsePDU.scala" />
     <entry file="file://$PROJECT_DIR$/src/main/scala/Modbus/Frame/ADUFramer.scala" />
     <entry file="file://$PROJECT_DIR$/src/main/scala/modbus/io/Client.scala" />
-    <entry file="file://$PROJECT_DIR$/src/main/scala/CGC/Modbus/Read.scala">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1122">
-          <caret line="86" lean-forward="true" selection-start-line="86" selection-end-line="86" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/scala/modbus/generator/Generator.scala">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="34">
-          <caret line="2" column="6" selection-start-line="2" selection-start-column="6" selection-end-line="2" selection-end-column="6" />
-        </state>
-      </provider>
-    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/scala/modbus/generator/Generator.scala" />
     <entry file="file://$PROJECT_DIR$/src/main/scala/modbus/io/ReadHandler.scala" />
     <entry file="file://$PROJECT_DIR$/src/main/scala/modbus/frame/Frame.scala">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="357">
           <caret line="24" column="1" lean-forward="true" selection-start-line="24" selection-start-column="1" selection-end-line="24" selection-end-column="1" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/scala/modbus/generator/Query.scala">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="51">
-          <caret line="3" column="15" selection-start-line="3" selection-start-column="15" selection-end-line="3" selection-end-column="15" />
         </state>
       </provider>
     </entry>
@@ -803,13 +717,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/test/scala/modbus/frame/DecodeFrameSpec.scala">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="68">
-          <caret line="4" column="40" selection-start-line="4" selection-start-column="40" selection-end-line="4" selection-end-column="40" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/main/scala/modbus/frame/PDU.scala" />
     <entry file="file://$PROJECT_DIR$/src/main/scala/modbus/frame/Frame Worksheet.sc">
       <provider selected="true" editor-type-id="text-editor">
@@ -818,27 +725,18 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/scala/modbus/frame/Frame.scala">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="2941">
-          <caret line="173" column="39" selection-start-line="173" selection-start-column="39" selection-end-line="173" selection-end-column="39" />
-        </state>
-      </provider>
-    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/scala/modbus/generator/Query.scala" />
     <entry file="file://$PROJECT_DIR$/src/test/scala/modbus/frame/FrameSpec.scala">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="136">
+        <state relative-caret-position="17">
           <caret line="11" selection-start-line="11" selection-end-line="11" />
-          <folding>
-            <element signature="e#22#51#0" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/scala/modbus/io/Handler.scala">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="969">
-          <caret line="62" selection-start-line="62" selection-end-line="62" />
+        <state relative-caret-position="26">
+          <caret line="15" column="24" lean-forward="true" selection-start-line="15" selection-start-column="24" selection-end-line="15" selection-end-column="24" />
           <folding>
             <element signature="e#19#87#0" expanded="true" />
           </folding>
@@ -847,15 +745,110 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/scala/modbus/io/Client.scala">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="136">
+        <state relative-caret-position="17">
           <caret line="11" column="63" selection-start-line="11" selection-start-column="63" selection-end-line="11" selection-end-column="63" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/scala/modbus/poll/ModbusTypes.scala">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="306">
+          <caret line="18" lean-forward="true" selection-start-line="18" selection-end-line="18" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/scala/modbus/frame/DecodeFrame.scala">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="187">
-          <caret line="12" selection-start-line="12" selection-end-line="12" />
+        <state relative-caret-position="68">
+          <caret line="4" column="7" selection-start-line="4" selection-start-column="7" selection-end-line="4" selection-end-column="7" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/scala/modbus/poll/MessageFactory.scala">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-25">
+          <caret line="96" column="5" lean-forward="true" selection-start-line="96" selection-start-column="5" selection-end-line="96" selection-end-column="5" />
+          <folding>
+            <element signature="e#21#67#0" expanded="true" />
+            <element signature="e#474#754#0" />
+            <element signature="e#832#1263#0" />
+            <element signature="e#1516#1891#0" />
+            <element signature="e#1516#4434#0" />
+            <element signature="e#4442#4787#0" />
+            <element signature="e#4442#7100#0" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/scala/modbus/frame/EncodeFrame.scala">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="561">
+          <caret line="33" column="23" lean-forward="true" selection-start-line="33" selection-start-column="23" selection-end-line="33" selection-end-column="23" />
+          <folding>
+            <element signature="e#22#65#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/scala/CGC/Modbus/Read.scala">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="306">
+          <caret line="21" column="25" selection-start-line="21" selection-start-column="25" selection-end-line="21" selection-end-column="25" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/scala/CGC/Modbus/Write.scala">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="34">
+          <caret line="2" column="6" selection-start-line="2" selection-start-column="6" selection-end-line="2" selection-end-column="6" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/scala/modbus/config/ConfigReader.scala">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="68">
+          <caret line="6" column="7" selection-start-line="6" selection-start-column="7" selection-end-line="6" selection-end-column="7" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/scala/CGC/Modbus/Comm.scala">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-622">
+          <caret line="28" column="15" lean-forward="true" selection-start-line="28" selection-start-column="15" selection-end-line="28" selection-end-column="15" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/scala/modbus/frame/Frame.scala">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="425">
+          <caret line="161" column="25" selection-start-line="161" selection-start-column="25" selection-end-line="161" selection-end-column="25" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/scala/modbus/poll/Poll.scala">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1020">
+          <caret line="73" lean-forward="true" selection-start-line="73" selection-end-line="73" />
+          <folding>
+            <element signature="e#21#89#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/test/scala/modbus/poll/PollSpec.scala">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="595">
+          <caret line="35" selection-start-line="35" selection-end-line="35" />
+          <folding>
+            <element signature="e#21#50#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/test/scala/modbus/frame/DecodeFrameSpec.scala">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="378">
+          <caret line="70" column="40" selection-start-line="70" selection-start-column="40" selection-end-line="70" selection-end-column="40" />
         </state>
       </provider>
     </entry>

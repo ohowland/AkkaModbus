@@ -1,8 +1,8 @@
-package CGC.Modbus
+package modbus.poll
 
-import org.scalatest.{BeforeAndAfterAll, MustMatchers, Suite, WordSpecLike}
 import akka.actor.ActorSystem
 import akka.testkit.TestKit
+import org.scalatest.{BeforeAndAfterAll, MustMatchers, Suite, WordSpecLike}
 
 trait StopSystemAfterAll extends BeforeAndAfterAll {
   this: TestKit with Suite =>

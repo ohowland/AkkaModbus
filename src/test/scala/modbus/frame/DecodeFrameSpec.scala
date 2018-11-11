@@ -18,7 +18,7 @@ class DecodeFrameSpec() extends Matchers
       val testADU: ADU = ADU(testMBAP, testPDU)
 
       val response = testADU.toByteString
-      val adu: ADU = DecodeFrame.adu(response)
+      val adu: ADU = DecodeFrame.decode(response)
 
       adu should ===(ADU(
         MBAP(transactionId, testPDU.length + 1, unitId),
@@ -35,7 +35,7 @@ class DecodeFrameSpec() extends Matchers
       val testADU: ADU = ADU(testMBAP, testPDU)
 
       val response = testADU.toByteString
-      val adu: ADU = DecodeFrame.adu(response)
+      val adu: ADU = DecodeFrame.decode(response)
 
       adu should ===(ADU(MBAP(transactionId, testPDU.length + 1, unitId), ExceptionReadHoldingRegisters(errorCode)))
     }
@@ -51,7 +51,7 @@ class DecodeFrameSpec() extends Matchers
       val testADU: ADU = ADU(testMBAP, testPDU)
 
       val response = testADU.toByteString
-      val adu: ADU = DecodeFrame.adu(response)
+      val adu: ADU = DecodeFrame.decode(response)
 
       adu should ===(ADU(
         MBAP(transactionId, testPDU.length + 1, unitId),
@@ -68,7 +68,7 @@ class DecodeFrameSpec() extends Matchers
       val testADU: ADU = ADU(testMBAP, testPDU)
 
       val response = testADU.toByteString
-      val adu: ADU = DecodeFrame.adu(response)
+      val adu: ADU = DecodeFrame.decode(response)
 
       adu should ===(ADU(MBAP(transactionId, 2, unitId), ExceptionWriteHoldingRegisters(errorCode)))
     }
