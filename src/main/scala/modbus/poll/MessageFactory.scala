@@ -13,7 +13,7 @@ object MessageFactory {
 
   trait ModbusMessageTemplate {
     def decode(response: List[Int]): Map[String, Double] = Map.empty
-    def size: Int = 0
+    def numberOfRegisters: Int = 0
   }
 
   /**
@@ -100,7 +100,7 @@ object MessageFactory {
     /**
       * Returns the total number of registers in the read request
       */
-    override def size: Int = specification.numberOfRegisters
+    override def numberOfRegisters: Int = specification.numberOfRegisters
   }
 
   /**
@@ -182,7 +182,7 @@ object MessageFactory {
       */
     override def decode(response: List[Int]): Map[String, Double] = ???
 
-    override def size: Int = specification.numberOfRegisters
+    override def numberOfRegisters: Int = specification.numberOfRegisters
   }
   /**
     * Returns a ModbusMessageTemplate class configured with required data to complete a write holding registers

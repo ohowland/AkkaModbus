@@ -28,7 +28,7 @@ object Poll {
 
 class Poll(requestId: Long,
            clientHandler: ActorRef,
-           messages: Set[MessageFactory.ModbusMessageTemplate],
+           templates: Set[MessageFactory.ModbusMessageTemplate],
            unitId: Int,
            requester: ActorRef,
            timeout: FiniteDuration) extends Actor with ActorLogging {
@@ -37,16 +37,19 @@ class Poll(requestId: Long,
   import context.dispatcher
 
   val queryTimeoutTimer = context.system.scheduler.scheduleOnce(timeout, self, CollectionTimeout)
-  var idToMessageTemplate: Map[Int, MessageFactory.ModbusMessageTemplate] = Map.empty
 
   override def preStart(): Unit = {
     context.watch(clientHandler)
 
-    messages.foreach { messageTemplate =>
-      val transactionId = Random.nextInt(65535) & 0xFF // Cap at maximum size U16
-      val messageADU = EncodeFrame.encode(messageTemplate, transactionId, unitId)
-      idToMessageTemplate = idToMessageTemplate + (transactionId -> messageTemplate)
-      clientHandler ! messageADU
+    val idToMessageTemplate = {for {
+      template <- templates
+      transactionId = Random.nextInt(65535) & 0xFF
+    } yield transactionId -> template}.toMap
+
+    self ! idToMessageTemplate
+
+    for ((transactionId, template) <- idToMessageTemplate) {
+      clientHandler ! EncodeFrame.encode(template, transactionId, unitId)
     }
   }
 
@@ -54,11 +57,17 @@ class Poll(requestId: Long,
     queryTimeoutTimer.cancel()
   }
 
-  override def receive: Receive = waitingForReplies(Map.empty, idToMessageTemplate.keySet)
+  override def receive: Receive = {
+    case idToMessageTemplate: Map[Int, MessageFactory.ModbusMessageTemplate] =>
+      context.become(waitingForReplies(Map.empty, idToMessageTemplate.keySet, idToMessageTemplate))
+  }
 
-  def waitingForReplies(dataSoFar: Map[String, Double], pendingTransactions: Set[Int]): Receive = {
+  def waitingForReplies(dataSoFar: Map[String, Double],
+                        pendingTransactions: Set[Int],
+                        idToMessageTemplate: Map[Int, MessageFactory.ModbusMessageTemplate]): Receive = {
 
     case data: ByteString =>
+      log.info(s"waiting for $pendingTransactions")
       log.info(s"recieved ByteString: [$data]")
       val adu = DecodeFrame.decode(data)
       log.info(s"ByteString decoded to: " +
@@ -69,7 +78,7 @@ class Poll(requestId: Long,
         s"payload: [${adu.pdu.payload}]")
 
       val incomingValueMap = idToMessageTemplate(adu.mbap.transactionId).decode(adu.pdu.payload)
-      receivedResponse(adu.mbap.transactionId, incomingValueMap, pendingTransactions, dataSoFar)
+      receivedResponse(adu.mbap.transactionId, incomingValueMap, pendingTransactions, dataSoFar, idToMessageTemplate)
 
     case Terminated(failedActor) =>
       //TODO: tell sender() the actor failed
@@ -83,7 +92,8 @@ class Poll(requestId: Long,
   def receivedResponse(transactionId: Int,
                        incomingValueMap: Map[String, Double],
                        pendingTransactions: Set[Int],
-                       dataSoFar: Map[String, Double]): Unit = {
+                       dataSoFar: Map[String, Double],
+                       idToMessageTemplate: Map[Int, MessageFactory.ModbusMessageTemplate]): Unit = {
 
     val newPendingTransactions = pendingTransactions - transactionId
 
@@ -93,7 +103,7 @@ class Poll(requestId: Long,
       requester ! PollResponse(requestId, newDataSoFar) // get rid of this dependency.
       context.stop(self)
     } else {
-      context.become(waitingForReplies(newDataSoFar, newPendingTransactions))
+      context.become(waitingForReplies(newDataSoFar, newPendingTransactions, idToMessageTemplate))
     }
   }
 }
