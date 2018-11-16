@@ -13,6 +13,7 @@ object MessageFactory {
 
   trait ModbusMessageTemplate {
     def decode(response: List[Int]): Map[String, Double] = Map.empty
+    def size: Int = 0
   }
 
   /**
@@ -95,6 +96,11 @@ object MessageFactory {
         value = sliceHoldingRegisters(response, register.datatype, register.address - registers.head.address)
       } yield register.name -> buildDouble(value, endianness)).toMap
     }
+
+    /**
+      * Returns the total number of registers in the read request
+      */
+    override def size: Int = specification.numberOfRegisters
   }
 
   /**
@@ -163,9 +169,20 @@ object MessageFactory {
   case class WriteSpecification(startAddress: Int, numberOfRegisters: Int)
 
   case class WriteModbusMessageTemplate(specification: WriteSpecification,
-                                       registers: List[ModbusTypes.ModbusRegister],
-                                       endianness: String) extends ModbusMessageTemplate {
-    def decode = ???
+                                        registers: List[ModbusTypes.ModbusRegister],
+                                        endianness: String) extends ModbusMessageTemplate {
+
+    /**
+      * Returns map of register name to register value as Map[String, Double].
+      *
+      * The decode method operates on the List[Int] returned by a write holding registers Modbus call.
+      * Messages created from a template are then decoded by the same template.
+      *
+      * @param response : A list of holding register values returned by a modbus poll
+      */
+    override def decode(response: List[Int]): Map[String, Double] = ???
+
+    override def size: Int = specification.numberOfRegisters
   }
   /**
     * Returns a ModbusMessageTemplate class configured with required data to complete a write holding registers
@@ -191,9 +208,6 @@ object MessageFactory {
     case ModbusTypes.F32 => 2
     case ModbusTypes.F64 => 4
   }
-
-
-
 }
 
 class MessageFactory(modbusMap: List[ModbusTypes.ModbusRegister]) extends Actor

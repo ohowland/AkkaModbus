@@ -1,6 +1,9 @@
 package modbus.frame
 
+import modbus.poll.{MessageFactory, ModbusTypes}
 import org.scalatest._
+
+import scala.util.Random
 
 class DecodeFrameSpec() extends Matchers
   with WordSpecLike
@@ -8,7 +11,7 @@ class DecodeFrameSpec() extends Matchers
 
   "An Application Data Unit Decoder" should {
     "interpret the ByteString representation of a ResponseReadHoldingRegisters" in {
-      val transactionId = 321
+      val transactionId = Random.nextInt(65535) & 0xFF
       val unitId = 10
       val registerList = List(1, 2, 3, 4)
       val byteCount = registerList.length * 2
@@ -20,9 +23,28 @@ class DecodeFrameSpec() extends Matchers
       val response = testADU.toByteString
       val adu: ADU = DecodeFrame.decode(response)
 
+      println(s"working bytestring: ${adu.pdu.payload}")
       adu should ===(ADU(
         MBAP(transactionId, testPDU.length + 1, unitId),
         ResponseReadHoldingRegisters(byteCount, registerList)))
+    }
+    "return an empty payload if the ByteString representation of A ResponseReadHoldingRegisters has " +
+      "incorrect byte length" in {
+      val transactionId = Random.nextInt(65535) & 0xFF
+      val unitId = 1
+      val registerList = List(1, 2, 3, 4)
+      val byteCount = 0
+
+      val testPDU: PDU = ResponseReadHoldingRegisters(byteCount, registerList)
+      val testMBAP: MBAP = MBAP(transactionId, testPDU.length + 1, unitId)
+      val testADU: ADU = ADU(testMBAP, testPDU)
+
+      val response = testADU.toByteString
+      val adu: ADU = DecodeFrame.decode(response)
+
+      adu should ===(ADU(
+        MBAP(transactionId, testPDU.length + 1, unitId),
+        ResponseReadHoldingRegisters(byteCount, List())))
     }
 
     "interpret the ByteString representation of an ExceptionReadHoldingRegisters" in {

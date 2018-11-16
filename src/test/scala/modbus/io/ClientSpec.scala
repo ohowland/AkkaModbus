@@ -3,7 +3,7 @@ package modbus.io
 import java.net.InetSocketAddress
 
 import modbus.frame._
-import akka.actor.{ActorSystem, Terminated}
+import akka.actor.{ActorSystem, ActorRef, Terminated}
 import akka.io.Tcp
 import akka.testkit.{TestKit, TestProbe}
 import akka.util.ByteString
@@ -23,9 +23,10 @@ class ClientSpec(_system: ActorSystem) extends TestKit(_system)
       val probe = TestProbe()
 
       val clientActor = system.actorOf(Client.props(remote, probe.ref), "Test-Client")
+      probe.watch(clientActor)
       probe.expectMsgType[Tcp.Connected]
       clientActor ! Client.ReqCloseConnection
-      probe.expectMsgType[Terminated]
+      probe.expectTerminated(clientActor)
     }
 
     "Transfer Modbus data to remote target" in {
@@ -34,6 +35,7 @@ class ClientSpec(_system: ActorSystem) extends TestKit(_system)
       val probe = TestProbe()
 
       val clientActor = system.actorOf(Client.props(remote, probe.ref), "Test-Client")
+      probe.watch(clientActor)
       probe.expectMsgType[Tcp.Connected]
 
       val transactionId = 1
@@ -46,7 +48,7 @@ class ClientSpec(_system: ActorSystem) extends TestKit(_system)
       val response = probe.expectMsgType[Client.Response]
 
       clientActor ! Client.ReqCloseConnection
-      probe.expectMsgType[Terminated]
+      probe.expectTerminated(clientActor)
     }
   }
 }

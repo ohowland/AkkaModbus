@@ -43,7 +43,7 @@ class Poll(requestId: Long,
     context.watch(clientHandler)
 
     messages.foreach { messageTemplate =>
-      val transactionId = Random.nextInt(65535) // Cap at maximum size U16
+      val transactionId = Random.nextInt(65535) & 0xFF // Cap at maximum size U16
       val messageADU = EncodeFrame.encode(messageTemplate, transactionId, unitId)
       idToMessageTemplate = idToMessageTemplate + (transactionId -> messageTemplate)
       clientHandler ! messageADU
@@ -59,7 +59,15 @@ class Poll(requestId: Long,
   def waitingForReplies(dataSoFar: Map[String, Double], pendingTransactions: Set[Int]): Receive = {
 
     case data: ByteString =>
+      log.info(s"recieved ByteString: [$data]")
       val adu = DecodeFrame.decode(data)
+      log.info(s"ByteString decoded to: " +
+        s"transactionId: [${adu.mbap.transactionId}]," +
+        s"ADU length: [${adu.mbap.length}], " +
+        s"unitId: [${adu.mbap.unitId}], " +
+        s"PDU length: [${adu.pdu.length}], " +
+        s"payload: [${adu.pdu.payload}]")
+
       val incomingValueMap = idToMessageTemplate(adu.mbap.transactionId).decode(adu.pdu.payload)
       receivedResponse(adu.mbap.transactionId, incomingValueMap, pendingTransactions, dataSoFar)
 
