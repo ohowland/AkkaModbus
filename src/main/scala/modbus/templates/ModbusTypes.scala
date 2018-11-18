@@ -1,4 +1,4 @@
-package modbus.poll
+package modbus.templates
 
 object ModbusTypes {
 

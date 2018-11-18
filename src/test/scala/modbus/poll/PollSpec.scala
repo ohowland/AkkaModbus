@@ -2,9 +2,9 @@ package modbus.poll
 
 import akka.actor.ActorSystem
 import akka.testkit.{TestKit, TestProbe}
-import akka.util.ByteString
 import modbus.frame._
 import modbus.poll.Poll.PollResponse
+import modbus.templates.{Factory, ModbusTypes}
 import org.scalatest._
 
 import scala.concurrent.duration._
@@ -20,15 +20,18 @@ class PollSpec(_system: ActorSystem) extends TestKit(_system)
     "return a decoded valueMap from a single ReadHoldingRegistersRequest containing a single register" in {
       val requester = TestProbe()
       val clientHandler = TestProbe()
-
       val requestId = util.Random.nextInt
+
       val testRegister1 = ModbusTypes.ModbusRegister("test1", 1, ModbusTypes.U16, "status", 1)
-      val testModbusMap = List(testRegister1)
+      val testRegister2 = ModbusTypes.ModbusRegister("badtest1", 2, ModbusTypes.U16, "control", 1)
+      val testRegister3 = ModbusTypes.ModbusRegister("badtest2", 3, ModbusTypes.U16, "config", 1)
+
+      val testModbusMap = List(testRegister1, testRegister2, testRegister3)
       val reqMessageTemplates =
-        MessageFactory.createReadModbusMessageTemplates(testModbusMap, "status", "big")
+        Factory.createReadHoldingRegistersTemplates(testModbusMap, "status", "big")
 
       val pollActor = system.actorOf(Poll.props(
-        requestId = 33,
+        requestId = requestId,
         clientHandler = clientHandler.ref,
         messages = reqMessageTemplates.toSet,
         unitId = 1,
@@ -43,13 +46,13 @@ class PollSpec(_system: ActorSystem) extends TestKit(_system)
       // ByteString representation of a ResponseReadHoldingRegisters
       val responsePDU = ResponseReadHoldingRegisters(reqMessageTemplates.head.numberOfRegisters * 2, List(11))
       val responseByteString =
-        ADU(MBAP(requestADU.mbap.transactionId, 0, requestADU.mbap.unitId), responsePDU).toByteString
+        ADU(MBAP(requestADU.mbap.transactionId, responsePDU.length + 1, requestADU.mbap.unitId), responsePDU).toByteString
       pollActor ! responseByteString
 
       // Poll handles decoding the ResponseReadHoldingRegisters ByteString back to a Map(String -> Double)
       // Defined by the ModbusTemplate
       val responseMap = requester.expectMsgType[PollResponse]
-      responseMap.requestId should ===(33)
+      responseMap.requestId should ===(requestId)
       responseMap.namedValueMap should===( Map("test1" -> 11.0) )
     }
 
@@ -61,9 +64,10 @@ class PollSpec(_system: ActorSystem) extends TestKit(_system)
 
       val testRegister1 = ModbusTypes.ModbusRegister("test1", 1, ModbusTypes.U16, "status", 1)
       val testRegister2 = ModbusTypes.ModbusRegister("test2", 2, ModbusTypes.U16, "status", 1)
-      val testModbusMap = List(testRegister1, testRegister2)
+      val testRegister3 = ModbusTypes.ModbusRegister("badtest1", 3, ModbusTypes.U16, "control", 2)
+      val testModbusMap = List(testRegister1, testRegister2, testRegister3)
       val reqMessageTemplates =
-        MessageFactory.createReadModbusMessageTemplates(testModbusMap, "status", "big")
+        Factory.createReadHoldingRegistersTemplates(testModbusMap, "status", "big")
 
       val pollActor = system.actorOf(Poll.props(
         requestId = requestId,
@@ -102,7 +106,7 @@ class PollSpec(_system: ActorSystem) extends TestKit(_system)
       val testRegister3 = ModbusTypes.ModbusRegister("test3", 10, ModbusTypes.U16, "status", 1)
       val testModbusMap = List(testRegister1, testRegister2, testRegister3)
       val reqMessageTemplates =
-        MessageFactory.createReadModbusMessageTemplates(testModbusMap, "status", "big")
+        Factory.createReadHoldingRegistersTemplates(testModbusMap, "status", "big")
 
       val pollActor = system.actorOf(Poll.props(
         requestId = requestId,
@@ -131,7 +135,7 @@ class PollSpec(_system: ActorSystem) extends TestKit(_system)
       responseMap.namedValueMap should===( Map("test1" -> 1.0, "test2" -> 5.0, "test3" -> 10.0) )
     }
 
-    "return a decoded valueMap from a multiple ReadHoldingRegistersRequest containing " +
+    "return a decoded valueMap from multiple ReadHoldingRegistersRequest containing " +
       "a single register each" in {
       val requester = TestProbe()
       val clientHandler = TestProbe()
@@ -139,9 +143,11 @@ class PollSpec(_system: ActorSystem) extends TestKit(_system)
 
       val testRegister1 = ModbusTypes.ModbusRegister("test1", 1, ModbusTypes.U16, "status", 1)
       val testRegister2 = ModbusTypes.ModbusRegister("test2", 2, ModbusTypes.U16, "status", 2)
+      val testRegister3 = ModbusTypes.ModbusRegister("badtest1", 3, ModbusTypes.U16, "control", 3)
+
       val testModbusMap = List(testRegister1, testRegister2)
       val reqMessageTemplates =
-        MessageFactory.createReadModbusMessageTemplates(testModbusMap, "status", "big")
+        Factory.createReadHoldingRegistersTemplates(testModbusMap, "status", "big")
 
       val pollActor = system.actorOf(Poll.props(
         requestId = requestId,
@@ -152,7 +158,7 @@ class PollSpec(_system: ActorSystem) extends TestKit(_system)
         timeout = 3.seconds
       ))
 
-      // The poll actor sends the clientHandler actor an ADU constructed from the message template
+      // The poll actor sends the clientHandler actor an ADU constructed from the message template.
       val requestADU1 = clientHandler.expectMsgType[ADU]
       val requestADU2 = clientHandler.expectMsgType[ADU]
 
@@ -175,6 +181,22 @@ class PollSpec(_system: ActorSystem) extends TestKit(_system)
       val responseMap = requester.expectMsgType[PollResponse]
       responseMap.requestId should ===(requestId)
       responseMap.namedValueMap should===( Map("test1" -> 1.0, "test2" -> 2.0) )
+    }
+
+    "handle a ExceptionReadHoldingRegisters in a single request" in {
+      fail("not implemented")
+    }
+
+    "handle a ExceptionReadHoldingRegisters in a multi request" in {
+      fail("not implemented")
+    }
+
+    "handle a clientHandler timeout" in {
+      fail("not implemented")
+    }
+
+    "handle a clientHandler terminated" in {
+      fail("not implemented")
     }
   }
 }

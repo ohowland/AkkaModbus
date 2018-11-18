@@ -26,7 +26,7 @@ import akka.util.ByteString
         MBAPFrameResponse should ===(ByteString(0, transactionId, 0, 0, 0, testPDU.length + 1, unitId))
       }
 
-      "convert a RequestReadHoldingRegisters object into properly formatted ByteStreams" in {
+      "convert a RequestReadHoldingRegisters into properly formatted ByteString" in {
         val transactionId = 321
         val unitId = 10
         val numberOfRegisters = 2
@@ -46,7 +46,11 @@ import akka.util.ByteString
         PDUFrameResponse should ===(ByteString(0x3, 0, startAddress, 0, numberOfRegisters))
       }
 
-      "convert an ExceptionReadHoldingRegisters object into a properly formatted ByteStream" in {
+      "convert a ResponseReadHoldingRegisters into properly formatted ByteString" in {
+        fail("not implemented")
+      }
+
+      "convert an ExceptionReadHoldingRegisters into a properly formatted ByteString" in {
         val transactionId = 321
         val unitId = 10
         val errorCode = 3
@@ -65,7 +69,7 @@ import akka.util.ByteString
         PDUFrameResponse should ===(ByteString(0x83, errorCode))
       }
 
-      "convert a WriteReadHoldingRegisters objects into properly formatted ByteStreams" in {
+      "convert a RequestWriteHoldingRegisters into properly formatted ByteStreams" in {
         val transactionId = 999
         val unitId = 10
         val payload = List(1, 2, 3, 4, 5)
@@ -87,6 +91,15 @@ import akka.util.ByteString
           ByteString(0x10, 0, startAddress, 0, numberOfRegisters, numberOfRegisters * 2, 0, payload(0), 0, payload(1),
           0, payload(2), 0, payload(3), 0, payload(4)))
       }
+
+      "convert a ResponseWriteHoldingRegisters into properly formatted ByteString" in {
+        fail("not implemented")
+      }
+
+      "convert a ExceptionWriteHoldingRegisters into properly formatted ByteString" in {
+        fail("not implemented")
+      }
+
     }
   }
 

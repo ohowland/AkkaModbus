@@ -1,8 +1,6 @@
-package modbus.config
+package modbus.templates
 
 import java.net.URL
-
-import modbus.poll.ModbusTypes
 
 object ConfigReader {
   def readCSVToRegisterList(path: URL): List[ModbusTypes.ModbusRegister] = {

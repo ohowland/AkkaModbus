@@ -1,4 +1,4 @@
-package modbus.poll
+package modbus.templates
 
 import akka.actor.ActorSystem
 import akka.testkit.TestKit

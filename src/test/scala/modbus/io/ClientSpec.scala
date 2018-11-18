@@ -17,7 +17,7 @@ class ClientSpec(_system: ActorSystem) extends TestKit(_system)
   def this() = this(ActorSystem("ClientSpec"))
 
   "A Modbus Client Actor" should {
-    "establish a connection successfully" in {
+    "establish a connection successfully (REQUIRES LOCAL MODBUS SLAVE)" in {
 
       val remote = new InetSocketAddress("localhost", 502)
       val probe = TestProbe()
@@ -29,7 +29,7 @@ class ClientSpec(_system: ActorSystem) extends TestKit(_system)
       probe.expectTerminated(clientActor)
     }
 
-    "Transfer Modbus data to remote target" in {
+    "transfer Modbus data to remote target (REQUIRES LOCAL MODBUS SLAVE)" in {
 
       val remote = new InetSocketAddress("localhost", 502)
       val probe = TestProbe()
@@ -38,17 +38,19 @@ class ClientSpec(_system: ActorSystem) extends TestKit(_system)
       probe.watch(clientActor)
       probe.expectMsgType[Tcp.Connected]
 
-      val transactionId = 1
+      val transactionId = util.Random.nextInt & 0xFF
       val unitId = 1
       val testPDU = ByteString(0x03, 0 ,0 , 0, 1) // Read Multiple Registers starting at 0 spanning 1 word
       val testMBAP = ByteString((transactionId >> 8).toByte, transactionId.toByte, 0, 0, 0, testPDU.length + 1, unitId)
-
-      val testADU = ByteString(0, transactionId, 0, 0, 0, testPDU.length + 1, unitId) ++ testPDU
+      val testADU = testMBAP ++ testPDU
       clientActor ! Client.Write(testADU)
       val response = probe.expectMsgType[Client.Response]
-
       clientActor ! Client.ReqCloseConnection
       probe.expectTerminated(clientActor)
+    }
+
+    "report a failed connection attempt" in {
+      fail("not implemented")
     }
   }
 }

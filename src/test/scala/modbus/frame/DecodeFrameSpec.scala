@@ -1,6 +1,6 @@
 package modbus.frame
 
-import modbus.poll.{MessageFactory, ModbusTypes}
+import modbus.templates.ModbusTypes
 import org.scalatest._
 
 import scala.util.Random
@@ -28,6 +28,23 @@ class DecodeFrameSpec() extends Matchers
         MBAP(transactionId, testPDU.length + 1, unitId),
         ResponseReadHoldingRegisters(byteCount, registerList)))
     }
+
+    "interpret the ByteString representation of an ExceptionReadHoldingRegisters" in {
+      val transactionId = 123
+      val unitId = 33
+      val errorCode = 3
+
+      val testPDU: PDU = ExceptionReadHoldingRegisters(errorCode.toByte)
+      val testMBAP: MBAP = MBAP(transactionId, length = testPDU.length + 1, unitId)
+      val testADU: ADU = ADU(testMBAP, testPDU)
+
+      val response = testADU.toByteString
+      val adu: ADU = DecodeFrame.decode(response)
+
+      adu should ===(ADU(MBAP(transactionId, testPDU.length + 1, unitId), ExceptionReadHoldingRegisters(errorCode)))
+    }
+
+    //TODO: Is this the behavior we want?
     "return an empty payload if the ByteString representation of A ResponseReadHoldingRegisters has " +
       "incorrect byte length" in {
       val transactionId = Random.nextInt(65535) & 0xFF
@@ -45,21 +62,6 @@ class DecodeFrameSpec() extends Matchers
       adu should ===(ADU(
         MBAP(transactionId, testPDU.length + 1, unitId),
         ResponseReadHoldingRegisters(byteCount, List())))
-    }
-
-    "interpret the ByteString representation of an ExceptionReadHoldingRegisters" in {
-      val transactionId = 123
-      val unitId = 33
-      val errorCode = 3
-
-      val testPDU: PDU = ExceptionReadHoldingRegisters(errorCode.toByte)
-      val testMBAP: MBAP = MBAP(transactionId, length = testPDU.length + 1, unitId)
-      val testADU: ADU = ADU(testMBAP, testPDU)
-
-      val response = testADU.toByteString
-      val adu: ADU = DecodeFrame.decode(response)
-
-      adu should ===(ADU(MBAP(transactionId, testPDU.length + 1, unitId), ExceptionReadHoldingRegisters(errorCode)))
     }
 
     "interpret the ByteString representation of a ResponseWriteHoldingRegisters" in {
@@ -80,7 +82,7 @@ class DecodeFrameSpec() extends Matchers
         ResponseWriteHoldingRegisters(startAddress, numberOfRegisters)))
     }
 
-    "interpret the ByteString respresentation of an ExceptionWriteHoldingRegisters" in {
+    "interpret the ByteString representation of an ExceptionWriteHoldingRegisters" in {
       val transactionId = 999
       val unitId = 126
       val errorCode = 4

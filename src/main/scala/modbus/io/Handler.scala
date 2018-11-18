@@ -1,64 +1,98 @@
 package modbus.io
 
-import akka.actor.{Actor, ActorLogging, ActorRef, Props, Terminated}
-import akka.io.Tcp._
-import akka.util.ByteString
-import modbus.frame.ADU
-
+import java.net.InetSocketAddress
 import scala.collection.immutable.Queue
+import akka.actor.{Actor, ActorLogging, ActorRef, Props, Terminated}
+import Handler._
+import akka.util.ByteString
 
 /**
-  * The io.Handler is responsible for buffering write and response messages.
+  * Client Handler
+  * 1. Has same message interface as the Client class
+  * 2. Starts new client is previous has stopped and their are buffered messsages waiting to send
+  * 3. Waits to send next message until it recieves a response from the Client.
+  * 4. Routes returned messages to original sender.
   */
-object Handler {
-  def props(client: ActorRef, decoder: ActorRef): Props = Props(new Handler(client, decoder))
 
-  case class Write(data: ByteString)
-  case class Response(data: ByteString)
+object Handler {
+  def props(config: HandlerConfig): Props = Props(new Handler(config))
+
+  case class HandlerConfig(remote: InetSocketAddress, remoteName: String, bufferMaxSize: Int)
 
 }
 
-class Handler(client: ActorRef, decoder: ActorRef)
-  extends Actor
-  with ActorLogging {
+class Handler(config: HandlerConfig) extends Actor with ActorLogging {
 
-  private var storage: List[ByteString] = List.empty
-  val maxSize: Int = 20
+  var storage: Queue[(ByteString, ActorRef)] = Queue.empty
+  val storageMaxSize: Int = config.bufferMaxSize
 
-  import Handler._
+  override def preStart(): Unit = {log.info("ClientHandler started")}
+  override def postStop(): Unit = {log.info("ClientHandler stopped")}
 
-  context watch client
-
+  /**
+    * In the closed state, there is no data in the write buffer. Connection is closed.
+    * @return
+    */
   def receive: Receive = {
-    case Write(data) =>
-      buffer(data)
-      client ! Client.Write(data)
-
-      context.become({
-        case Write(data) => buffer(data)
-        case Received(data) => acknowledge(data)
-        case Terminated => context stop self
-      })
+    case msg @ Client.Write(data) =>
+      val client = context.actorOf(Client.props(config.remote, context.self), config.remoteName)
+      context.watch(client)
+      log.info("state transition: stopped -> requesting")
+      context.become(requesting(client))
+      context.self forward msg
+      // in the unbecome state, we need to transmit the first message. The buffer will take care of it from there.
+      client ! msg
   }
 
-  private def buffer(data: ByteString): Unit = {
-    data :: storage
+  /**
+    * In the idle state, there is no data in the write buffer. Connection is not maintained.
+    */
+  def idle(client: ActorRef): Receive = {
+    case msg @ Client.Write(data) =>
+      log.info("state transition: idle -> requesting")
+      context.become(requesting(client))
+      context.self forward msg
+      // in the idle state, we need to transmit the first message. The buffer will take care of it from there.
+      client ! msg
 
-    if (storage.size > maxSize) {
-      log.debug("buffer full: ignoring incoming request")
-      storage = storage drop 1
-    }
+    case Terminated(child) =>
+      log.info("state transition: idle -> stopped")
+      context.unbecome
   }
 
-  private def acknowledge(data: ByteString): Unit = {
-    require(storage.nonEmpty, "storage was empty")
+  /**
+    * In the requesting state, there is data in the write buffer. Connection is maintained.
+    */
+  def requesting(client: ActorRef): Receive = {
+    case Client.Write(data) =>
+      buffer(data, sender())
 
-    decoder ! data
+    case Client.Response(data) =>
+      acknowledge(data, client)
 
-    storage = storage drop 1
-    if (storage.isEmpty) {
+    case Terminated(child) =>
+      val client = context.actorOf(Client.props(config.remote, context.self), config.remoteName)
+      context.watch(client)
+      log.info("state transition: requesting -> stopped")
       context.unbecome()
-    } else client ! Client.Write(storage.head)
+      storage = Queue.empty
   }
 
+  def buffer(data: ByteString, sender: ActorRef): Unit = {
+    if (storage.size <= storageMaxSize) storage = storage.enqueue((data, sender))
+    log.info(s"storage: $storage")
+    // ignore more incoming data if buffer is full.
+  }
+
+  def acknowledge(incomingData: ByteString, client: ActorRef): Unit = {
+    val bufferedTuple: (ByteString, ActorRef) = storage.dequeue._1
+    storage = storage.dequeue._2
+
+    val route: ActorRef = bufferedTuple._2
+    route ! Client.Response(incomingData)
+
+    if (storage.isEmpty) context.become(idle(client))
+    else { val nextBufferedByteString = storage.dequeue._1._1
+           client ! Client.Write(nextBufferedByteString) }
+  }
 }
