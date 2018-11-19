@@ -1,9 +1,11 @@
 package modbus.io
 
 import java.net.InetSocketAddress
+
 import scala.collection.immutable.Queue
 import akka.actor.{Actor, ActorLogging, ActorRef, Props, Terminated}
 import Handler._
+import akka.io.Tcp.Connected
 import akka.util.ByteString
 
 /**
@@ -37,11 +39,29 @@ class Handler(config: HandlerConfig) extends Actor with ActorLogging {
     case msg @ Client.Write(data) =>
       val client = context.actorOf(Client.props(config.remote, context.self), config.remoteName)
       context.watch(client)
-      log.info("state transition: stopped -> requesting")
+      buffer(data, sender())
+      log.info("state transition: idle -> wait")
+      context.become(wait(client))
+  }
+
+  /**
+    * Waiting for connection ack.
+    */
+  def wait(client: ActorRef): Receive = {
+    case msg @ Client.Write(data) =>
+      buffer(data, sender())
+
+    case Connected(remote, local) =>
+      log.info("state transition: wait -> requesting")
       context.become(requesting(client))
-      context.self forward msg
-      // in the unbecome state, we need to transmit the first message. The buffer will take care of it from there.
-      client ! msg
+      val msg = storage.dequeue._1._1
+      log.info(s"sending client [$client] message [$msg]")
+      client ! Client.Write(msg)
+
+    case Terminated(child) =>
+      log.info("state transition: wait -> stopped")
+      storage = Queue.empty
+      context.unbecome()
   }
 
   /**
@@ -57,7 +77,7 @@ class Handler(config: HandlerConfig) extends Actor with ActorLogging {
 
     case Terminated(child) =>
       log.info("state transition: idle -> stopped")
-      context.unbecome
+      context.unbecome()
   }
 
   /**
@@ -71,11 +91,9 @@ class Handler(config: HandlerConfig) extends Actor with ActorLogging {
       acknowledge(data, client)
 
     case Terminated(child) =>
-      val client = context.actorOf(Client.props(config.remote, context.self), config.remoteName)
-      context.watch(client)
       log.info("state transition: requesting -> stopped")
-      context.unbecome()
       storage = Queue.empty
+      context.unbecome()
   }
 
   def buffer(data: ByteString, sender: ActorRef): Unit = {

@@ -32,6 +32,9 @@ class Client(remote: InetSocketAddress, handler: ActorRef)
 
   IO(Tcp) ! Connect(remote)
 
+  override def preStart(): Unit = log.info("Client started")
+  override def postStop(): Unit = log.info("Client stopped")
+
   override def receive: Receive = {
 
     case CommandFailed(_: Connect) =>
@@ -48,14 +51,17 @@ class Client(remote: InetSocketAddress, handler: ActorRef)
   def connected(connection: ActorRef): Receive = {
 
     case Client.Write(data) =>
+      log.info(s"Client sending data: $data")
       connection ! Tcp.Write(data)
 
     case CommandFailed(w: Tcp.Write) =>
+      log.info(s"O/S buffer was full")
       // O/S buffer was full
       handler ! WriteFailed
 
     case Received(data) =>
       // send data to handler
+      log.info(s"Response ByteString $data")
       handler ! Response(data)
 
     case ReqCloseConnection =>
