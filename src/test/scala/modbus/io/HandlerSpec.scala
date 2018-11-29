@@ -20,14 +20,14 @@ class HandlerSpec(_system: ActorSystem) extends TestKit(_system)
   "A Client Handler Actor" should {
     "Buffer a RequestReadHoldingRegisters and transfer it to remote target" in {
 
-      val remote = new InetSocketAddress("localhost", 502)
-      val remoteName = "test-target"
+      val remote = "localhost"
+      val remoteName = "test-target-1"
       val bufferMaxSize = 10
       val config = HandlerConfig(remote, remoteName, bufferMaxSize)
 
       val pollProbe = TestProbe()
       val clientProbe = TestProbe()
-      val clientHandlerActor = system.actorOf(Handler.props(config), "test-client-handler")
+      val clientHandlerActor = system.actorOf(Handler.props(config), "test-client-handler-1")
 
       val transactionId = util.Random.nextInt & 0xFF
       val unitId = 1 //util.Random.nextInt & 0x7F
@@ -38,19 +38,20 @@ class HandlerSpec(_system: ActorSystem) extends TestKit(_system)
       clientHandlerActor.tell(Client.Write(testADU), pollProbe.ref)
 
       val response = pollProbe.expectMsgType[Client.Response]
+
       clientHandlerActor ! PoisonPill
     }
 
     "Buffer multiple RequestReadHoldingRegister and transfer them to remote target" in {
 
-      val remote = new InetSocketAddress("localhost", 502)
-      val remoteName = "test-target"
+      val remote = "localhost"
+      val remoteName = "test-target-2"
       val bufferMaxSize = 10
       val config = HandlerConfig(remote, remoteName, bufferMaxSize)
 
       val pollProbe = TestProbe()
       val clientProbe = TestProbe()
-      val clientHandlerActor = system.actorOf(Handler.props(config), "test-client-handler")
+      val clientHandlerActor = system.actorOf(Handler.props(config), "test-client-handler-2")
 
       val transactionId1 = util.Random.nextInt & 0xFF
       val unitId = 1 //util.Random.nextInt & 0x7F

@@ -19,7 +19,7 @@ import akka.util.ByteString
 object Handler {
   def props(config: HandlerConfig): Props = Props(new Handler(config))
 
-  case class HandlerConfig(remote: InetSocketAddress, remoteName: String, bufferMaxSize: Int)
+  case class HandlerConfig(remoteAddr: String, remoteName: String, bufferMaxSize: Int)
 
 }
 
@@ -37,7 +37,8 @@ class Handler(config: HandlerConfig) extends Actor with ActorLogging {
     */
   def receive: Receive = {
     case msg @ Client.Write(data) =>
-      val client = context.actorOf(Client.props(config.remote, context.self), config.remoteName)
+      val remote = new InetSocketAddress(config.remoteAddr, 502)
+      val client = context.actorOf(Client.props(remote, context.self), config.remoteName)
       context.watch(client)
       buffer(data, sender())
       log.info("state transition: idle -> wait")

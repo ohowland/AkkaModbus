@@ -18,11 +18,11 @@ import scala.util.Random
 object Poll {
   def props(requestId: Long,
             clientHandler: ActorRef,
-            messages: Set[Factory.MessageTemplate],
+            templates: Set[Factory.MessageTemplate],
             unitId: Int,
             requester: ActorRef,
             timeout: FiniteDuration
-           ): Props = Props(new Poll(requestId, clientHandler, messages, unitId, requester, timeout))
+           ): Props = Props(new Poll(requestId, clientHandler, templates, unitId, requester, timeout))
 
   case object CollectionTimeout
   case class PollResponse(requestId: Long, namedValueMap: Map[String, Double])

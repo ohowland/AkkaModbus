@@ -1,6 +1,8 @@
-package CGC.asset
+package cgc.core.asset
 
-import akka.actor.{ Actor, ActorLogging, Props }
+import akka.actor.{Actor, ActorLogging, Props}
+import cgc.core.comm.CommManager
+import com.typesafe.config.ConfigFactory
 
 /** The Schweitzer Engineering Laboratories 547 (SEL547) is a protection relay used to enforce IEEE-547 at the point
   * of interconnection. This actor will spawn the proper communications Actor and provide it with the configuration
@@ -18,6 +20,9 @@ object SEL547 {
 
 class SEL547 extends Actor with ActorLogging {
   import SEL547._
+
+  val config = ConfigFactory.load()
+  val comm = context.actorOf(CommManager.props(config.getConfig("SEL547.cgc.core.comm.comm")))
 
   override def preStart(): Unit = log.info("SEL547 Actor started")
   override def postStop(): Unit = log.info("SEL547 Actor stopped")

@@ -33,7 +33,7 @@ class PollSpec(_system: ActorSystem) extends TestKit(_system)
       val pollActor = system.actorOf(Poll.props(
         requestId = requestId,
         clientHandler = clientHandler.ref,
-        messages = reqMessageTemplates.toSet,
+        templates = reqMessageTemplates.toSet,
         unitId = 1,
         requester = requester.ref,
         timeout = 3.seconds
@@ -72,7 +72,7 @@ class PollSpec(_system: ActorSystem) extends TestKit(_system)
       val pollActor = system.actorOf(Poll.props(
         requestId = requestId,
         clientHandler = clientHandler.ref,
-        messages = reqMessageTemplates.toSet,
+        templates = reqMessageTemplates.toSet,
         unitId = 1,
         requester = requester.ref,
         timeout = 3.seconds
@@ -111,7 +111,7 @@ class PollSpec(_system: ActorSystem) extends TestKit(_system)
       val pollActor = system.actorOf(Poll.props(
         requestId = requestId,
         clientHandler = clientHandler.ref,
-        messages = reqMessageTemplates.toSet,
+        templates = reqMessageTemplates.toSet,
         unitId = 1,
         requester = requester.ref,
         timeout = 3.seconds
@@ -152,7 +152,7 @@ class PollSpec(_system: ActorSystem) extends TestKit(_system)
       val pollActor = system.actorOf(Poll.props(
         requestId = requestId,
         clientHandler = clientHandler.ref,
-        messages = reqMessageTemplates.toSet,
+        templates = reqMessageTemplates.toSet,
         unitId = 1,
         requester = requester.ref,
         timeout = 3.seconds

@@ -1,4 +1,4 @@
-package CGC.asset
+package cgc.core.asset
 
 import akka.actor.{ Actor, ActorLogging, Props}
 
