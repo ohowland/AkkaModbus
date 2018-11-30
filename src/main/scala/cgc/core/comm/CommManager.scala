@@ -1,9 +1,10 @@
 package cgc.core.comm
 
-import akka.actor.{Actor, ActorLogging, ActorRef, Props}
+import akka.actor.{Actor, ActorLogging, ActorRef, PoisonPill, Props}
 
 import scala.concurrent.duration._
 import com.typesafe.config.Config
+import modbus.io.Handler.{CloseConnection, HandlerConfig}
 import modbus.poll.Poll.PollResponse
 import modbus.templates
 
@@ -15,6 +16,7 @@ object CommManager {
   def props(config: Config, requestingActor: ActorRef): Props = Props(new CommManager(config, requestingActor))
 
   case object PollDevices
+  case object CloseConnections
   case class UpdateStatus(data: Map[String, Double])
   case class WriteControl(data: Map[String, Double])
 }
@@ -70,11 +72,15 @@ class CommManager(config: Config, requestingActor: ActorRef) extends Actor with 
       requestingActor ! UpdateStatus(dataMap)
 
     case WriteControl(data) => ???
+
+    case CloseConnections =>
+      clientHandler ! CloseConnection
   }
 
-  def configHandler: Handler.HandlerConfig = {
-    Handler.HandlerConfig(
+  def configHandler: HandlerConfig = {
+    HandlerConfig(
       config.getString("communication.address"),
+      config.getInt("communication.port"),
       config.getString("name"),
       20)
   }

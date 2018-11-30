@@ -3,10 +3,11 @@ package modbus.io
 import java.net.InetSocketAddress
 
 import scala.collection.immutable.Queue
-import akka.actor.{Actor, ActorLogging, ActorRef, Props, Terminated}
+import akka.actor.{Actor, ActorLogging, ActorRef, PoisonPill, Props, Terminated}
 import Handler._
 import akka.io.Tcp.Connected
 import akka.util.ByteString
+import modbus.io.Client.ReqCloseConnection
 
 /**
   * Client Handler
@@ -19,7 +20,8 @@ import akka.util.ByteString
 object Handler {
   def props(config: HandlerConfig): Props = Props(new Handler(config))
 
-  case class HandlerConfig(remoteAddr: String, remoteName: String, bufferMaxSize: Int)
+  case object CloseConnection
+  case class HandlerConfig(remoteAddr: String, port: Int, remoteName: String, bufferMaxSize: Int)
 
 }
 
@@ -37,7 +39,7 @@ class Handler(config: HandlerConfig) extends Actor with ActorLogging {
     */
   def receive: Receive = {
     case msg @ Client.Write(data) =>
-      val remote = new InetSocketAddress(config.remoteAddr, 502)
+      val remote = new InetSocketAddress(config.remoteAddr, config.port)
       val client = context.actorOf(Client.props(remote, context.self), config.remoteName)
       context.watch(client)
       buffer(data, sender())
@@ -79,6 +81,9 @@ class Handler(config: HandlerConfig) extends Actor with ActorLogging {
     case Terminated(child) =>
       log.info("state transition: idle -> stopped")
       context.unbecome()
+
+    case CloseConnection =>
+      client ! ReqCloseConnection
   }
 
   /**
@@ -95,6 +100,9 @@ class Handler(config: HandlerConfig) extends Actor with ActorLogging {
       log.info("state transition: requesting -> stopped")
       storage = Queue.empty
       context.unbecome()
+
+    case CloseConnection =>
+      client ! ReqCloseConnection
   }
 
   def buffer(data: ByteString, sender: ActorRef): Unit = {

@@ -21,9 +21,10 @@ class HandlerSpec(_system: ActorSystem) extends TestKit(_system)
     "Buffer a RequestReadHoldingRegisters and transfer it to remote target" in {
 
       val remote = "localhost"
+      val port = 502
       val remoteName = "test-target-1"
       val bufferMaxSize = 10
-      val config = HandlerConfig(remote, remoteName, bufferMaxSize)
+      val config = HandlerConfig(remote, port, remoteName, bufferMaxSize)
 
       val pollProbe = TestProbe()
       val clientProbe = TestProbe()
@@ -45,9 +46,10 @@ class HandlerSpec(_system: ActorSystem) extends TestKit(_system)
     "Buffer multiple RequestReadHoldingRegister and transfer them to remote target" in {
 
       val remote = "localhost"
+      val port = 502
       val remoteName = "test-target-2"
       val bufferMaxSize = 10
-      val config = HandlerConfig(remote, remoteName, bufferMaxSize)
+      val config = HandlerConfig(remote, port, remoteName, bufferMaxSize)
 
       val pollProbe = TestProbe()
       val clientProbe = TestProbe()

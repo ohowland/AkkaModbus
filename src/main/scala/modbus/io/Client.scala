@@ -1,8 +1,10 @@
 package modbus.io
 
-import akka.actor.{Actor, ActorLogging, ActorRef, Props}
+import akka.actor.{Actor, ActorLogging, ActorRef, PoisonPill, Props}
 import akka.io.{IO, Tcp}
 import java.net.InetSocketAddress
+
+import akka.actor.SupervisorStrategy.Stop
 import akka.util.ByteString
 
 /**
@@ -73,6 +75,9 @@ class Client(remote: InetSocketAddress, handler: ActorRef)
 
     case SuspendReading =>
       connection ! SuspendReading
+
+    case PoisonPill =>
+      connection ! Close
   }
 
 }
