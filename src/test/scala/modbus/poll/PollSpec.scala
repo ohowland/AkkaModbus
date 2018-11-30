@@ -3,6 +3,7 @@ package modbus.poll
 import akka.actor.ActorSystem
 import akka.testkit.{TestKit, TestProbe}
 import modbus.frame._
+import modbus.io.Client
 import modbus.poll.Poll.PollResponse
 import modbus.templates.{Factory, ModbusTypes}
 import org.scalatest._
@@ -39,8 +40,11 @@ class PollSpec(_system: ActorSystem) extends TestKit(_system)
         timeout = 3.seconds
       ))
 
-      // The poll actor sends the clientHandler actor an ADU constructed from the message template
-      val requestADU = clientHandler.expectMsgType[ADU]
+      // The poll actor sends the clientHandler actor a ByteString constructed from the message template
+      val requestByteString = clientHandler.expectMsgType[Client.Write]
+
+      // Convert to ADU so we can access the transactionID, which is assigned by the client handler.
+      val requestADU = DecodeFrame.decode(requestByteString.data)
 
       // In the successful case, the clientHandler will return a
       // ByteString representation of a ResponseReadHoldingRegisters
@@ -79,7 +83,8 @@ class PollSpec(_system: ActorSystem) extends TestKit(_system)
       ))
 
       // The poll actor sends the clientHandler actor an ADU constructed from the message template
-      val requestADU = clientHandler.expectMsgType[ADU]
+      val requestByteString = clientHandler.expectMsgType[Client.Write]
+      val requestADU = DecodeFrame.decode(requestByteString.data)
 
       // In the successful case, the clientHandler will return a
       // ByteString representation of a ResponseReadHoldingRegisters
@@ -118,7 +123,9 @@ class PollSpec(_system: ActorSystem) extends TestKit(_system)
       ))
 
       // The poll actor sends the clientHandler actor an ADU constructed from the message template
-      val requestADU = clientHandler.expectMsgType[ADU]
+      val requestByteString = clientHandler.expectMsgType[Client.Write]
+      val requestADU = DecodeFrame.decode(requestByteString.data)
+
 
       // In the successful case, the clientHandler will return a
       // ByteString representation of a ResponseReadHoldingRegisters
@@ -159,8 +166,10 @@ class PollSpec(_system: ActorSystem) extends TestKit(_system)
       ))
 
       // The poll actor sends the clientHandler actor an ADU constructed from the message template.
-      val requestADU1 = clientHandler.expectMsgType[ADU]
-      val requestADU2 = clientHandler.expectMsgType[ADU]
+      val requestByteString1 = clientHandler.expectMsgType[Client.Write]
+      val requestADU1 = DecodeFrame.decode(requestByteString1.data)
+      val requestByteString2 = clientHandler.expectMsgType[Client.Write]
+      val requestADU2 = DecodeFrame.decode(requestByteString2.data)
 
       // In the successful case, the clientHandler will return a
       // ByteString representation of a ResponseReadHoldingRegisters

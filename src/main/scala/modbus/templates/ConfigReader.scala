@@ -1,9 +1,10 @@
 package modbus.templates
 
 import java.net.URL
+import scala.io.Source
 
 object ConfigReader {
-  def readCSVToRegisterList(path: URL): List[ModbusTypes.ModbusRegister] = {
+  def readAbsolutePath(path: URL): List[ModbusTypes.ModbusRegister] = {
     val bufferedSource = io.Source.fromURL(path)
     for {
       line <- bufferedSource.getLines
@@ -14,6 +15,19 @@ object ConfigReader {
                                        toModbusDatatype(datatype).get,
                                        group,
                                        block.toInt)
+  }.toList
+
+  def readResource(name: String): List[ModbusTypes.ModbusRegister] = {
+    val bufferedSource = io.Source.fromResource(name)
+    for {
+      line <- bufferedSource.getLines
+      Array(name, address, datatype, group, block) = line.split(",").map(_.trim)
+      if toModbusDatatype(datatype).isDefined
+    } yield ModbusTypes.ModbusRegister(name,
+      address.toInt,
+      toModbusDatatype(datatype).get,
+      group,
+      block.toInt)
   }.toList
 
   def toModbusDatatype(datatype: String): Option[ModbusTypes.ModbusDatatype] = datatype match {

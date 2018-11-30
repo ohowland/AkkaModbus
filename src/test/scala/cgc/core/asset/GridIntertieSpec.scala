@@ -2,7 +2,6 @@ package cgc.core.asset
 
 import akka.actor.ActorSystem
 import akka.testkit.{TestKit, TestProbe}
-import cgc.core.asset.GridIntertie
 import org.scalatest._
 
 class GridIntertieSpec(_system: ActorSystem) extends TestKit(_system)

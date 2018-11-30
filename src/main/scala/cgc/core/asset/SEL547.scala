@@ -22,7 +22,7 @@ class SEL547 extends Actor with ActorLogging {
   import SEL547._
 
   val config = ConfigFactory.load()
-  val comm = context.actorOf(CommManager.props(config.getConfig("SEL547.cgc.core.comm.comm")))
+  val comm = context.actorOf(CommManager.props(config.getConfig("cgc.assets.SEL547"), self))
 
   override def preStart(): Unit = log.info("SEL547 Actor started")
   override def postStop(): Unit = log.info("SEL547 Actor stopped")

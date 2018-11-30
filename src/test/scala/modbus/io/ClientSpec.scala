@@ -2,8 +2,7 @@ package modbus.io
 
 import java.net.InetSocketAddress
 
-import modbus.frame._
-import akka.actor.{ActorSystem, ActorRef, Terminated}
+import akka.actor.ActorSystem
 import akka.io.Tcp
 import akka.testkit.{TestKit, TestProbe}
 import akka.util.ByteString

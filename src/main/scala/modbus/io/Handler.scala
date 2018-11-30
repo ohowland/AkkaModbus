@@ -105,10 +105,11 @@ class Handler(config: HandlerConfig) extends Actor with ActorLogging {
 
   def acknowledge(incomingData: ByteString, client: ActorRef): Unit = {
     val bufferedTuple: (ByteString, ActorRef) = storage.dequeue._1
+    log.info(s"acknowledge: ${bufferedTuple._1} -> $incomingData")
     storage = storage.dequeue._2
 
     val route: ActorRef = bufferedTuple._2
-    route ! Client.Response(incomingData)
+    route ! incomingData
 
     if (storage.isEmpty) context.become(idle(client))
     else { val nextBufferedByteString = storage.dequeue._1._1

@@ -2,24 +2,27 @@ package modbus.templates
 
 import akka.actor.ActorSystem
 import akka.testkit.TestKit
-import org.scalatest.{BeforeAndAfterAll, MustMatchers, Suite, WordSpecLike}
+import org.scalatest._
 
-trait StopSystemAfterAll extends BeforeAndAfterAll {
-  this: TestKit with Suite =>
-  override protected def afterAll() = {
-    super.afterAll()
-    //system.shutdown()
-  }
-}
-
-class MessageFactorySpec extends TestKit(ActorSystem("MessageFactorySpec"))
+class MessageFactorySpec extends Matchers
   with WordSpecLike
-  with MustMatchers
-  with StopSystemAfterAll {
+  with BeforeAndAfterAll {
 
-  "A Message Factory" must {
-    "something" in {
-      succeed
+  "A CSV ConfigReader" should {
+    "load from a ModbusMap from class resources by name" in {
+      val ModbusMap: List[ModbusTypes.ModbusRegister] = ConfigReader.readResource("testModbusMap.csv")
+      ModbusMap should ===(List(
+        ModbusTypes.ModbusRegister("test1", 10, ModbusTypes.U16, "status", 0),
+        ModbusTypes.ModbusRegister("test2", 11, ModbusTypes.U32, "status", 0),
+        ModbusTypes.ModbusRegister("test3", 15, ModbusTypes.I16, "status", 1),
+        ModbusTypes.ModbusRegister("test4", 16, ModbusTypes.F32, "status", 1),
+        ModbusTypes.ModbusRegister("test5", 20, ModbusTypes.F64, "status", 2)))
+    }
+  }
+
+  "A Modbus Template Factory" should {
+    "return a single template" in {
+      fail("not implemented")
     }
   }
 }
