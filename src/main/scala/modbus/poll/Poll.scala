@@ -4,7 +4,7 @@ import akka.actor.{Actor, ActorLogging, ActorRef, Props, Terminated}
 import akka.util.ByteString
 import modbus.frame.{DecodeFrame, EncodeFrame}
 import modbus.io.Client.Write
-import modbus.templates.Factory
+import modbus.templates.ModbusTemplate
 
 import scala.concurrent.duration.FiniteDuration
 import scala.util.Random
@@ -18,7 +18,7 @@ import scala.util.Random
 object Poll {
   def props(requestId: Long,
             clientHandler: ActorRef,
-            templates: Set[Factory.MessageTemplate],
+            templates: Set[ModbusTemplate],
             unitId: Int,
             requester: ActorRef,
             timeout: FiniteDuration
@@ -30,7 +30,7 @@ object Poll {
 
 class Poll(requestId: Long,
            clientHandler: ActorRef,
-           templates: Set[Factory.MessageTemplate],
+           templates: Set[ModbusTemplate],
            unitId: Int,
            requester: ActorRef,
            timeout: FiniteDuration) extends Actor with ActorLogging {
@@ -60,13 +60,13 @@ class Poll(requestId: Long,
   }
 
   override def receive: Receive = {
-    case idToMessageTemplate: Map[Int, Factory.MessageTemplate] =>
+    case idToMessageTemplate: Map[Int, ModbusTemplate] =>
       context.become(waitingForReplies(Map.empty, idToMessageTemplate.keySet, idToMessageTemplate))
   }
 
   def waitingForReplies(dataSoFar: Map[String, Double],
                         pendingTransactions: Set[Int],
-                        idToMessageTemplate: Map[Int, Factory.MessageTemplate]): Receive = {
+                        idToMessageTemplate: Map[Int, ModbusTemplate]): Receive = {
 
     case data: ByteString =>
       log.info(s"waiting for $pendingTransactions")
@@ -95,7 +95,7 @@ class Poll(requestId: Long,
                        incomingValueMap: Map[String, Double],
                        pendingTransactions: Set[Int],
                        dataSoFar: Map[String, Double],
-                       idToMessageTemplate: Map[Int, Factory.MessageTemplate]): Unit = {
+                       idToMessageTemplate: Map[Int, ModbusTemplate]): Unit = {
 
     val newPendingTransactions = pendingTransactions - transactionId
 

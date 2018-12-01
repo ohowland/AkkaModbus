@@ -1,6 +1,6 @@
 name,address,datatype,group,block
 test1,0,U16,status,0
 test2,1,U16,status,0
-test4,4,U16,status,1
-test5,5,U16,status,1
-test8,8,U16,status,2
+test4,3,U16,status,1
+test5,4,U16,status,1
+test8,7,U16,status,2

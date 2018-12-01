@@ -39,7 +39,7 @@ class CommManager(config: Config, requestingActor: ActorRef) extends Actor with 
   private val deviceName = config.getString("name")
   private val modbusMap = templates.ConfigReader.readResource(deviceName + "ModbusMap.csv")
   private val templateList = templates.Factory
-    .createReadHoldingRegistersTemplates(modbusMap, "status", "big").toSet
+    .getReadMultipleHoldingRegistersTemplates(modbusMap, "status", "big").toSet
 
   // schedule the reoccurring poll actor
   private val pollInterval = config.getDouble("communication.pollInterval").seconds

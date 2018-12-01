@@ -29,7 +29,7 @@ class PollSpec(_system: ActorSystem) extends TestKit(_system)
 
       val testModbusMap = List(testRegister1, testRegister2, testRegister3)
       val reqMessageTemplates =
-        Factory.createReadHoldingRegistersTemplates(testModbusMap, "status", "big")
+        Factory.getReadMultipleHoldingRegistersTemplates(testModbusMap, "status", "big")
 
       val pollActor = system.actorOf(Poll.props(
         requestId = requestId,
@@ -71,7 +71,7 @@ class PollSpec(_system: ActorSystem) extends TestKit(_system)
       val testRegister3 = ModbusTypes.ModbusRegister("badtest1", 3, ModbusTypes.U16, "control", 2)
       val testModbusMap = List(testRegister1, testRegister2, testRegister3)
       val reqMessageTemplates =
-        Factory.createReadHoldingRegistersTemplates(testModbusMap, "status", "big")
+        Factory.getReadMultipleHoldingRegistersTemplates(testModbusMap, "status", "big")
 
       val pollActor = system.actorOf(Poll.props(
         requestId = requestId,
@@ -111,7 +111,7 @@ class PollSpec(_system: ActorSystem) extends TestKit(_system)
       val testRegister3 = ModbusTypes.ModbusRegister("test3", 10, ModbusTypes.U16, "status", 1)
       val testModbusMap = List(testRegister1, testRegister2, testRegister3)
       val reqMessageTemplates =
-        Factory.createReadHoldingRegistersTemplates(testModbusMap, "status", "big")
+        Factory.getReadMultipleHoldingRegistersTemplates(testModbusMap, "status", "big")
 
       val pollActor = system.actorOf(Poll.props(
         requestId = requestId,
@@ -154,7 +154,7 @@ class PollSpec(_system: ActorSystem) extends TestKit(_system)
 
       val testModbusMap = List(testRegister1, testRegister2)
       val reqMessageTemplates =
-        Factory.createReadHoldingRegistersTemplates(testModbusMap, "status", "big")
+        Factory.getReadMultipleHoldingRegistersTemplates(testModbusMap, "status", "big")
 
       val pollActor = system.actorOf(Poll.props(
         requestId = requestId,

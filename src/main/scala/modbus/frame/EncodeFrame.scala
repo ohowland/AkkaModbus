@@ -1,11 +1,10 @@
 package modbus.frame
 
-import akka.util.{ByteIterator, ByteString}
-import modbus.templates.Factory.{MessageTemplate, ReadModbusMessageTemplate, WriteModbusMessageTemplate}
+import modbus.templates.{ModbusTemplate, ReadMultipleHoldingRegistersTemplate, WriteMultipleHoldingRegistersTemplate}
 
 object EncodeFrame {
 
-  def encode(template: MessageTemplate, transactionId: Int, unitId: Int): ADU = {
+  def encode(template: ModbusTemplate, transactionId: Int, unitId: Int): ADU = {
     val pdu = encodePDU(template)
     ADU(encodeMBAP(transactionId, pdu.length + 1, unitId), pdu) // the length of the message is the PDU length + unitId
   }
@@ -20,24 +19,24 @@ object EncodeFrame {
     MBAP(transactionId, length, unitId)
   }
 
-  private def encodePDU(template: MessageTemplate): PDU = {
+  private def encodePDU(template: ModbusTemplate): PDU = {
 
-    def encodeRequestReadHoldingRegisters(template: ReadModbusMessageTemplate) = {
+    def encodeRequestReadMultipleHoldingRegisters(template: ReadMultipleHoldingRegistersTemplate) = {
       val startAddress = template.specification.startAddress
       val numberOfRegisters = template.specification.numberOfRegisters
       RequestReadHoldingRegisters(startAddress, numberOfRegisters)
     }
 
-    def encodeRequestWriteHoldingRegisters(template: MessageTemplate) = {
-      val startAddress = ???
-      val numberOfRegisters = ???
+    def encodeRequestWriteMultipleHoldingRegister(template: WriteMultipleHoldingRegistersTemplate) = {
+      val startAddress = template.specification.startAddress
+      val numberOfRegisters = template.specification.numberOfRegisters
       val payload = ???
       RequestWriteHoldingRegisters(startAddress, numberOfRegisters, payload)
     }
 
     val pdu: PDU = template match {
-      case msgTemplate: ReadModbusMessageTemplate => encodeRequestReadHoldingRegisters(msgTemplate)
-      case msgTemplate: WriteModbusMessageTemplate => encodeRequestWriteHoldingRegisters(msgTemplate)
+      case msgTemplate: ReadMultipleHoldingRegistersTemplate => encodeRequestReadMultipleHoldingRegisters(msgTemplate)
+      case msgTemplate: WriteMultipleHoldingRegistersTemplate => encodeRequestWriteMultipleHoldingRegister(msgTemplate)
       case _ => PDU.empty
     }
     pdu

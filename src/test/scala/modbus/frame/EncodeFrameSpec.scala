@@ -19,7 +19,7 @@ class EncodeFrameSpec() extends Matchers
       val groupName = "status"
       val endianness = "big"
 
-      val templates = Factory.createReadHoldingRegistersTemplates(testModbusMap, groupName, endianness)
+      val templates = Factory.getReadMultipleHoldingRegistersTemplates(testModbusMap, groupName, endianness)
       val unitId = 1
 
       val requestMessageAndIdSet = for {
@@ -44,7 +44,7 @@ class EncodeFrameSpec() extends Matchers
       val groupName = "status"
       val endianness = "big"
 
-      val templates = Factory.createReadHoldingRegistersTemplates(testModbusMap, groupName, endianness)
+      val templates = Factory.getReadMultipleHoldingRegistersTemplates(testModbusMap, groupName, endianness)
       val unitId = 1
 
       val requestMessageAndIdSet = for {
@@ -75,7 +75,7 @@ class EncodeFrameSpec() extends Matchers
       val groupName = "status"
       val endianness = "big"
 
-      val templates = Factory.createReadHoldingRegistersTemplates(testModbusMap, groupName, endianness)
+      val templates = Factory.getReadMultipleHoldingRegistersTemplates(testModbusMap, groupName, endianness)
       val unitId = 1
       val validateSet = for {
         template <- templates
