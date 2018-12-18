@@ -7,6 +7,7 @@ import akka.actor.{ActorRef, ActorSystem, PoisonPill, Terminated}
 import akka.io.Tcp
 import akka.testkit.{TestKit, TestProbe}
 import akka.util.ByteString
+import com.typesafe.config.{Config, ConfigFactory}
 import modbus.io.Handler.HandlerConfig
 import org.scalatest._
 
@@ -20,9 +21,10 @@ class HandlerSpec(_system: ActorSystem) extends TestKit(_system)
   "A Client Handler Actor" should {
     "Buffer a RequestReadHoldingRegisters and transfer it to remote target" in {
 
-      val remote = "localhost"
-      val port = 502
-      val remoteName = "test-target-1"
+      val testConfig: Config = ConfigFactory.load().getConfig("cgc.assets.testDevice1")
+      val remote = testConfig.getString("communication.address")
+      val port = testConfig.getInt("communication.port")
+      val remoteName = testConfig.getString("name")
       val bufferMaxSize = 10
       val config = HandlerConfig(remote, port, remoteName, bufferMaxSize)
 
@@ -38,16 +40,17 @@ class HandlerSpec(_system: ActorSystem) extends TestKit(_system)
 
       clientHandlerActor.tell(Client.Write(testADU), pollProbe.ref)
 
-      val response = pollProbe.expectMsgType[Client.Response]
+      val response = pollProbe.expectMsgType[ByteString]
 
       clientHandlerActor ! PoisonPill
     }
 
     "Buffer multiple RequestReadHoldingRegister and transfer them to remote target" in {
 
-      val remote = "localhost"
-      val port = 502
-      val remoteName = "test-target-2"
+      val testConfig: Config = ConfigFactory.load().getConfig("cgc.assets.testDevice1")
+      val remote = testConfig.getString("communication.address")
+      val port = testConfig.getInt("communication.port")
+      val remoteName = testConfig.getString("name")
       val bufferMaxSize = 10
       val config = HandlerConfig(remote, port, remoteName, bufferMaxSize)
 
@@ -82,11 +85,11 @@ class HandlerSpec(_system: ActorSystem) extends TestKit(_system)
       testADU = testMBAP ++ testPDU
       clientHandlerActor.tell(Client.Write(testADU), pollProbe.ref)
 
-      val response1 = pollProbe.expectMsgType[Client.Response]
-      val response2 = pollProbe.expectMsgType[Client.Response]
-      val response3 = pollProbe.expectMsgType[Client.Response]
-      val response4 = pollProbe.expectMsgType[Client.Response]
-      val response5 = pollProbe.expectMsgType[Client.Response]
+      val response1 = pollProbe.expectMsgType[ByteString]
+      val response2 = pollProbe.expectMsgType[ByteString]
+      val response3 = pollProbe.expectMsgType[ByteString]
+      val response4 = pollProbe.expectMsgType[ByteString]
+      val response5 = pollProbe.expectMsgType[ByteString]
 
       clientHandlerActor ! PoisonPill
     }

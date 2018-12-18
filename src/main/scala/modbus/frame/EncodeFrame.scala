@@ -1,11 +1,11 @@
 package modbus.frame
 
-import modbus.templates.{ModbusTemplate, ReadMultipleHoldingRegistersTemplate, WriteMultipleHoldingRegistersTemplate}
+import modbus.templates.{ModbusTemplate, ReadMultipleHoldingRegistersTemplate, WriteMultipleHoldingRegistersTemplate, WriteSingleHoldingRegisterTemplate}
 
 object EncodeFrame {
 
-  def encode(template: ModbusTemplate, transactionId: Int, unitId: Int): ADU = {
-    val pdu = encodePDU(template)
+  def encode(template: ModbusTemplate, transactionId: Int, unitId: Int, values: Int*): ADU = {
+    val pdu = encodePDU(template, values)
     ADU(encodeMBAP(transactionId, pdu.length + 1, unitId), pdu) // the length of the message is the PDU length + unitId
   }
 
@@ -19,7 +19,7 @@ object EncodeFrame {
     MBAP(transactionId, length, unitId)
   }
 
-  private def encodePDU(template: ModbusTemplate): PDU = {
+  private def encodePDU(template: ModbusTemplate, values: Seq[Int]): PDU = {
 
     def encodeRequestReadMultipleHoldingRegisters(template: ReadMultipleHoldingRegistersTemplate) = {
       val startAddress = template.specification.startAddress
@@ -27,16 +27,26 @@ object EncodeFrame {
       RequestReadHoldingRegisters(startAddress, numberOfRegisters)
     }
 
-    def encodeRequestWriteMultipleHoldingRegister(template: WriteMultipleHoldingRegistersTemplate) = {
+    def encodeRequestWriteMultipleHoldingRegisters(template: WriteMultipleHoldingRegistersTemplate) = {
       val startAddress = template.specification.startAddress
       val numberOfRegisters = template.specification.numberOfRegisters
-      val payload = ???
-      RequestWriteHoldingRegisters(startAddress, numberOfRegisters, payload)
+      val registerValues = {
+        if (values.isEmpty) None
+        else Some(values.toList)
+      }
+      RequestWriteMultipleHoldingRegisters(startAddress, numberOfRegisters, registerValues)
+    }
+
+    def encodeRequestWriteSingleHoldingRegister(template: WriteSingleHoldingRegisterTemplate) = {
+      val registerAddress = template.specification.startAddress
+      val registerValue = values.headOption
+      RequestWriteSingleHoldingRegister(registerAddress, registerValue)
     }
 
     val pdu: PDU = template match {
       case msgTemplate: ReadMultipleHoldingRegistersTemplate => encodeRequestReadMultipleHoldingRegisters(msgTemplate)
-      case msgTemplate: WriteMultipleHoldingRegistersTemplate => encodeRequestWriteMultipleHoldingRegister(msgTemplate)
+      case msgTemplate: WriteMultipleHoldingRegistersTemplate => encodeRequestWriteMultipleHoldingRegisters(msgTemplate)
+      case msgTemplate: WriteSingleHoldingRegisterTemplate => encodeRequestWriteSingleHoldingRegister(msgTemplate)
       case _ => PDU.empty
     }
     pdu

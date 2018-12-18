@@ -6,6 +6,8 @@ import akka.actor.ActorSystem
 import akka.io.Tcp
 import akka.testkit.{TestKit, TestProbe}
 import akka.util.ByteString
+import com.typesafe.config.{Config, ConfigFactory}
+import scala.concurrent.duration._
 import org.scalatest._
 
 class ClientSpec(_system: ActorSystem) extends TestKit(_system)
@@ -16,9 +18,11 @@ class ClientSpec(_system: ActorSystem) extends TestKit(_system)
   def this() = this(ActorSystem("ClientSpec"))
 
   "A Modbus Client Actor" should {
-    "establish a connection successfully (REQUIRES LOCAL MODBUS SLAVE)" in {
-
-      val remote = new InetSocketAddress("localhost", 502)
+    "establish a connection successfully" in {
+      val testConfig: Config = ConfigFactory.load().getConfig("cgc.assets.testDevice1")
+      val remote = new InetSocketAddress(
+        testConfig.getString("communication.address"),
+        testConfig.getInt("communication.port"))
       val probe = TestProbe()
 
       val clientActor = system.actorOf(Client.props(remote, probe.ref), "Test-Client")
@@ -28,9 +32,11 @@ class ClientSpec(_system: ActorSystem) extends TestKit(_system)
       probe.expectTerminated(clientActor)
     }
 
-    "transfer Modbus data to remote target (REQUIRES LOCAL MODBUS SLAVE)" in {
-
-      val remote = new InetSocketAddress("localhost", 502)
+    "transfer Modbus data to remote target" in {
+      val testConfig: Config = ConfigFactory.load().getConfig("cgc.assets.testDevice1")
+      val remote = new InetSocketAddress(
+        testConfig.getString("communication.address"),
+        testConfig.getInt("communication.port"))
       val probe = TestProbe()
 
       val clientActor = system.actorOf(Client.props(remote, probe.ref), "Test-Client")
@@ -49,7 +55,12 @@ class ClientSpec(_system: ActorSystem) extends TestKit(_system)
     }
 
     "report a failed connection attempt" in {
-      fail("not implemented")
+      val remote = new InetSocketAddress("bougusAddress", 502)
+      val probe = TestProbe()
+      val clientActor = system.actorOf(Client.props(remote, probe.ref), "Test-Client")
+      probe.watch(clientActor)
+      probe.expectMsg(10.seconds, Client.ConnectionFailed)
+      probe.expectTerminated(clientActor)
     }
   }
 }

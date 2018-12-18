@@ -15,7 +15,8 @@ import modbus.templates
 object CommManager {
   def props(config: Config, requestingActor: ActorRef): Props = Props(new CommManager(config, requestingActor))
 
-  case object PollDevices
+  case object ReadPoll
+  case object WritePoll
   case object CloseConnections
   case class UpdateStatus(data: Map[String, Double])
   case class WriteControl(data: Map[String, Double])
@@ -38,16 +39,18 @@ class CommManager(config: Config, requestingActor: ActorRef) extends Actor with 
   // Create the templates required for this class.
   private val deviceName = config.getString("name")
   private val modbusMap = templates.ConfigReader.readResource(deviceName + "ModbusMap.csv")
-  private val templateList = templates.Factory
+  private val readStatusTemplates = templates.Factory
     .getReadMultipleHoldingRegistersTemplates(modbusMap, "status", "big").toSet
+  private val writeControlTemplates = templates.Factory
+    .getWriteSingleHoldingRegisterTemplates(modbusMap, "control", "big").toSet
 
-  // schedule the reoccurring poll actor
+  // schedule the recurring read status poll actor
   private val pollInterval = config.getDouble("communication.pollInterval").seconds
   context.system.scheduler.schedule(
     initialDelay = 1.seconds,
     interval = pollInterval,
     receiver = self,
-    message = PollDevices)
+    message = ReadPoll)
 
   private val unitId = config.getInt("communication.unitId")
   private val pollTimeout = config.getDouble("communication.pollTimeout").seconds
@@ -57,12 +60,12 @@ class CommManager(config: Config, requestingActor: ActorRef) extends Actor with 
 
   def receive: Receive = {
 
-    case PollDevices =>
+    case ReadPoll =>
       val requestId = util.Random.nextInt()
       context.actorOf(modbus.poll.Poll.props(
         requestId,
         clientHandler,
-        templateList,
+        readStatusTemplates,
         unitId,
         requester = self,
         pollTimeout))
@@ -71,7 +74,20 @@ class CommManager(config: Config, requestingActor: ActorRef) extends Actor with 
       dataMap.foreach(println)
       requestingActor ! UpdateStatus(dataMap)
 
-    case WriteControl(data) => ???
+    case WriteControl(data) => {
+
+      writeControlTemplates.
+
+      val requestId = util.Random.nextInt()
+      context.actorOf(modbus.poll.Poll.props(
+        requestId,
+        clientHandler,
+        writeControlTemplates,
+        unitId,
+        requester = self,
+        pollTimeout))
+
+    }
 
     case CloseConnections =>
       clientHandler ! CloseConnection

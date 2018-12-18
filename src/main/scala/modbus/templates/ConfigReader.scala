@@ -8,26 +8,29 @@ object ConfigReader {
     val bufferedSource = io.Source.fromURL(path)
     for {
       line <- bufferedSource.getLines
-      Array(name, address, datatype, group, block) = line.split(",").map(_.trim)
+      Array(name, address, datatype, group, block, scale) = line.split(",").map(_.trim)
       if toModbusDatatype(datatype).isDefined
-    } yield ModbusTypes.ModbusRegister(name,
-                                       address.toInt,
-                                       toModbusDatatype(datatype).get,
-                                       group,
-                                       block.toInt)
+    } yield ModbusTypes.ModbusRegister(
+      name,
+      address.toInt,
+      toModbusDatatype(datatype).get,
+      group,
+      block.toInt,
+      scale.toInt)
   }.toList
 
   def readResource(name: String): List[ModbusTypes.ModbusRegister] = {
     val bufferedSource = io.Source.fromResource(name)
     for {
       line <- bufferedSource.getLines
-      Array(name, address, datatype, group, block) = line.split(",").map(_.trim)
+      Array(name, address, datatype, group, block, scale) = line.split(",").map(_.trim)
       if toModbusDatatype(datatype).isDefined
     } yield ModbusTypes.ModbusRegister(name,
       address.toInt,
       toModbusDatatype(datatype).get,
       group,
-      block.toInt)
+      block.toInt,
+      scale.toInt)
   }.toList
 
   def toModbusDatatype(datatype: String): Option[ModbusTypes.ModbusDatatype] = datatype match {

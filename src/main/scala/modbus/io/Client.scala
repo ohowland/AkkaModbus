@@ -3,6 +3,7 @@ package modbus.io
 import akka.actor.{Actor, ActorLogging, ActorRef, PoisonPill, Props}
 import akka.io.{IO, Tcp}
 import java.net.InetSocketAddress
+import scala.concurrent.duration._
 
 import akka.actor.SupervisorStrategy.Stop
 import akka.util.ByteString
@@ -32,7 +33,7 @@ class Client(remote: InetSocketAddress, handler: ActorRef)
   import context.system // implicitly used by IO(Tcp)
   import akka.io.Tcp._
 
-  IO(Tcp) ! Connect(remote)
+  IO(Tcp) ! Connect(remote, timeout = Some(3.seconds))
 
   override def preStart(): Unit = log.info("Client started")
   override def postStop(): Unit = log.info("Client stopped")

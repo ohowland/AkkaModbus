@@ -129,77 +129,150 @@ case class ExceptionReadHoldingRegisters(errorCode: Int) extends ReadHoldingRegi
     frameBuilder.putByte(errorCode.toByte)
     frameBuilder.result()
   }
-  override def length: Int = {
-    this.toByteString.length
+  override def length: Int = this.toByteString.length
+}
+
+/************************************************************************
+  * Write Single Holding Register request, response, and exception PDUs *
+  ***********************************************************************/
+trait WriteSingleHoldingRegister extends PDU
+
+case object RequestWriteSingleHoldingRegister { val functionCode: Int = 0x06 }
+case class RequestWriteSingleHoldingRegister(registerAddress: Int, registerValue: Option[Int])
+  extends WriteSingleHoldingRegister {
+
+  /**
+    * Request Write Single Holding Register PDU Structure
+    * BYTE        : |  1 Byte  |      2 Bytes     |    2 Bytes     |
+    * DESCRIPTION : | Fct Code | Register Address | Register Value |
+    */
+  override def toByteString: ByteString = {
+    val frameBuilder = ByteString.newBuilder
+    implicit val byteOrder = java.nio.ByteOrder.BIG_ENDIAN
+    frameBuilder.putByte(RequestWriteMultipleHoldingRegisters.functionCode.toByte)
+    frameBuilder.putShort(registerAddress)
+    frameBuilder.putShort(registerValue.getOrElse(0))
+    frameBuilder.result()
   }
+  override def length: Int = this.toByteString.length
+
+  override def payload: List[Int] = registerValue match {
+    case Some(x) => List(x)
+    case None => List.empty
+  }
+}
+
+case object ResponseWriteSingleHoldingRegister { val functionCode: Int = 0x06 }
+case class ResponseWriteSingleHoldingRegister(registerAddress: Int, registerValue: Option[Int])
+  extends WriteSingleHoldingRegister {
+  /**
+    * Response Write Single Holding Register PDU Structure
+    * BYTE        : |  1 Byte  |      2 Bytes     |    2 Bytes     |
+    * DESCRIPTION : | Fct Code | Register Address | Register Value |
+    */
+  override def toByteString: ByteString = {
+    val frameBuilder = ByteString.newBuilder
+    implicit val byteOrder = java.nio.ByteOrder.BIG_ENDIAN
+    frameBuilder.putByte(RequestWriteMultipleHoldingRegisters.functionCode.toByte)
+    frameBuilder.putShort(registerAddress)
+    frameBuilder.putShort(registerValue.getOrElse(0))
+    frameBuilder.result()
+  }
+  override def length: Int = this.toByteString.length
+
+  override def payload: List[Int] = registerValue match {
+    case Some(x) => List(x)
+    case None => List.empty
+  }
+}
+
+case object ExceptionWriteSingleHoldingRegister { val functionCode: Int = 0x86 }
+case class ExceptionWriteSingleHoldingRegister(errorCode: Int)
+  extends WriteSingleHoldingRegister {
+
+  /**
+    * Exception Write Single Holding Register PDU Structure
+    * BYTE        : |  1 Byte  |      2 Bytes     |    2 Bytes     |
+    * DESCRIPTION : | Fct Code | Register Address | Register Value |
+    */
+  override def toByteString: ByteString = {
+    val frameBuilder = ByteString.newBuilder
+    implicit val byteOrder = java.nio.ByteOrder.BIG_ENDIAN
+    frameBuilder.putByte(ExceptionWriteSingleHoldingRegister.functionCode.toByte)
+    frameBuilder.putByte(errorCode.toByte)
+    frameBuilder.result()
+  }
+  override def length: Int = this.toByteString.length
 }
 
 /**************************************************************************
   * Write Multiple Holding Register request, response, and exception PDUs *
   *************************************************************************/
-trait WriteHoldingRegisters extends PDU
+trait WriteMultipleHoldingRegisters extends PDU
 
-/**
-  * Write Hold Registers PDU Structure
-  * BYTE        : |  1 Byte  |    2 Bytes    |   2 Bytes   |        2 Bytes         | N Bytes |
-  * DESCRIPTION : | Fct Code | Start Address | # Registers | Payload Size (N Bytes) | Payload |
-  */
-case object RequestWriteHoldingRegisters { val functionCode: Int = 0x10 }
-case class RequestWriteHoldingRegisters(startAddress: Int, numberOfRegisters: Int, registers: List[Int])
-  extends WriteHoldingRegisters {
+case object RequestWriteMultipleHoldingRegisters { val functionCode: Int = 0x10 }
+case class RequestWriteMultipleHoldingRegisters(startAddress: Int, numberOfRegisters: Int, registerValues: Option[List[Int]])
+  extends WriteMultipleHoldingRegisters {
+
   val payloadSize: Int = 2 * numberOfRegisters
+
+  /**
+    * Request Write Multiple Holding Registers PDU Structure
+    * BYTE        : |  1 Byte  |    2 Bytes    |   2 Bytes   |        2 Bytes         | N Bytes |
+    * DESCRIPTION : | Fct Code | Start Address | # Registers | Payload Size (N Bytes) | Payload |
+    */
   override def toByteString: ByteString = {
     val frameBuilder = ByteString.newBuilder
     implicit val byteOrder = java.nio.ByteOrder.BIG_ENDIAN
-    frameBuilder.putByte(RequestWriteHoldingRegisters.functionCode.toByte)
+    frameBuilder.putByte(RequestWriteMultipleHoldingRegisters.functionCode.toByte)
     frameBuilder.putShort(startAddress)
     frameBuilder.putShort(numberOfRegisters)
     frameBuilder.putByte(payloadSize.toByte)
     frameBuilder.putShorts(payload.map(_.toShort).toArray)
     frameBuilder.result()
   }
-  override def length: Int = {
-    this.toByteString.length
-  }
 
-  override def payload = registers
+  override def length: Int = this.toByteString.length
+
+  override def payload: List[Int] = registerValues.getOrElse(List.empty)
 }
 
-case object ResponseWriteHoldingRegisters { val functionCode: Int = 0x10 }
-case class ResponseWriteHoldingRegisters(startAddress: Int, numberOfRegisters: Int) extends WriteHoldingRegisters {
+case object ResponseWriteMultipleHoldingRegisters { val functionCode: Int = 0x10 }
+case class ResponseWriteMultipleHoldingRegisters(startAddress: Int, numberOfRegisters: Int)
+  extends WriteMultipleHoldingRegisters {
+
   /**
-    * Response Write Hold Registers PDU Structure
+    * Response Write Multiple Holding Registers PDU Structure
     * BYTE        : |  1 Byte  |    2 Bytes    |   2 Bytes    |
     * DESCRIPTION : | Fct Code | Start Address | # Registers  |
     */
   override def toByteString: ByteString = {
     val frameBuilder = ByteString.newBuilder
     implicit val byteOrder = java.nio.ByteOrder.BIG_ENDIAN
-    frameBuilder.putByte(ResponseWriteHoldingRegisters.functionCode.toByte)
+    frameBuilder.putByte(ResponseWriteMultipleHoldingRegisters.functionCode.toByte)
     frameBuilder.putShort(startAddress)
     frameBuilder.putShort(numberOfRegisters)
     frameBuilder.result()
   }
-  override def length: Int = {
-    this.toByteString.length
-  }
+
+  override def length: Int = this.toByteString.length
 }
 
-case object ExceptionWriteHoldingRegisters { val functionCode: Int = 0x90 }
-case class ExceptionWriteHoldingRegisters(errorCode: Int) extends WriteHoldingRegisters {
+case object ExceptionWriteMultipleHoldingRegisters { val functionCode: Int = 0x90 }
+case class ExceptionWriteMultipleHoldingRegisters(errorCode: Int) extends WriteMultipleHoldingRegisters {
+
   /**
-    * Exception Write Holding Registers PDU Structure
+    * Exception Write Multiple Holding Registers PDU Structure
     * BYTE        : |  1 Byte  |  1 Bytes   |
     * DESCRIPTION : | Fct Code | Error Code |
     */
   override def toByteString: ByteString = {
     val frameBuilder = ByteString.newBuilder
     implicit val byteOrder = java.nio.ByteOrder.BIG_ENDIAN
-    frameBuilder.putByte(ExceptionWriteHoldingRegisters.functionCode.toByte)
+    frameBuilder.putByte(ExceptionWriteMultipleHoldingRegisters.functionCode.toByte)
     frameBuilder.putByte(errorCode.toByte)
     frameBuilder.result()
   }
-  override def length: Int = {
-    this.toByteString.length
-  }
+
+  override def length: Int = this.toByteString.length
 }

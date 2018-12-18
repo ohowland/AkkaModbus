@@ -22,7 +22,6 @@ object Handler {
 
   case object CloseConnection
   case class HandlerConfig(remoteAddr: String, port: Int, remoteName: String, bufferMaxSize: Int)
-
 }
 
 class Handler(config: HandlerConfig) extends Actor with ActorLogging {

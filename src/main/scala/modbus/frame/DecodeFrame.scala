@@ -40,28 +40,40 @@ object DecodeFrame {
       ExceptionReadHoldingRegisters(error)
     }
 
-    def decodeResponseWriteHoldingRegisters(in: ByteIterator) = {
+    def decodeResponseWriteMultipleHoldingRegisters(in: ByteIterator) = {
       val startAddress = in.getShort
       val registerCount = in.getShort
-      ResponseWriteHoldingRegisters(startAddress, registerCount)
+      ResponseWriteMultipleHoldingRegisters(startAddress, registerCount)
     }
 
-    def decodeExceptionWriteHoldingRegisters(in: ByteIterator) = {
+    def decodeExceptionWriteMultipleHoldingRegisters(in: ByteIterator) = {
       val errorCode = in.getByte
-      ExceptionWriteHoldingRegisters(errorCode)
+      ExceptionWriteMultipleHoldingRegisters(errorCode)
+    }
+
+    def decodeResponseWriteSingleRegisters(in: ByteIterator) = {
+      val registerAddress = in.getShort
+      val registerValue = in.getShort
+      ResponseWriteSingleHoldingRegister(registerAddress, registerValue)
+    }
+
+    def decodeExceptionWriteSingleHoldingRegisters(in: ByteIterator) = {
+      val errorCode = in.getByte
+      ExceptionWriteSingleHoldingRegister(errorCode)
     }
 
     val in = data.iterator
     val functionCode: Int = in.getByte.toInt
 
     // 0xFF to get unsigned byte
-    val pdu: PDU = functionCode & 0xFF match {
+    functionCode & 0xFF match {
       case ResponseReadHoldingRegisters.functionCode => decodeResponseReadHoldingRegisters(in)
       case ExceptionReadHoldingRegisters.functionCode => decodeExceptionReadHoldingRegisters(in)
-      case ResponseWriteHoldingRegisters.functionCode => decodeResponseWriteHoldingRegisters(in)
-      case ExceptionWriteHoldingRegisters.functionCode => decodeExceptionWriteHoldingRegisters(in)
+      case ResponseWriteSingleHoldingRegister.functionCode => decodeResponseWriteSingleRegisters(in)
+      case ExceptionWriteSingleHoldingRegister.functionCode => decodeExceptionWriteSingleHoldingRegisters(in)
+      case ResponseWriteMultipleHoldingRegisters.functionCode => decodeResponseWriteMultipleHoldingRegisters(in)
+      case ExceptionWriteMultipleHoldingRegisters.functionCode => decodeExceptionWriteMultipleHoldingRegisters(in)
       case _ => PDU.empty
     }
-    pdu
   }
 }

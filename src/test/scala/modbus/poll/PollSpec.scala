@@ -2,6 +2,7 @@ package modbus.poll
 
 import akka.actor.ActorSystem
 import akka.testkit.{TestKit, TestProbe}
+import com.typesafe.config.ConfigFactory
 import modbus.frame._
 import modbus.io.Client
 import modbus.poll.Poll.PollResponse
