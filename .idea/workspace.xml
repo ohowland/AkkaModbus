@@ -1,7 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="b3744f55-811a-44f7-b14b-d2c9cff519a7" name="Default Changelist" comment="refactor of the templates package">
+    <list default="true" id="b3744f55-811a-44f7-b14b-d2c9cff519a7" name="Default Changelist" comment="Changes to comm manager">
+      <change afterPath="$PROJECT_DIR$/src/main/scala/modbus/frame/ADU.scala" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/scala/modbus/frame/MBAP.scala" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/scala/modbus/frame/PDU.scala" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/scala/modbus/frame/WriteMultipleHoldingRegisters.scala" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/scala/modbus/frame/WriteSingleHoldingRegister.scala" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/modules/scalacgc.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules/scalacgc.iml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/project/target/scala-2.12/sbt-1.0/resolution-cache/default/scalacgc-build/scala_2.12/sbt_1.0/0.1.0-SNAPSHOT/resolved.xml.properties" beforeDir="false" afterPath="$PROJECT_DIR$/project/target/scala-2.12/sbt-1.0/resolution-cache/default/scalacgc-build/scala_2.12/sbt_1.0/0.1.0-SNAPSHOT/resolved.xml.properties" afterDir="false" />
@@ -19,26 +24,10 @@
       <change beforePath="$PROJECT_DIR$/project/target/scala-2.12/sbt-1.0/resolution-cache/reports/default-scalacgc-build-test.xml" beforeDir="false" afterPath="$PROJECT_DIR$/project/target/scala-2.12/sbt-1.0/resolution-cache/reports/default-scalacgc-build-test.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/project/target/streams/$global/update/$global/streams/out" beforeDir="false" afterPath="$PROJECT_DIR$/project/target/streams/$global/update/$global/streams/out" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/project/target/streams/$global/update/$global/streams/update_cache_2.12/output" beforeDir="false" afterPath="$PROJECT_DIR$/project/target/streams/$global/update/$global/streams/update_cache_2.12/output" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/SEL547ModbusMap.csv" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/SEL547ModbusMap.csv" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/scala/cgc/core/comm/CommManager.scala" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/scala/cgc/core/comm/CommManager.scala" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/scala/modbus/frame/DecodeFrame.scala" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/scala/modbus/frame/DecodeFrame.scala" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/scala/modbus/frame/EncodeFrame.scala" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/scala/modbus/frame/EncodeFrame.scala" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/scala/modbus/frame/Frame Worksheet.sc" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/scala/modbus/frame/Frame Worksheet.sc" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/scala/modbus/frame/Frame.scala" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/scala/modbus/frame/Frame.scala" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/scala/modbus/io/Client.scala" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/scala/modbus/io/Client.scala" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/scala/modbus/io/Handler.scala" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/scala/modbus/io/Handler.scala" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/scala/modbus/templates/ConfigReader.scala" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/scala/modbus/templates/ConfigReader.scala" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/scala/modbus/templates/Factory.scala" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/scala/modbus/templates/Factory.scala" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/scala/modbus/templates/ModbusTemplate.scala" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/scala/modbus/templates/ModbusTemplate.scala" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/scala/modbus/templates/ModbusTypes.scala" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/scala/modbus/templates/ModbusTypes.scala" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/resources/application.conf" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/resources/application.conf" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/resources/remoteTest1ModbusMap.csv" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/resources/test1ModbusMap.csv" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/resources/testDevice1ModbusMap.csv" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/resources/testModbusMap.csv" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/scala/cgc/core/comm/CommManagerSpec.scala" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/scala/cgc/core/comm/CommManagerSpec.scala" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/scala/modbus/io/ClientSpec.scala" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/scala/modbus/io/ClientSpec.scala" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/scala/modbus/io/HandlerSpec.scala" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/scala/modbus/io/HandlerSpec.scala" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/scala/modbus/poll/PollSpec.scala" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/scala/modbus/poll/PollSpec.scala" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/scala/modbus/frame/DecodeFrame.scala" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/scala/modbus/frame/EncodeFrame.scala" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/scala/modbus/frame/Frame Worksheet.sc" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/scala/modbus/frame/Frame.scala" beforeDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/target/" />
     <ignored path="$PROJECT_DIR$/project/project/target/" />
@@ -114,14 +103,33 @@
     </session>
   </component>
   <component name="FileEditorManager">
-    <leaf>
-      <file leaf-file-name="ModbusTemplate.scala" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/src/main/scala/modbus/templates/ModbusTemplate.scala">
+    <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
+      <file leaf-file-name="ReadMultipleHoldingRegisters.scala" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/src/main/scala/modbus/frame/ReadMultipleHoldingRegisters.scala">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="587">
-              <caret line="207" column="84" lean-forward="true" selection-start-line="207" selection-start-column="84" selection-end-line="207" selection-end-column="84" />
+            <state relative-caret-position="119">
+              <caret line="7" column="40" selection-start-line="7" selection-start-column="40" selection-end-line="7" selection-end-column="40" />
               <folding>
-                <element signature="e#26#76#0" expanded="true" />
+                <element signature="e#22#65#0" expanded="true" />
+                <element signature="e#223#520#1" />
+                <element signature="e#259#518#0" />
+                <element signature="e#640#1172#0" />
+                <element signature="e#644#828#0" />
+                <element signature="e#644#1106#0" />
+                <element signature="e#1109#1170#0" />
+                <element signature="e#1215#1567#1" />
+                <element signature="e#1251#1565#0" />
+                <element signature="e#1376#1391#0" />
+                <element signature="e#1677#2291#0" />
+                <element signature="e#1681#1866#0" />
+                <element signature="e#1681#2179#0" />
+                <element signature="e#2101#2149#0" />
+                <element signature="e#2182#2243#0" />
+                <element signature="e#2335#2477#1" />
+                <element signature="e#2371#2475#0" />
+                <element signature="e#2572#3031#0" />
+                <element signature="e#2576#2737#0" />
+                <element signature="e#2576#2975#0" />
               </folding>
             </state>
           </provider>
@@ -148,15 +156,7 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/src/main/scala/modbus/handler/ReadHandler.scala" />
-        <option value="$PROJECT_DIR$/src/main/scala/modbus/handler/WriteHandler.scala" />
-        <option value="$PROJECT_DIR$/src/main/scala/modbus/io/ClientManager.scala" />
-        <option value="$PROJECT_DIR$/src/main/scala/modbus/io/WriteHandler.scala" />
-        <option value="$PROJECT_DIR$/src/main/scala/modbus/io/ReadHandler.scala" />
-        <option value="$PROJECT_DIR$/src/main/scala/modbus/frame/Adu.scala" />
-        <option value="$PROJECT_DIR$/src/main/scala/modbus/frame/ADU.scala" />
         <option value="$PROJECT_DIR$/src/test/scala/modbus/frame/ADUSpec.scala" />
-        <option value="$PROJECT_DIR$/src/main/scala/modbus/frame/PDU.scala" />
         <option value="$PROJECT_DIR$/src/main/scala/modbus/frame/Decode.scala" />
         <option value="$PROJECT_DIR$/src/test/scala/modbus/frame/DecodeSpec.scala" />
         <option value="$PROJECT_DIR$/src/main/scala/modbus/poll/ModbusTypes.scala" />
@@ -190,15 +190,23 @@
         <option value="$PROJECT_DIR$/src/test/scala/modbus/io/ClientSpec.scala" />
         <option value="$PROJECT_DIR$/src/main/scala/modbus/io/Client.scala" />
         <option value="$PROJECT_DIR$/src/main/scala/cgc/core/comm/CommManager.scala" />
-        <option value="$PROJECT_DIR$/src/main/scala/modbus/frame/DecodeFrame.scala" />
-        <option value="$PROJECT_DIR$/src/main/scala/modbus/frame/Frame.scala" />
         <option value="$PROJECT_DIR$/src/main/scala/modbus/frame/Frame Worksheet.sc" />
-        <option value="$PROJECT_DIR$/src/main/scala/modbus/frame/EncodeFrame.scala" />
         <option value="$PROJECT_DIR$/src/main/scala/modbus/templates/Factory.scala" />
         <option value="$PROJECT_DIR$/src/main/resources/SEL547ModbusMap.csv" />
         <option value="$PROJECT_DIR$/src/main/scala/modbus/templates/ConfigReader.scala" />
         <option value="$PROJECT_DIR$/src/main/scala/modbus/templates/ModbusTypes.scala" />
         <option value="$PROJECT_DIR$/src/main/scala/modbus/templates/ModbusTemplate.scala" />
+        <option value="$PROJECT_DIR$/src/main/scala/modbus/frame/ReadHoldingRegisters.scala" />
+        <option value="$PROJECT_DIR$/src/main/scala/modbus/frame/WriteHoldingRegister.scala" />
+        <option value="$PROJECT_DIR$/src/main/scala/modbus/frame/Frame.scala" />
+        <option value="$PROJECT_DIR$/src/main/scala/modbus/frame/EncodeFrame.scala" />
+        <option value="$PROJECT_DIR$/src/main/scala/modbus/frame/ADU.scala" />
+        <option value="$PROJECT_DIR$/src/main/scala/modbus/frame/MBAP.scala" />
+        <option value="$PROJECT_DIR$/src/main/scala/modbus/frame/PDU.scala" />
+        <option value="$PROJECT_DIR$/src/main/scala/modbus/frame/WriteMultipleHoldingRegisters.scala" />
+        <option value="$PROJECT_DIR$/src/main/scala/modbus/frame/WriteSingleHoldingRegister.scala" />
+        <option value="$PROJECT_DIR$/src/main/scala/modbus/frame/DecodeFrame.scala" />
+        <option value="$PROJECT_DIR$/src/main/scala/modbus/frame/ReadMultipleHoldingRegisters.scala" />
       </list>
     </option>
   </component>
@@ -214,6 +222,8 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
+      <pane id="Scope" />
+      <pane id="PackagesPane" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -261,50 +271,12 @@
               <item name="main" type="462c0819:PsiDirectoryNode" />
               <item name="scala" type="462c0819:PsiDirectoryNode" />
               <item name="modbus" type="462c0819:PsiDirectoryNode" />
-              <item name="docs" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="CGC" type="b2602c69:ProjectViewProjectNode" />
-              <item name="ScalaCGC" type="462c0819:PsiDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="main" type="462c0819:PsiDirectoryNode" />
-              <item name="scala" type="462c0819:PsiDirectoryNode" />
-              <item name="modbus" type="462c0819:PsiDirectoryNode" />
               <item name="frame" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="CGC" type="b2602c69:ProjectViewProjectNode" />
-              <item name="ScalaCGC" type="462c0819:PsiDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="main" type="462c0819:PsiDirectoryNode" />
-              <item name="scala" type="462c0819:PsiDirectoryNode" />
-              <item name="modbus" type="462c0819:PsiDirectoryNode" />
-              <item name="io" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="CGC" type="b2602c69:ProjectViewProjectNode" />
-              <item name="ScalaCGC" type="462c0819:PsiDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="main" type="462c0819:PsiDirectoryNode" />
-              <item name="scala" type="462c0819:PsiDirectoryNode" />
-              <item name="modbus" type="462c0819:PsiDirectoryNode" />
-              <item name="poll" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="CGC" type="b2602c69:ProjectViewProjectNode" />
-              <item name="ScalaCGC" type="462c0819:PsiDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="main" type="462c0819:PsiDirectoryNode" />
-              <item name="scala" type="462c0819:PsiDirectoryNode" />
-              <item name="modbus" type="462c0819:PsiDirectoryNode" />
-              <item name="templates" type="462c0819:PsiDirectoryNode" />
             </path>
           </expand>
           <select />
         </subPane>
       </pane>
-      <pane id="Scope" />
-      <pane id="PackagesPane" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -573,7 +545,6 @@
     <editor active="true" />
     <layout>
       <window_info anchor="bottom" id="TODO" order="6" />
-      <window_info anchor="bottom" id="Messages" order="12" weight="0.2911796" />
       <window_info anchor="right" id="sbt" order="4" />
       <window_info anchor="right" id="Palette&#9;" order="3" />
       <window_info anchor="bottom" id="Event Log" order="9" side_tool="true" />
@@ -595,6 +566,7 @@
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Find" order="1" weight="0.32943678" />
+      <window_info anchor="bottom" id="Messages" order="12" weight="0.2911796" />
     </layout>
   </component>
   <component name="UnknownFeatures">
@@ -619,7 +591,8 @@
     <MESSAGE value="initial structure of the CommManager is implemented for reads;&#10;first test passing in the CommManagerSpec;&#10;tests passing in PollSpec" />
     <MESSAGE value="remote test for comm manager actor; added a CloseConnections message to&#10;the CommManager and ClientHandler classes to promote graceful&#10;connection closure." />
     <MESSAGE value="refactor of the templates package" />
-    <option name="LAST_COMMIT_MESSAGE" value="refactor of the templates package" />
+    <MESSAGE value="Changes to comm manager" />
+    <option name="LAST_COMMIT_MESSAGE" value="Changes to comm manager" />
   </component>
   <component name="WorksheetDefaultProjectSettings">
     <option name="compilerProfileName" value="Default" />
@@ -628,15 +601,10 @@
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
-      <option name="time" value="15" />
+      <option name="time" value="17" />
     </breakpoint-manager>
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/src/test/scala/Modbus/Stream/ModbusStreamSpec.scala" />
-    <entry file="file://$PROJECT_DIR$/src/test/scala/CGC/Modbus/CommSpec.scala" />
-    <entry file="file://$PROJECT_DIR$/src/main/scala/Modbus/Stream/ParsePDU.scala" />
-    <entry file="file://$PROJECT_DIR$/src/main/scala/Modbus/Frame/ADUFramer.scala" />
-    <entry file="file://$PROJECT_DIR$/src/main/scala/modbus/io/Client.scala" />
     <entry file="file://$PROJECT_DIR$/src/main/scala/modbus/generator/Generator.scala" />
     <entry file="file://$PROJECT_DIR$/src/main/scala/modbus/io/ReadHandler.scala" />
     <entry file="file://$PROJECT_DIR$/src/main/scala/modbus/frame/Frame.scala">
@@ -660,7 +628,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/scala/modbus/frame/PDU.scala" />
     <entry file="file://$PROJECT_DIR$/src/main/scala/modbus/generator/Query.scala" />
     <entry file="file://$PROJECT_DIR$/src/main/scala/CGC/Modbus/Read.scala" />
     <entry file="file://$PROJECT_DIR$/src/main/scala/CGC/Modbus/Write.scala" />
@@ -757,20 +724,8 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/test/resources/remoteTest1ModbusMap.csv">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="85">
-          <caret line="5" column="20" lean-forward="true" selection-start-line="5" selection-start-column="20" selection-end-line="5" selection-end-column="20" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/test/resources/testModbusMap.csv">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="68">
-          <caret line="4" column="21" lean-forward="true" selection-start-line="4" selection-start-column="21" selection-end-line="4" selection-end-column="21" />
-        </state>
-      </provider>
-    </entry>
+    <entry file="file://$PROJECT_DIR$/src/test/resources/remoteTest1ModbusMap.csv" />
+    <entry file="file://$PROJECT_DIR$/src/test/resources/testModbusMap.csv" />
     <entry file="file://$PROJECT_DIR$/src/test/resources/testDevice1ModbusMap.csv">
       <provider selected="true" editor-type-id="text-editor" />
     </entry>
@@ -785,9 +740,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="681">
           <caret line="211" column="1" selection-start-line="211" selection-start-column="1" selection-end-line="211" selection-end-column="1" />
-          <folding>
-            <element signature="e#21#50#0" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -802,9 +754,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="373">
           <caret line="90" column="53" lean-forward="true" selection-start-line="90" selection-start-column="53" selection-end-line="90" selection-end-column="53" />
-          <folding>
-            <element signature="e#19#52#0" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -819,10 +768,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="238">
           <caret line="36" lean-forward="true" selection-start-line="36" selection-end-line="36" />
-          <folding>
-            <element signature="e#19#87#0" expanded="true" />
-            <element signature="e#872#887#0" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -830,9 +775,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="322">
           <caret line="60" column="30" lean-forward="true" selection-start-line="60" selection-start-column="30" selection-end-line="60" selection-end-column="30" />
-          <folding>
-            <element signature="e#19#52#0" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -843,37 +785,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/scala/modbus/frame/Frame.scala">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="298">
-          <caret line="232" column="3" lean-forward="true" selection-start-line="232" selection-start-column="3" selection-end-line="232" selection-end-column="3" />
-          <folding>
-            <element signature="e#2415#3006#0" />
-            <element signature="e#2419#2603#0" />
-            <element signature="e#3183#3856#0" />
-            <element signature="e#4019#4537#0" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/scala/modbus/frame/DecodeFrame.scala">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="621">
-          <caret line="68" column="31" lean-forward="true" selection-start-line="68" selection-start-column="31" selection-end-line="68" selection-end-column="31" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/main/scala/modbus/frame/Frame Worksheet.sc">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="85">
           <caret line="5" column="18" lean-forward="true" selection-start-line="5" selection-start-column="18" selection-end-line="5" selection-end-column="18" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/scala/modbus/frame/EncodeFrame.scala">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="833">
-          <caret line="49" column="25" lean-forward="true" selection-start-line="49" selection-start-column="25" selection-end-line="49" selection-end-column="25" />
         </state>
       </provider>
     </entry>
@@ -907,10 +822,112 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/scala/modbus/templates/ModbusTemplate.scala">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="587">
-          <caret line="207" column="84" lean-forward="true" selection-start-line="207" selection-start-column="84" selection-end-line="207" selection-end-column="84" />
+        <state relative-caret-position="2227">
+          <caret line="207" column="84" selection-start-line="207" selection-start-column="84" selection-end-line="207" selection-end-column="84" />
           <folding>
             <element signature="e#26#76#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/scala/modbus/frame/Frame.scala">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="68">
+          <caret line="4" selection-start-line="4" selection-end-line="4" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/scala/modbus/frame/EncodeFrame.scala">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/scala/modbus/frame/ADU.scala">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="459">
+          <caret line="27" lean-forward="true" selection-start-line="27" selection-end-line="27" />
+          <folding>
+            <element signature="n#!!doc" expanded="true" />
+            <element signature="e#65#92#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/scala/modbus/frame/MBAP.scala">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="374">
+          <caret line="27" column="1" lean-forward="true" selection-start-line="27" selection-start-column="1" selection-end-line="27" selection-end-column="1" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/scala/modbus/frame/PDU.scala">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="629">
+          <caret line="37" column="1" lean-forward="true" selection-start-line="37" selection-start-column="1" selection-end-line="37" selection-end-column="1" />
+          <folding>
+            <element signature="n#!!doc" expanded="true" />
+            <element signature="e#62#89#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/scala/modbus/frame/WriteMultipleHoldingRegisters.scala">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="221">
+          <caret line="73" column="1" lean-forward="true" selection-start-line="73" selection-start-column="1" selection-end-line="73" selection-end-column="1" />
+          <folding>
+            <element signature="e#22#65#0" expanded="true" />
+            <element signature="e#226#644#1" />
+            <element signature="e#812#1713#0" />
+            <element signature="e#1765#1981#1" />
+            <element signature="e#2114#2723#0" />
+            <element signature="e#2776#2935#1" />
+            <element signature="e#2913#3446#0" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/scala/modbus/frame/WriteSingleHoldingRegister.scala">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="187">
+          <caret line="11" column="24" lean-forward="true" selection-start-line="11" selection-start-column="24" selection-end-line="11" selection-end-column="24" />
+          <folding>
+            <element signature="e#22#65#0" expanded="true" />
+            <element signature="e#607#1276#0" />
+            <element signature="e#1325#1544#1" />
+            <element signature="e#1670#2339#0" />
+            <element signature="e#2389#2581#1" />
+            <element signature="e#2522#3094#0" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/scala/modbus/frame/DecodeFrame.scala">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/scala/modbus/frame/ReadMultipleHoldingRegisters.scala">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="119">
+          <caret line="7" column="40" selection-start-line="7" selection-start-column="40" selection-end-line="7" selection-end-column="40" />
+          <folding>
+            <element signature="e#22#65#0" expanded="true" />
+            <element signature="e#223#520#1" />
+            <element signature="e#259#518#0" />
+            <element signature="e#640#1172#0" />
+            <element signature="e#644#828#0" />
+            <element signature="e#644#1106#0" />
+            <element signature="e#1109#1170#0" />
+            <element signature="e#1215#1567#1" />
+            <element signature="e#1251#1565#0" />
+            <element signature="e#1376#1391#0" />
+            <element signature="e#1677#2291#0" />
+            <element signature="e#1681#1866#0" />
+            <element signature="e#1681#2179#0" />
+            <element signature="e#2101#2149#0" />
+            <element signature="e#2182#2243#0" />
+            <element signature="e#2335#2477#1" />
+            <element signature="e#2371#2475#0" />
+            <element signature="e#2572#3031#0" />
+            <element signature="e#2576#2737#0" />
+            <element signature="e#2576#2975#0" />
           </folding>
         </state>
       </provider>
