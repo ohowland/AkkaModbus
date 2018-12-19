@@ -1,20 +1,20 @@
 package modbus.frame
 
 import akka.util.{ByteIterator, ByteString}
-import modbus.templates.ReadMultipleHoldingRegistersTemplate
+import modbus.template.Template
 
 trait ReadMultipleHoldingRegisters extends PDU
 
-case object RequestReadHoldingRegisters {
+case object RequestReadMultipleHoldingRegisters {
   val functionCode: Int = 0x03
 
-  def encode(template: ReadMultipleHoldingRegistersTemplate) = {
-    val startAddress = template.specification.startAddress
-    val numberOfRegisters = template.specification.numberOfRegisters
-    RequestReadHoldingRegisters(startAddress, numberOfRegisters)
+  def encode(template: Template) = {
+    val startAddress = template.startAddress
+    val numberOfRegisters = template.numberOfRegisters
+    RequestReadMultipleHoldingRegisters(startAddress, numberOfRegisters)
   }
 }
-case class RequestReadHoldingRegisters(startAddress: Int, numberOfRegisters: Int) extends ReadMultipleHoldingRegisters {
+case class RequestReadMultipleHoldingRegisters(startAddress: Int, numberOfRegisters: Int) extends ReadMultipleHoldingRegisters {
   /**
     * Request Read Hold Registers PDU Structure
     * BYTE        : |  1 Byte  |    2 Bytes    |   2 Bytes   |
@@ -22,7 +22,7 @@ case class RequestReadHoldingRegisters(startAddress: Int, numberOfRegisters: Int
     */
   override def toByteString: ByteString = {
     val frameBuilder = ByteString.newBuilder
-    frameBuilder.putByte(RequestReadHoldingRegisters.functionCode.toByte)
+    frameBuilder.putByte(RequestReadMultipleHoldingRegisters.functionCode.toByte)
     frameBuilder.putShort(startAddress)
     frameBuilder.putShort(numberOfRegisters)
     frameBuilder.result()
@@ -32,7 +32,7 @@ case class RequestReadHoldingRegisters(startAddress: Int, numberOfRegisters: Int
   }
 }
 
-case object ResponseReadHoldingRegisters {
+case object ResponseReadMultipleHoldingRegisters {
   val functionCode: Int = 0x03
 
   def decode(in: ByteIterator) = {
@@ -42,10 +42,10 @@ case object ResponseReadHoldingRegisters {
     }
     in.getShorts(shortArray, 0, byteCount / 2)
     val registerList: List[Int] = shortArray.map(_.toInt).toList
-    ResponseReadHoldingRegisters(byteCount, registerList)
+    ResponseReadMultipleHoldingRegisters(byteCount, registerList)
   }
 }
-case class ResponseReadHoldingRegisters(size: Int, response: List[Int]) extends ReadMultipleHoldingRegisters {
+case class ResponseReadMultipleHoldingRegisters(size: Int, response: List[Int]) extends ReadMultipleHoldingRegisters {
   /**
     * Response Read Hold Registers PDU Structure
     * BYTE        : |  1 Byte  |    1 Bytes    |   N Bytes   |
@@ -53,7 +53,7 @@ case class ResponseReadHoldingRegisters(size: Int, response: List[Int]) extends 
     */
   override def toByteString: ByteString = {
     val frameBuilder = ByteString.newBuilder
-    frameBuilder.putByte(ResponseReadHoldingRegisters.functionCode.toByte)
+    frameBuilder.putByte(ResponseReadMultipleHoldingRegisters.functionCode.toByte)
     frameBuilder.putByte(size.toByte)
     for (i <- response.indices) {
       frameBuilder.putShort(response(i))
@@ -67,15 +67,15 @@ case class ResponseReadHoldingRegisters(size: Int, response: List[Int]) extends 
   override def payload: List[Int] = response
 }
 
-case object ExceptionReadHoldingRegisters {
+case object ExceptionReadMultipleHoldingRegisters {
   val functionCode: Int = 0x83
 
   def decode(in: ByteIterator) = {
     val error = in.getByte
-    ExceptionReadHoldingRegisters(error)
+    ExceptionReadMultipleHoldingRegisters(error)
   }
 }
-case class ExceptionReadHoldingRegisters(errorCode: Int) extends ReadMultipleHoldingRegisters {
+case class ExceptionReadMultipleHoldingRegisters(errorCode: Int) extends ReadMultipleHoldingRegisters {
   /**
     * Exception Read Holding Registers PDU Structure
     * BYTE        : |  1 Byte  |    1 Bytes    |
@@ -83,7 +83,7 @@ case class ExceptionReadHoldingRegisters(errorCode: Int) extends ReadMultipleHol
     */
   override def toByteString: ByteString = {
     val frameBuilder = ByteString.newBuilder
-    frameBuilder.putByte(ExceptionReadHoldingRegisters.functionCode.toByte)
+    frameBuilder.putByte(ExceptionReadMultipleHoldingRegisters.functionCode.toByte)
     frameBuilder.putByte(errorCode.toByte)
     frameBuilder.result()
   }

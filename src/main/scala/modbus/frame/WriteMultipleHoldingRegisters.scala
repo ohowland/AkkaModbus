@@ -1,24 +1,21 @@
 package modbus.frame
 
 import akka.util.{ByteIterator, ByteString}
-import modbus.templates.WriteMultipleHoldingRegistersTemplate
+import modbus.template.WriteMultipleHoldingRegistersTemplate
 
 trait WriteMultipleHoldingRegisters extends PDU
 case object RequestWriteMultipleHoldingRegisters {
   val functionCode: Int = 0x10
 
-  def encode(template: WriteMultipleHoldingRegistersTemplate) = {
-    val startAddress = template.specification.startAddress
-    val numberOfRegisters = template.specification.numberOfRegisters
-    val registerValues = {
-      if (values.isEmpty) None
-      else Some(values.toList)
-    }
+  def encode(template: WriteMultipleHoldingRegistersTemplate, values: Map[String, Double]) = {
+    val startAddress = template.startAddress
+    val numberOfRegisters = template.numberOfRegisters
+    val registerValues = template.encode(values)
     RequestWriteMultipleHoldingRegisters(startAddress, numberOfRegisters, registerValues)
   }
 }
 
-case class RequestWriteMultipleHoldingRegisters(startAddress: Int, numberOfRegisters: Int, registerValues: Option[List[Int]])
+case class RequestWriteMultipleHoldingRegisters(startAddress: Int, numberOfRegisters: Int, registerValues: List[Int])
   extends WriteMultipleHoldingRegisters {
 
   val payloadSize: Int = 2 * numberOfRegisters
@@ -41,7 +38,7 @@ case class RequestWriteMultipleHoldingRegisters(startAddress: Int, numberOfRegis
 
   override def length: Int = this.toByteString.length
 
-  override def payload: List[Int] = registerValues.getOrElse(List.empty)
+  override def payload: List[Int] = registerValues
 }
 
 case object ResponseWriteMultipleHoldingRegisters {

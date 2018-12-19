@@ -6,7 +6,7 @@ import com.typesafe.config.ConfigFactory
 import modbus.frame._
 import modbus.io.Client
 import modbus.poll.Poll.PollResponse
-import modbus.templates.{Factory, ModbusTypes}
+import modbus.template.{Factory, Modbus}
 import org.scalatest._
 
 import scala.concurrent.duration._
@@ -24,9 +24,9 @@ class PollSpec(_system: ActorSystem) extends TestKit(_system)
       val clientHandler = TestProbe()
       val requestId = util.Random.nextInt
 
-      val testRegister1 = ModbusTypes.ModbusRegister("test1", 1, ModbusTypes.U16, "status", 1)
-      val testRegister2 = ModbusTypes.ModbusRegister("badtest1", 2, ModbusTypes.U16, "control", 1)
-      val testRegister3 = ModbusTypes.ModbusRegister("badtest2", 3, ModbusTypes.U16, "config", 1)
+      val testRegister1 = Modbus.ModbusRegister("test1", 1, Modbus.U16, "status", 1)
+      val testRegister2 = Modbus.ModbusRegister("badtest1", 2, Modbus.U16, "control", 1)
+      val testRegister3 = Modbus.ModbusRegister("badtest2", 3, Modbus.U16, "config", 1)
 
       val testModbusMap = List(testRegister1, testRegister2, testRegister3)
       val reqMessageTemplates =
@@ -67,9 +67,9 @@ class PollSpec(_system: ActorSystem) extends TestKit(_system)
       val clientHandler = TestProbe()
       val requestId = util.Random.nextInt
 
-      val testRegister1 = ModbusTypes.ModbusRegister("test1", 1, ModbusTypes.U16, "status", 1)
-      val testRegister2 = ModbusTypes.ModbusRegister("test2", 2, ModbusTypes.U16, "status", 1)
-      val testRegister3 = ModbusTypes.ModbusRegister("badtest1", 3, ModbusTypes.U16, "control", 2)
+      val testRegister1 = Modbus.ModbusRegister("test1", 1, Modbus.U16, "status", 1)
+      val testRegister2 = Modbus.ModbusRegister("test2", 2, Modbus.U16, "status", 1)
+      val testRegister3 = Modbus.ModbusRegister("badtest1", 3, Modbus.U16, "control", 2)
       val testModbusMap = List(testRegister1, testRegister2, testRegister3)
       val reqMessageTemplates =
         Factory.getReadMultipleHoldingRegistersTemplates(testModbusMap, "status", "big")
@@ -107,9 +107,9 @@ class PollSpec(_system: ActorSystem) extends TestKit(_system)
       val clientHandler = TestProbe()
       val requestId = util.Random.nextInt
 
-      val testRegister1 = ModbusTypes.ModbusRegister("test1", 1, ModbusTypes.U16, "status", 1)
-      val testRegister2 = ModbusTypes.ModbusRegister("test2", 5, ModbusTypes.U16, "status", 1)
-      val testRegister3 = ModbusTypes.ModbusRegister("test3", 10, ModbusTypes.U16, "status", 1)
+      val testRegister1 = Modbus.ModbusRegister("test1", 1, Modbus.U16, "status", 1)
+      val testRegister2 = Modbus.ModbusRegister("test2", 5, Modbus.U16, "status", 1)
+      val testRegister3 = Modbus.ModbusRegister("test3", 10, Modbus.U16, "status", 1)
       val testModbusMap = List(testRegister1, testRegister2, testRegister3)
       val reqMessageTemplates =
         Factory.getReadMultipleHoldingRegistersTemplates(testModbusMap, "status", "big")
@@ -149,9 +149,9 @@ class PollSpec(_system: ActorSystem) extends TestKit(_system)
       val clientHandler = TestProbe()
       val requestId = util.Random.nextInt
 
-      val testRegister1 = ModbusTypes.ModbusRegister("test1", 1, ModbusTypes.U16, "status", 1)
-      val testRegister2 = ModbusTypes.ModbusRegister("test2", 2, ModbusTypes.U16, "status", 2)
-      val testRegister3 = ModbusTypes.ModbusRegister("badtest1", 3, ModbusTypes.U16, "control", 3)
+      val testRegister1 = Modbus.ModbusRegister("test1", 1, Modbus.U16, "status", 1)
+      val testRegister2 = Modbus.ModbusRegister("test2", 2, Modbus.U16, "status", 2)
+      val testRegister3 = Modbus.ModbusRegister("badtest1", 3, Modbus.U16, "control", 3)
 
       val testModbusMap = List(testRegister1, testRegister2)
       val reqMessageTemplates =

@@ -17,7 +17,7 @@ case object MBAP {
     MBAP(transactionId, length, unitId)
   }
 
-  private def decode(data: ByteString): MBAP = {
+  def decode(data: ByteString): MBAP = {
     val in = data.iterator
     val transactionId = in.getShort
     val protocolId = in.getShort

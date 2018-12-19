@@ -1,16 +1,16 @@
 package modbus.frame
 
 import akka.util.{ByteIterator, ByteString}
-import modbus.templates.WriteSingleHoldingRegisterTemplate
+import modbus.template.WriteSingleHoldingRegisterTemplate
 
 trait WriteSingleHoldingRegister extends PDU
 case object RequestWriteSingleHoldingRegister {
   val functionCode: Int = 0x06
 
-  def encode(template: WriteSingleHoldingRegisterTemplate) = {
-    val registerAddress = template.specification.startAddress
-    val registerValue = template.values
-    RequestWriteSingleHoldingRegister(registerAddress, registerValue)
+  def encode(template: WriteSingleHoldingRegisterTemplate, values: Map[String, Double]) = {
+    val registerAddress = template.startAddress
+    val registerValue = template.encode(values)
+    RequestWriteSingleHoldingRegister(registerAddress, registerValue(0))
   }
 }
 case class RequestWriteSingleHoldingRegister(registerAddress: Int, registerValue: Int)

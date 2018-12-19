@@ -6,7 +6,7 @@ import scala.concurrent.duration._
 import com.typesafe.config.Config
 import modbus.io.Handler.{CloseConnection, HandlerConfig}
 import modbus.poll.Poll.PollResponse
-import modbus.templates
+import modbus.template
 
 /** Loads in the Modbus Map and generates the required modbus messsages, loads the configuration for the Client Handler,
   * which includes all information needed by the Client and IO class. Then creates recurring Poll Actors directed at
@@ -38,10 +38,10 @@ class CommManager(config: Config, requestingActor: ActorRef) extends Actor with 
 
   // Create the templates required for this class.
   private val deviceName = config.getString("name")
-  private val modbusMap = templates.ConfigReader.readResource(deviceName + "ModbusMap.csv")
-  private val readStatusTemplates = templates.Factory
+  private val modbusMap = template.ConfigReader.readResource(deviceName + "ModbusMap.csv")
+  private val readStatusTemplates = template.Factory
     .getReadMultipleHoldingRegistersTemplates(modbusMap, "status", "big").toSet
-  private val writeControlTemplates = templates.Factory
+  private val writeControlTemplates = template.Factory
     .getWriteSingleHoldingRegisterTemplates(modbusMap, "control", "big").toSet
 
   // schedule the recurring read status poll actor

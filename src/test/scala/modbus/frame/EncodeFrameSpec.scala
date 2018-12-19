@@ -1,6 +1,6 @@
 package modbus.frame
 
-import modbus.templates.{Factory, ModbusTypes}
+import modbus.template.{Factory, Modbus}
 import org.scalatest._
 
 import scala.util.Random
@@ -11,9 +11,9 @@ class EncodeFrameSpec() extends Matchers
 
   "An Application Data Unit Encoder" should {
     "translate a single RequestReadHoldingRegisters containing one register to an ADU frame " in {
-      val testRegister1 = ModbusTypes.ModbusRegister("test1", 1, ModbusTypes.U16, "status", 1)
-      val testRegister2 = ModbusTypes.ModbusRegister("badtest1", 2, ModbusTypes.U16, "control", 2)
-      val testRegister3 = ModbusTypes.ModbusRegister("badtest2", 3, ModbusTypes.U16, "control", 2)
+      val testRegister1 = Modbus.ModbusRegister("test1", 1, Modbus.U16, "status", 1)
+      val testRegister2 = Modbus.ModbusRegister("badtest1", 2, Modbus.U16, "control", 2)
+      val testRegister3 = Modbus.ModbusRegister("badtest2", 3, Modbus.U16, "control", 2)
 
       val testModbusMap = List(testRegister1, testRegister2, testRegister3)
       val groupName = "status"
@@ -36,9 +36,9 @@ class EncodeFrameSpec() extends Matchers
     }
 
     "translate a single RequestReadHoldingRegisters containing multiple registers to an ADU frame " in {
-      val testRegister1 = ModbusTypes.ModbusRegister("test1", 1, ModbusTypes.U16, "status", 1)
-      val testRegister2 = ModbusTypes.ModbusRegister("test2", 2, ModbusTypes.U16, "status", 1)
-      val testRegister3 = ModbusTypes.ModbusRegister("test3", 3, ModbusTypes.U16, "status", 1)
+      val testRegister1 = Modbus.ModbusRegister("test1", 1, Modbus.U16, "status", 1)
+      val testRegister2 = Modbus.ModbusRegister("test2", 2, Modbus.U16, "status", 1)
+      val testRegister3 = Modbus.ModbusRegister("test3", 3, Modbus.U16, "status", 1)
 
       val testModbusMap = List(testRegister1, testRegister2, testRegister3)
       val groupName = "status"
@@ -66,10 +66,10 @@ class EncodeFrameSpec() extends Matchers
       val message2StartRegister = 6
       val message2LastRegister = 7
 
-      val testRegister1 = ModbusTypes.ModbusRegister("test1", message1StartRegister, ModbusTypes.U16, "status", 1)
-      val testRegister2 = ModbusTypes.ModbusRegister("test2", message1LastRegister, ModbusTypes.U16, "status", 1)
-      val testRegister3 = ModbusTypes.ModbusRegister("test3", message2StartRegister, ModbusTypes.U16, "status", 2)
-      val testRegister4 = ModbusTypes.ModbusRegister("test4", message2LastRegister, ModbusTypes.U16, "status", 2)
+      val testRegister1 = Modbus.ModbusRegister("test1", message1StartRegister, Modbus.U16, "status", 1)
+      val testRegister2 = Modbus.ModbusRegister("test2", message1LastRegister, Modbus.U16, "status", 1)
+      val testRegister3 = Modbus.ModbusRegister("test3", message2StartRegister, Modbus.U16, "status", 2)
+      val testRegister4 = Modbus.ModbusRegister("test4", message2LastRegister, Modbus.U16, "status", 2)
 
       val testModbusMap = List(testRegister1, testRegister2, testRegister3, testRegister4)
       val groupName = "status"

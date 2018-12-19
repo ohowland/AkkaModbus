@@ -5,18 +5,17 @@
 package modbus.frame
 
 import akka.util.ByteString
-import modbus.frame.DecodeFrame._
-import modbus.templates.ModbusTemplate
+import modbus.template._
 
 object PDU {
   val empty = new PDU
 
-  def encode(template: ModbusTemplate, values: Seq[Int]): PDU = {
+  def encode(template: Template, values: Map[String, Double]): PDU = {
     template match {
-      case msgTemplate: ReadMultipleHoldingRegistersTemplate => encodeRequestReadMultipleHoldingRegisters(msgTemplate)
-      case msgTemplate: WriteMultipleHoldingRegistersTemplate => encodeRequestWriteMultipleHoldingRegisters(msgTemplate)
-      case msgTemplate: WriteSingleHoldingRegisterTemplate => encodeRequestWriteSingleHoldingRegister(msgTemplate)
-      case _ => PDU.empty
+      case t: ReadMultipleHoldingRegistersTemplate => RequestReadMultipleHoldingRegisters.encode(t)
+      case t: WriteMultipleHoldingRegistersTemplate => RequestWriteMultipleHoldingRegisters.encode(t, values)
+      case t: WriteSingleHoldingRegisterTemplate => RequestWriteSingleHoldingRegister.encode(t, values)
+      case _ => empty
     }
   }
 
@@ -26,13 +25,13 @@ object PDU {
 
     // 0xFF to get unsigned byte TODO: Function code as byte instead of integer.
     functionCode & 0xFF match {
-      case ResponseReadHoldingRegisters.functionCode => decodeResponseReadHoldingRegisters(in)
-      case ExceptionReadHoldingRegisters.functionCode => decodeExceptionReadHoldingRegisters(in)
-      case ResponseWriteSingleHoldingRegister.functionCode => decodeResponseWriteSingleRegisters(in)
-      case ExceptionWriteSingleHoldingRegister.functionCode => decodeExceptionWriteSingleHoldingRegisters(in)
-      case ResponseWriteMultipleHoldingRegisters.functionCode => decodeResponseWriteMultipleHoldingRegisters(in)
-      case ExceptionWriteMultipleHoldingRegisters.functionCode => decodeExceptionWriteMultipleHoldingRegisters(in)
-      case _ => PDU.empty
+      case ResponseReadMultipleHoldingRegisters.functionCode => ResponseReadMultipleHoldingRegisters.decode(in)
+      case ResponseWriteSingleHoldingRegister.functionCode => ResponseWriteSingleHoldingRegister.decode(in)
+      case ResponseWriteMultipleHoldingRegisters.functionCode => ResponseWriteMultipleHoldingRegisters.decode(in)
+      case ExceptionReadMultipleHoldingRegisters.functionCode => ExceptionReadMultipleHoldingRegisters.decode(in)
+      case ExceptionWriteSingleHoldingRegister.functionCode => ExceptionWriteSingleHoldingRegister.decode(in)
+      case ExceptionWriteMultipleHoldingRegisters.functionCode => ExceptionWriteMultipleHoldingRegisters.decode(in)
+      case _ => empty
     }
   }
 }

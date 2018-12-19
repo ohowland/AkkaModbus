@@ -2,9 +2,9 @@ package modbus.poll
 
 import akka.actor.{Actor, ActorLogging, ActorRef, Props, Terminated}
 import akka.util.ByteString
-import modbus.frame.{DecodeFrame, EncodeFrame}
+import modbus.frame.{ADU, PDU}
 import modbus.io.Client.Write
-import modbus.templates.ModbusTemplate
+import modbus.template.ModbusTemplate
 
 import scala.concurrent.duration.FiniteDuration
 import scala.util.Random
@@ -51,7 +51,7 @@ class Poll(requestId: Long,
     self ! idToMessageTemplate
 
     for ((transactionId, template) <- idToMessageTemplate) {
-      clientHandler ! Write(EncodeFrame.encode(template, transactionId, unitId).toByteString)
+      clientHandler ! Write(ADU.encode(template, transactionId, unitId).toByteString)
     }
   }
 
@@ -71,7 +71,7 @@ class Poll(requestId: Long,
     case data: ByteString =>
       log.info(s"waiting for $pendingTransactions")
       log.info(s"recieved ByteString: [$data]")
-      val adu = DecodeFrame.decode(data)
+      val adu = ADU.decode(data)
       log.info(s"ByteString decoded to: " +
         s"transactionId: [${adu.mbap.transactionId}]," +
         s"ADU length: [${adu.mbap.length}], " +

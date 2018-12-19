@@ -1,6 +1,6 @@
 package modbus.frame
 
-import modbus.templates.ModbusTypes
+import modbus.template.Modbus
 import org.scalatest._
 
 import scala.util.Random
