@@ -1,9 +1,9 @@
 package modbus.frame
 
-import modbus.template.Modbus
 import org.scalatest._
 
 import scala.util.Random
+import modbus.frame._
 
 class DecodeFrameSpec() extends Matchers
   with WordSpecLike
@@ -16,17 +16,17 @@ class DecodeFrameSpec() extends Matchers
       val registerList = List(1, 2, 3, 4)
       val byteCount = registerList.length * 2
 
-      val testPDU: PDU = ResponseReadHoldingRegisters(byteCount, registerList)
+      val testPDU: PDU = ResponseReadMultipleHoldingRegisters(byteCount, registerList)
       val testMBAP: MBAP = MBAP(transactionId, length = testPDU.length + 1, unitId)
       val testADU: ADU = ADU(testMBAP, testPDU)
 
       val response = testADU.toByteString
-      val adu: ADU = DecodeFrame.decode(response)
+      val adu: ADU = ADU.decode(response)
 
       println(s"working bytestring: ${adu.pdu.payload}")
       adu should ===(ADU(
         MBAP(transactionId, testPDU.length + 1, unitId),
-        ResponseReadHoldingRegisters(byteCount, registerList)))
+        ResponseReadMultipleHoldingRegisters(byteCount, registerList)))
     }
 
     "interpret the ByteString representation of an ExceptionReadHoldingRegisters" in {
@@ -34,14 +34,14 @@ class DecodeFrameSpec() extends Matchers
       val unitId = 33
       val errorCode = 3
 
-      val testPDU: PDU = ExceptionReadHoldingRegisters(errorCode.toByte)
+      val testPDU: PDU = ExceptionReadMultipleHoldingRegisters(errorCode.toByte)
       val testMBAP: MBAP = MBAP(transactionId, length = testPDU.length + 1, unitId)
       val testADU: ADU = ADU(testMBAP, testPDU)
 
       val response = testADU.toByteString
-      val adu: ADU = DecodeFrame.decode(response)
+      val adu: ADU = ADU.decode(response)
 
-      adu should ===(ADU(MBAP(transactionId, testPDU.length + 1, unitId), ExceptionReadHoldingRegisters(errorCode)))
+      adu should ===(ADU(MBAP(transactionId, testPDU.length + 1, unitId), ExceptionReadMultipleHoldingRegisters(errorCode)))
     }
 
     //TODO: Is this the behavior we want?
@@ -52,34 +52,34 @@ class DecodeFrameSpec() extends Matchers
       val registerList = List(1, 2, 3, 4)
       val byteCount = 0
 
-      val testPDU: PDU = ResponseReadHoldingRegisters(byteCount, registerList)
+      val testPDU: PDU = ResponseReadMultipleHoldingRegisters(byteCount, registerList)
       val testMBAP: MBAP = MBAP(transactionId, testPDU.length + 1, unitId)
       val testADU: ADU = ADU(testMBAP, testPDU)
 
       val response = testADU.toByteString
-      val adu: ADU = DecodeFrame.decode(response)
+      val adu: ADU = ADU.decode(response)
 
       adu should ===(ADU(
         MBAP(transactionId, testPDU.length + 1, unitId),
-        ResponseReadHoldingRegisters(byteCount, List())))
+        ResponseReadMultipleHoldingRegisters(byteCount, List())))
     }
 
-    "interpret the ByteString representation of a ResponseWriteHoldingRegisters" in {
+    "interpret the ByteString representation of a ResponseWriteMultipleHoldingRegisters" in {
       val transactionId = 100
       val unitId = 1
       val startAddress = 0
       val numberOfRegisters = 30
 
-      val testPDU: PDU = ResponseWriteHoldingRegisters(startAddress, numberOfRegisters)
+      val testPDU: PDU = ResponseWriteMultipleHoldingRegisters(startAddress, numberOfRegisters)
       val testMBAP: MBAP = MBAP(transactionId, length = testPDU.length + 1, unitId)
       val testADU: ADU = ADU(testMBAP, testPDU)
 
       val response = testADU.toByteString
-      val adu: ADU = DecodeFrame.decode(response)
+      val adu: ADU = ADU.decode(response)
 
       adu should ===(ADU(
         MBAP(transactionId, testPDU.length + 1, unitId),
-        ResponseWriteHoldingRegisters(startAddress, numberOfRegisters)))
+        ResponseWriteMultipleHoldingRegisters(startAddress, numberOfRegisters)))
     }
 
     "interpret the ByteString representation of an ExceptionWriteHoldingRegisters" in {
@@ -87,14 +87,14 @@ class DecodeFrameSpec() extends Matchers
       val unitId = 126
       val errorCode = 4
 
-      val testPDU: PDU = ExceptionWriteHoldingRegisters(errorCode.toByte)
+      val testPDU: PDU = ExceptionWriteMultipleHoldingRegisters(errorCode.toByte)
       val testMBAP: MBAP = MBAP(transactionId, length = testPDU.length, unitId)
       val testADU: ADU = ADU(testMBAP, testPDU)
 
       val response = testADU.toByteString
-      val adu: ADU = DecodeFrame.decode(response)
+      val adu: ADU = ADU.decode(response)
 
-      adu should ===(ADU(MBAP(transactionId, 2, unitId), ExceptionWriteHoldingRegisters(errorCode)))
+      adu should ===(ADU(MBAP(transactionId, 2, unitId), ExceptionWriteMultipleHoldingRegisters(errorCode)))
     }
   }
 }

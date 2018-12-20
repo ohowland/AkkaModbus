@@ -22,6 +22,7 @@ case class RequestReadMultipleHoldingRegisters(startAddress: Int, numberOfRegist
     * DESCRIPTION : | Fct Code | Start Address | # Registers |
     */
   override def toByteString: ByteString = {
+    implicit val byteOrder = java.nio.ByteOrder.BIG_ENDIAN
     val frameBuilder = ByteString.newBuilder
     frameBuilder.putByte(RequestReadMultipleHoldingRegisters.functionCode.toByte)
     frameBuilder.putShort(startAddress)
@@ -37,6 +38,7 @@ case object ResponseReadMultipleHoldingRegisters {
   val functionCode: Int = 0x03
 
   def decode(in: ByteIterator) = {
+    implicit val byteOrder = java.nio.ByteOrder.BIG_ENDIAN
     val byteCount = in.getByte
     var shortArray: Array[Short] = Array.fill(byteCount / 2) {
       0
@@ -54,6 +56,7 @@ case class ResponseReadMultipleHoldingRegisters(size: Int, response: List[Int]) 
     */
   override def toByteString: ByteString = {
     val frameBuilder = ByteString.newBuilder
+    implicit val byteOrder = java.nio.ByteOrder.BIG_ENDIAN
     frameBuilder.putByte(ResponseReadMultipleHoldingRegisters.functionCode.toByte)
     frameBuilder.putByte(size.toByte)
     for (i <- response.indices) {

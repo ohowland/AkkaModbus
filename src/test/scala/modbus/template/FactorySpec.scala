@@ -10,7 +10,7 @@ class MessageFactorySpec extends Matchers
 
   "A CSV ConfigReader" should {
     "load from a ModbusMap from class resources by name" in {
-      val ModbusMap: List[Modbus.Register] = ConfigReader.readResource("testModbusMap.csv")
+      val ModbusMap: List[Modbus.Register] = ConfigReader.readResource("testDevice1ModbusMap.csv")
       ModbusMap should ===(List(
         Modbus.Register("test1", 10, Modbus.U16, "status", 0, 1),
         Modbus.Register("test2", 11, Modbus.U32, "status", 0, 1),

@@ -40,6 +40,7 @@ case object ResponseWriteMultipleHoldingRegisters {
 
   val functionCode: Int = 0x10
   def decode(in: ByteIterator) = {
+    implicit val byteOrder = java.nio.ByteOrder.BIG_ENDIAN
     val startAddress = in.getShort
     val registerCount = in.getShort
     ResponseWriteMultipleHoldingRegisters(startAddress, registerCount)

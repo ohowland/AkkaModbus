@@ -24,9 +24,9 @@ class PollSpec(_system: ActorSystem) extends TestKit(_system)
       val clientHandler = TestProbe()
       val requestId = util.Random.nextInt
 
-      val testRegister1 = Modbus.ModbusRegister("test1", 1, Modbus.U16, "status", 1)
-      val testRegister2 = Modbus.ModbusRegister("badtest1", 2, Modbus.U16, "control", 1)
-      val testRegister3 = Modbus.ModbusRegister("badtest2", 3, Modbus.U16, "config", 1)
+      val testRegister1 = Modbus.Register("test1", 1, Modbus.U16, "status", 1, 1)
+      val testRegister2 = Modbus.Register("badtest1", 2, Modbus.U16, "control", 1, 1)
+      val testRegister3 = Modbus.Register("badtest2", 3, Modbus.U16, "config", 1, 1)
 
       val testModbusMap = List(testRegister1, testRegister2, testRegister3)
       val reqMessageTemplates =
@@ -45,11 +45,11 @@ class PollSpec(_system: ActorSystem) extends TestKit(_system)
       val requestByteString = clientHandler.expectMsgType[Client.Write]
 
       // Convert to ADU so we can access the transactionID, which is assigned by the client handler.
-      val requestADU = DecodeFrame.decode(requestByteString.data)
+      val requestADU = ADU.decode(requestByteString.data)
 
       // In the successful case, the clientHandler will return a
       // ByteString representation of a ResponseReadHoldingRegisters
-      val responsePDU = ResponseReadHoldingRegisters(reqMessageTemplates.head.numberOfRegisters * 2, List(11))
+      val responsePDU = ResponseReadMultipleHoldingRegisters(reqMessageTemplates.head.numberOfRegisters * 2, List(11))
       val responseByteString =
         ADU(MBAP(requestADU.mbap.transactionId, responsePDU.length + 1, requestADU.mbap.unitId), responsePDU).toByteString
       pollActor ! responseByteString
@@ -67,9 +67,9 @@ class PollSpec(_system: ActorSystem) extends TestKit(_system)
       val clientHandler = TestProbe()
       val requestId = util.Random.nextInt
 
-      val testRegister1 = Modbus.ModbusRegister("test1", 1, Modbus.U16, "status", 1)
-      val testRegister2 = Modbus.ModbusRegister("test2", 2, Modbus.U16, "status", 1)
-      val testRegister3 = Modbus.ModbusRegister("badtest1", 3, Modbus.U16, "control", 2)
+      val testRegister1 = Modbus.Register("test1", 1, Modbus.U16, "status", 1, 1)
+      val testRegister2 = Modbus.Register("test2", 2, Modbus.U16, "status", 1, 1)
+      val testRegister3 = Modbus.Register("badtest1", 3, Modbus.U16, "control", 2, 1)
       val testModbusMap = List(testRegister1, testRegister2, testRegister3)
       val reqMessageTemplates =
         Factory.getReadMultipleHoldingRegistersTemplates(testModbusMap, "status", "big")
@@ -85,11 +85,11 @@ class PollSpec(_system: ActorSystem) extends TestKit(_system)
 
       // The poll actor sends the clientHandler actor an ADU constructed from the message template
       val requestByteString = clientHandler.expectMsgType[Client.Write]
-      val requestADU = DecodeFrame.decode(requestByteString.data)
+      val requestADU = ADU.decode(requestByteString.data)
 
       // In the successful case, the clientHandler will return a
       // ByteString representation of a ResponseReadHoldingRegisters
-      val responsePDU = ResponseReadHoldingRegisters(reqMessageTemplates.head.numberOfRegisters * 2, List(1, 2))
+      val responsePDU = ResponseReadMultipleHoldingRegisters(reqMessageTemplates.head.numberOfRegisters * 2, List(1, 2))
       val responseByteString =
         ADU(MBAP(requestADU.mbap.transactionId, 0, requestADU.mbap.unitId), responsePDU).toByteString
       pollActor ! responseByteString
@@ -107,9 +107,9 @@ class PollSpec(_system: ActorSystem) extends TestKit(_system)
       val clientHandler = TestProbe()
       val requestId = util.Random.nextInt
 
-      val testRegister1 = Modbus.ModbusRegister("test1", 1, Modbus.U16, "status", 1)
-      val testRegister2 = Modbus.ModbusRegister("test2", 5, Modbus.U16, "status", 1)
-      val testRegister3 = Modbus.ModbusRegister("test3", 10, Modbus.U16, "status", 1)
+      val testRegister1 = Modbus.Register("test1", 1, Modbus.U16, "status", 1, 1)
+      val testRegister2 = Modbus.Register("test2", 5, Modbus.U16, "status", 1, 1)
+      val testRegister3 = Modbus.Register("test3", 10, Modbus.U16, "status", 1, 1)
       val testModbusMap = List(testRegister1, testRegister2, testRegister3)
       val reqMessageTemplates =
         Factory.getReadMultipleHoldingRegistersTemplates(testModbusMap, "status", "big")
@@ -125,12 +125,12 @@ class PollSpec(_system: ActorSystem) extends TestKit(_system)
 
       // The poll actor sends the clientHandler actor an ADU constructed from the message template
       val requestByteString = clientHandler.expectMsgType[Client.Write]
-      val requestADU = DecodeFrame.decode(requestByteString.data)
+      val requestADU = ADU.decode(requestByteString.data)
 
 
       // In the successful case, the clientHandler will return a
       // ByteString representation of a ResponseReadHoldingRegisters
-      val responsePDU = ResponseReadHoldingRegisters(
+      val responsePDU = ResponseReadMultipleHoldingRegisters(
         reqMessageTemplates.head.numberOfRegisters * 2, List(1, 2, 3, 4, 5, 6, 7, 8, 9, 10))
       val responseByteString =
         ADU(MBAP(requestADU.mbap.transactionId, 0, requestADU.mbap.unitId), responsePDU).toByteString
@@ -149,9 +149,9 @@ class PollSpec(_system: ActorSystem) extends TestKit(_system)
       val clientHandler = TestProbe()
       val requestId = util.Random.nextInt
 
-      val testRegister1 = Modbus.ModbusRegister("test1", 1, Modbus.U16, "status", 1)
-      val testRegister2 = Modbus.ModbusRegister("test2", 2, Modbus.U16, "status", 2)
-      val testRegister3 = Modbus.ModbusRegister("badtest1", 3, Modbus.U16, "control", 3)
+      val testRegister1 = Modbus.Register("test1", 1, Modbus.U16, "status", 1, 1)
+      val testRegister2 = Modbus.Register("test2", 2, Modbus.U16, "status", 2, 1)
+      val testRegister3 = Modbus.Register("badtest1", 3, Modbus.U16, "control", 3, 1)
 
       val testModbusMap = List(testRegister1, testRegister2)
       val reqMessageTemplates =
@@ -168,19 +168,19 @@ class PollSpec(_system: ActorSystem) extends TestKit(_system)
 
       // The poll actor sends the clientHandler actor an ADU constructed from the message template.
       val requestByteString1 = clientHandler.expectMsgType[Client.Write]
-      val requestADU1 = DecodeFrame.decode(requestByteString1.data)
+      val requestADU1 = ADU.decode(requestByteString1.data)
       val requestByteString2 = clientHandler.expectMsgType[Client.Write]
-      val requestADU2 = DecodeFrame.decode(requestByteString2.data)
+      val requestADU2 = ADU.decode(requestByteString2.data)
 
       // In the successful case, the clientHandler will return a
       // ByteString representation of a ResponseReadHoldingRegisters
-      val responsePDU1 = ResponseReadHoldingRegisters(
+      val responsePDU1 = ResponseReadMultipleHoldingRegisters(
         reqMessageTemplates(0).numberOfRegisters * 2, List(1))
       val responseByteString1 =
         ADU(MBAP(requestADU1.mbap.transactionId, 0, requestADU1.mbap.unitId), responsePDU1).toByteString
       pollActor ! responseByteString1
 
-      val responsePDU2 = ResponseReadHoldingRegisters(
+      val responsePDU2 = ResponseReadMultipleHoldingRegisters(
         reqMessageTemplates(1).numberOfRegisters * 2, List(2))
       val responseByteString2 =
         ADU(MBAP(requestADU2.mbap.transactionId, 0, requestADU2.mbap.unitId), responsePDU2).toByteString

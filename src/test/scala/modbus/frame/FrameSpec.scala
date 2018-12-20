@@ -17,7 +17,7 @@ import akka.util.ByteString
         val transactionId = 123
         val unitId = 1
 
-        val testPDU: PDU = PDU.empty
+        val testPDU: PDU = new PDU
         val testMBAP: MBAP = MBAP(transactionId, length = testPDU.length + 1, unitId)
         val testADU: ADU = ADU(testMBAP, testPDU)
 
@@ -32,7 +32,7 @@ import akka.util.ByteString
         val numberOfRegisters = 2
         val startAddress = 1
 
-        val testPDU: PDU = RequestReadHoldingRegisters(startAddress, numberOfRegisters)
+        val testPDU: PDU = RequestReadMultipleHoldingRegisters(startAddress, numberOfRegisters)
         val testMBAP: MBAP = MBAP(transactionId, length = testPDU.length + 1, unitId)
         val testADU: ADU = ADU(testMBAP, testPDU)
 
@@ -55,7 +55,7 @@ import akka.util.ByteString
         val unitId = 10
         val errorCode = 3
 
-        val testPDU: PDU = ExceptionReadHoldingRegisters(errorCode)
+        val testPDU: PDU = ExceptionReadMultipleHoldingRegisters(errorCode)
         val testMBAP: MBAP = MBAP(transactionId, length = testPDU.length + 1, unitId)
         val testADU: ADU = ADU(testMBAP, testPDU)
 
@@ -77,7 +77,7 @@ import akka.util.ByteString
         val startAddress = 22
 
         val testPDU: PDU =
-          RequestWriteHoldingRegisters(startAddress, numberOfRegisters, payload)
+          RequestWriteMultipleHoldingRegisters(startAddress, numberOfRegisters, payload)
         val testMBAP: MBAP = MBAP(transactionId, testPDU.length + 1, unitId)
         val testADU: ADU = ADU(testMBAP, testPDU)
 

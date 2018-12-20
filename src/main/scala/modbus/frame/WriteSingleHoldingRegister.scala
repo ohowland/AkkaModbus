@@ -33,6 +33,7 @@ case class RequestWriteSingleHoldingRegister(registerAddress: Int, registerValue
 case object ResponseWriteSingleHoldingRegister {
   val functionCode: Int = 0x06
   def decode(in: ByteIterator) = {
+    implicit val byteOrder = java.nio.ByteOrder.BIG_ENDIAN
     val registerAddress = in.getShort
     val registerValue = in.getShort
     ResponseWriteSingleHoldingRegister(registerAddress, registerValue)
@@ -56,6 +57,7 @@ case class ResponseWriteSingleHoldingRegister(registerAddress: Int, registerValu
 case object ExceptionWriteSingleHoldingRegister {
   val functionCode: Int = 0x86
   def decode(in: ByteIterator) = {
+    implicit val byteOrder = java.nio.ByteOrder.BIG_ENDIAN
     val errorCode = in.getByte
     ExceptionWriteSingleHoldingRegister(errorCode)
   }

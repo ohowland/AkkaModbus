@@ -14,6 +14,7 @@ case object MBAP {
   val protocolId: Int = 0
 
   def decode(data: ByteString): MBAP = {
+    implicit val byteOrder = java.nio.ByteOrder.BIG_ENDIAN
     val in = data.iterator
     val transactionId = in.getShort
     val protocolId = in.getShort

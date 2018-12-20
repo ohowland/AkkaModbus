@@ -24,7 +24,7 @@ object PDU {
   }
 }
 
-abstract class PDU {
+class PDU {
   def setPayload(payload: List[Int]): PDU = this
 
   def toByteString: ByteString = ByteString.empty
