@@ -1,24 +1,16 @@
 package modbus.template
 
-import scala.math.pow
+object Builder {
 
-object Factory {
-  /**
-    * Returns a list of ModbusTemplates configured with required data to complete a read holding registers
-    * request.
-    *
-    * @param modbusMap is a list of ModbusRegisters which define communcation with a device.
-    * @param groupName is used to select registers from the modbusMap based on the field ModbusRegister.group
-    */
+  def setModbusMap(m: List[Modbus.Register]) = ???
+  def setGroupName(gn: String)
+  def setEndianness()
+  def execute()
+
   def getReadMultipleHoldingRegistersTemplates(modbusMap: List[Modbus.Register],
                                                groupName: String,
-                                               endianness: String): List[ModbusTemplate] = {
-    /**
-      * Returns a set of all blocks in the Modbus map for a given groupName.
-      *
-      * @param modbusMap is a list of ModbusRegisters which define communcation with a device.
-      * @param groupName is used to select registers from the modbusMap based on the field ModbusRegister.group.
-      */
+                                               endianness: String): List[Template] = {
+
     def findBlocks(modbusMap: List[Modbus.Register], groupName: String): Set[Int] =
       modbusMap.filter(_.group == groupName).map(_.block).toSet
 
@@ -42,13 +34,12 @@ object Factory {
       } yield registerList).toList
     }
 
-    // Returns a ReadSpecification for the registerlist
-    def buildBlockSpecification(registerList: List[Modbus.Register]): BlockSpecification = {
+    def buildBlockSpecification(registerList: List[Modbus.Register]): Template.BlockSpecification = {
       val startAddress: Int = registerList.map(_.address).min
       val lastAddress: Int = registerList.map(_.address).max
       val lastAddressType: Modbus.Datatype = modbusMap.filter(_.address == lastAddress).map(_.datatype).head
       val numberOfRegisters: Int = lastAddress + lastAddressType.nWords - startAddress
-      BlockSpecification(startAddress, numberOfRegisters)
+      Template.BlockSpecification(startAddress, numberOfRegisters)
     }
 
     for {
@@ -56,26 +47,13 @@ object Factory {
     } yield ReadMultipleHoldingRegistersTemplate(buildBlockSpecification(registerBlock), registerBlock, endianness)
   }
 
-  // Returns a list of ModbusTemplates configured with required data to complete a write holding registers request.
   def getWriteMultipleHoldingRegistersTemplates(modbusMap: List[Modbus.Register],
                                                 groupName: String,
-                                                endianness: String): List[ModbusTemplate] = {
+                                                endianness: String): List[Template] = {
 
-    // Returns a set of all blocks in the Modbus map for a given groupName.
     def findBlocks(modbusMap: List[Modbus.Register], groupName: String): Set[Int] =
       modbusMap.filter(_.group == groupName).map(_.block).toSet
 
-    /**
-      * Returns a bucketed list of modbus registers based on register block number.
-      *
-      * Example:
-      * List(List(register1.block == 1, register2.block == 1),
-      * List(register13.block == 2),
-      * List(register22.block == 6))
-      *
-      * @param modbusMap is a list of ModbusRegisters which define communcation with a device.
-      * @param blocks    is a set of all block numbers contained in the modbusMap.
-      */
     def bucketRegisterListByBlock(modbusMap: List[Modbus.Register],
                                   blocks: Set[Int],
                                   groupName: String): List[List[Modbus.Register]] = {
@@ -85,18 +63,12 @@ object Factory {
       } yield registerList).toList
     }
 
-    /**
-      * Returns a BlockSpecification for the registerlist
-      *
-      * @param registerList
-      * @return
-      */
-    def buildBlockSpecification(registerList: List[Modbus.Register]): BlockSpecification = {
+    def buildBlockSpecification(registerList: List[Modbus.Register]): Template.BlockSpecification = {
       val startAddress: Int = registerList.map(_.address).min
       val lastAddress: Int = registerList.map(_.address).max
       val lastAddressType: Modbus.Datatype = modbusMap.filter(_.address == lastAddress).map(_.datatype).head
       val numberOfRegisters: Int = lastAddress + lastAddressType.nWords - startAddress
-      BlockSpecification(startAddress, numberOfRegisters)
+      Template.BlockSpecification(startAddress, numberOfRegisters)
     }
 
     for {
@@ -104,19 +76,12 @@ object Factory {
     } yield WriteMultipleHoldingRegistersTemplate(buildBlockSpecification(registerBlock), registerBlock, endianness)
   }
 
-  /**
-    * Returns a list of ModbusTemplates configured configured with required data to complete a write single holding
-    * register requests.
-    *
-    * @param modbusMap is a list of ModbusRegisters which define communcation with a device.
-    * @param groupName is used to select registers from the modbusMap based on the field ModbusRegister.group
-    */
   def getWriteSingleHoldingRegisterTemplates(modbusMap: List[Modbus.Register],
                                              groupName: String,
-                                             endianness: String): List[ModbusTemplate] = {
+                                             endianness: String): List[Template] = {
 
     def buildBlockSpecification(register: Modbus.Register) = {
-      BlockSpecification(register.address, 1)
+      Template.BlockSpecification(register.address, 1)
     }
 
     for {

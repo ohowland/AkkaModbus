@@ -1,9 +1,0 @@
-<component name="libraryTable">
-  <library name="sbt: org.rxtx:rxtx:2.1.7:jar">
-    <CLASSES>
-      <root url="jar://$USER_HOME$/.ivy2/cache/org.rxtx/rxtx/jars/rxtx-2.1.7.jar!/" />
-    </CLASSES>
-    <JAVADOC />
-    <SOURCES />
-  </library>
-</component>
