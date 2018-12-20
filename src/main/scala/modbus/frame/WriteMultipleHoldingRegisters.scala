@@ -7,10 +7,10 @@ trait WriteMultipleHoldingRegisters extends PDU
 case object RequestWriteMultipleHoldingRegisters {
   val functionCode: Int = 0x10
 
-  def encode(template: WriteMultipleHoldingRegistersTemplate, values: Map[String, Double]) = {
+  def apply(template: WriteMultipleHoldingRegistersTemplate): PDU = {
     val startAddress = template.startAddress
     val numberOfRegisters = template.numberOfRegisters
-    val registerValues = template.encode(values)
+    val registerValues = List.empty
     RequestWriteMultipleHoldingRegisters(startAddress, numberOfRegisters, registerValues)
   }
 }
@@ -20,11 +20,6 @@ case class RequestWriteMultipleHoldingRegisters(startAddress: Int, numberOfRegis
 
   val payloadSize: Int = 2 * numberOfRegisters
 
-  /**
-    * Request Write Multiple Holding Registers PDU Structure
-    * BYTE        : |  1 Byte  |    2 Bytes    |   2 Bytes   |        2 Bytes         | N Bytes |
-    * DESCRIPTION : | Fct Code | Start Address | # Registers | Payload Size (N Bytes) | Payload |
-    */
   override def toByteString: ByteString = {
     val frameBuilder = ByteString.newBuilder
     implicit val byteOrder = java.nio.ByteOrder.BIG_ENDIAN
@@ -53,11 +48,6 @@ case object ResponseWriteMultipleHoldingRegisters {
 case class ResponseWriteMultipleHoldingRegisters(startAddress: Int, numberOfRegisters: Int)
   extends WriteMultipleHoldingRegisters {
 
-  /**
-    * Response Write Multiple Holding Registers PDU Structure
-    * BYTE        : |  1 Byte  |    2 Bytes    |   2 Bytes    |
-    * DESCRIPTION : | Fct Code | Start Address | # Registers  |
-    */
   override def toByteString: ByteString = {
     val frameBuilder = ByteString.newBuilder
     implicit val byteOrder = java.nio.ByteOrder.BIG_ENDIAN
@@ -80,11 +70,6 @@ case object ExceptionWriteMultipleHoldingRegisters {
 }
 case class ExceptionWriteMultipleHoldingRegisters(errorCode: Int) extends WriteMultipleHoldingRegisters {
 
-  /**
-    * Exception Write Multiple Holding Registers PDU Structure
-    * BYTE        : |  1 Byte  |  1 Bytes   |
-    * DESCRIPTION : | Fct Code | Error Code |
-    */
   override def toByteString: ByteString = {
     val frameBuilder = ByteString.newBuilder
     implicit val byteOrder = java.nio.ByteOrder.BIG_ENDIAN

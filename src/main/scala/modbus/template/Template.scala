@@ -6,6 +6,7 @@
   */
 
 package modbus.template
+import modbus.frame.{PDU, RequestReadMultipleHoldingRegisters}
 
 object Template {
   case class BlockSpecification(startAddress: Int, numberOfRegisters: Int)

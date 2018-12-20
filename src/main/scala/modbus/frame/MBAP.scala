@@ -13,10 +13,6 @@ import akka.util.ByteString
 case object MBAP {
   val protocolId: Int = 0
 
-  def encode(transactionId: Int, length: Int, unitId: Int): MBAP = {
-    MBAP(transactionId, length, unitId)
-  }
-
   def decode(data: ByteString): MBAP = {
     val in = data.iterator
     val transactionId = in.getShort
@@ -37,5 +33,16 @@ case class MBAP(transactionId: Int, length: Int, unitId: Int) {
     frameBuilder.putByte(unitId.toByte)
     frameBuilder.result()
   }
-}
 
+  def setLength(newLength: Int): MBAP = {
+    this.copy(length = newLength)
+  }
+
+  def setUnitId(id: Int): MBAP = {
+    this.copy(unitId = id)
+  }
+
+  def setTransactionId(id: Int): MBAP = {
+    this.copy(transactionId = id)
+  }
+}

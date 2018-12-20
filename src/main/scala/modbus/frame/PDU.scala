@@ -8,17 +8,6 @@ import akka.util.ByteString
 import modbus.template._
 
 object PDU {
-  val empty = new PDU
-
-  def encode(template: Template, values: Map[String, Double]): PDU = {
-    template match {
-      case t: ReadMultipleHoldingRegistersTemplate => RequestReadMultipleHoldingRegisters.encode(t)
-      case t: WriteMultipleHoldingRegistersTemplate => RequestWriteMultipleHoldingRegisters.encode(t, values)
-      case t: WriteSingleHoldingRegisterTemplate => RequestWriteSingleHoldingRegister.encode(t, values)
-      case _ => empty
-    }
-  }
-
   def decode(data: ByteString): PDU = {
     val in = data.iterator
     val functionCode: Int = in.getByte.toInt
@@ -31,13 +20,16 @@ object PDU {
       case ExceptionReadMultipleHoldingRegisters.functionCode => ExceptionReadMultipleHoldingRegisters.decode(in)
       case ExceptionWriteSingleHoldingRegister.functionCode => ExceptionWriteSingleHoldingRegister.decode(in)
       case ExceptionWriteMultipleHoldingRegisters.functionCode => ExceptionWriteMultipleHoldingRegisters.decode(in)
-      case _ => empty
     }
   }
 }
 
-class PDU {
+abstract class PDU {
+  def setPayload(payload: List[Int]): PDU = this
+
   def toByteString: ByteString = ByteString.empty
+
   def length: Int = 0
+
   def payload: List[Int] = List.empty
 }

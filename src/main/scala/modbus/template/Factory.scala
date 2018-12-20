@@ -1,11 +1,6 @@
 package modbus.template
 
-object Builder {
-
-  def setModbusMap(m: List[Modbus.Register]) = ???
-  def setGroupName(gn: String)
-  def setEndianness()
-  def execute()
+object Factory {
 
   def getReadMultipleHoldingRegistersTemplates(modbusMap: List[Modbus.Register],
                                                groupName: String,
@@ -21,9 +16,6 @@ object Builder {
       * List(List(register1.block == 1, register2.block == 1),
       * List(register13.block == 2),
       * List(register22.block == 6))
-      *
-      * @param modbusMap is a list of ModbusRegisters which define communcation with a device.
-      * @param blocks    is a set of all block numbers contained in the modbusMap.
       */
     def bucketRegisterListByBlock(modbusMap: List[Modbus.Register],
                                   blocks: Set[Int],
@@ -81,7 +73,7 @@ object Builder {
                                              endianness: String): List[Template] = {
 
     def buildBlockSpecification(register: Modbus.Register) = {
-      Template.BlockSpecification(register.address, 1)
+      Template.BlockSpecification(register.address, register.datatype.nWords)
     }
 
     for {

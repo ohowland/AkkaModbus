@@ -2,9 +2,9 @@ package modbus.poll
 
 import akka.actor.{Actor, ActorLogging, ActorRef, Props, Terminated}
 import akka.util.ByteString
-import modbus.frame.{ADU, PDU}
 import modbus.io.Client.Write
-import modbus.template.ModbusTemplate
+import modbus.template.Template
+import modbus.frame.{ADU, Factory}
 
 import scala.concurrent.duration.FiniteDuration
 import scala.util.Random
@@ -18,7 +18,7 @@ import scala.util.Random
 object Poll {
   def props(requestId: Long,
             clientHandler: ActorRef,
-            templates: Set[ModbusTemplate],
+            templates: Set[Template],
             unitId: Int,
             requester: ActorRef,
             timeout: FiniteDuration
@@ -30,7 +30,7 @@ object Poll {
 
 class Poll(requestId: Long,
            clientHandler: ActorRef,
-           templates: Set[ModbusTemplate],
+           templates: Set[Template],
            unitId: Int,
            requester: ActorRef,
            timeout: FiniteDuration) extends Actor with ActorLogging {
@@ -47,11 +47,13 @@ class Poll(requestId: Long,
       template <- templates
       transactionId = Random.nextInt(65535) & 0xFF
     } yield transactionId -> template}.toMap
-
     self ! idToMessageTemplate
 
     for ((transactionId, template) <- idToMessageTemplate) {
-      clientHandler ! Write(ADU.encode(template, transactionId, unitId).toByteString)
+      val adu = Factory.instanceOf(template)
+        .setTransactionId(transactionId)
+        .setUnitId(unitId)
+      clientHandler ! Write(adu.toByteString)
     }
   }
 
@@ -60,13 +62,13 @@ class Poll(requestId: Long,
   }
 
   override def receive: Receive = {
-    case idToMessageTemplate: Map[Int, ModbusTemplate] =>
+    case idToMessageTemplate: Map[Int, Template] =>
       context.become(waitingForReplies(Map.empty, idToMessageTemplate.keySet, idToMessageTemplate))
   }
 
   def waitingForReplies(dataSoFar: Map[String, Double],
                         pendingTransactions: Set[Int],
-                        idToMessageTemplate: Map[Int, ModbusTemplate]): Receive = {
+                        idToMessageTemplate: Map[Int, Template]): Receive = {
 
     case data: ByteString =>
       log.info(s"waiting for $pendingTransactions")
@@ -95,7 +97,7 @@ class Poll(requestId: Long,
                        incomingValueMap: Map[String, Double],
                        pendingTransactions: Set[Int],
                        dataSoFar: Map[String, Double],
-                       idToMessageTemplate: Map[Int, ModbusTemplate]): Unit = {
+                       idToMessageTemplate: Map[Int, Template]): Unit = {
 
     val newPendingTransactions = pendingTransactions - transactionId
 

@@ -1,17 +1,17 @@
-name,address,datatype,access,group,block,scale
-Row 0,145,U16,read,status,2,1
-Row 1,146,U16,read,status,2,1
-SEL Logic Row 2 (Output Status),147,U16,read,status,2,1
-Row 3,148,U16,read,status,2,1
-Row 4,149,U16,read,status,2,1
-Row 5,150,U16,read,status,2,1
-Row 6,151,U16,read,status,2,1
-Row 7,152,U16,read,status,2,1
-Row 8,153,U16,read,status,2,1
-Row 9,154,U16,read,status,2,1
-Row 10,155,U16,read,status,2,1
-SEL Logic Row 11 (Faults),156,U16,read,status,2,1
-SEL Logic Row 12 (Logic Status),157,U16,read,status,2,1
-Row 13,158,U16,read,status,2,1
-Row 14,159,U16,read,status,2,1
-Row 15,160,U16,read,status,2,1
+name,address,datatype,access,group,block,scale,endianness
+Row 0,145,U16,read,status,2,1,1,big
+Row 1,146,U16,read,status,2,1,1,big
+SEL Logic Row 2 (Output Status),147,U16,read,status,2,1,1,big
+Row 3,148,U16,read,status,2,1,1,big
+Row 4,149,U16,read,status,2,1,1,big
+Row 5,150,U16,read,status,2,1,1,big
+Row 6,151,U16,read,status,2,1,1,big
+Row 7,152,U16,read,status,2,1,1,big
+Row 8,153,U16,read,status,2,1,1,big
+Row 9,154,U16,read,status,2,1,1,big
+Row 10,155,U16,read,status,2,1,1,big
+SEL Logic Row 11 (Faults),156,U16,read,status,2,1,1,big
+SEL Logic Row 12 (Logic Status),157,U16,read,status,2,1,1,big
+Row 13,158,U16,read,status,2,1,1,big
+Row 14,159,U16,read,status,2,1,1,big
+Row 15,160,U16,read,status,2,1,1,big

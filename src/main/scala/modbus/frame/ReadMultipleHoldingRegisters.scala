@@ -1,18 +1,19 @@
 package modbus.frame
 
 import akka.util.{ByteIterator, ByteString}
-import modbus.template.Template
+import modbus.template.{ReadMultipleHoldingRegistersTemplate, Template}
 
 trait ReadMultipleHoldingRegisters extends PDU
 
 case object RequestReadMultipleHoldingRegisters {
   val functionCode: Int = 0x03
 
-  def encode(template: Template) = {
+  def apply(template: Template): PDU = {
     val startAddress = template.startAddress
     val numberOfRegisters = template.numberOfRegisters
     RequestReadMultipleHoldingRegisters(startAddress, numberOfRegisters)
   }
+
 }
 case class RequestReadMultipleHoldingRegisters(startAddress: Int, numberOfRegisters: Int) extends ReadMultipleHoldingRegisters {
   /**

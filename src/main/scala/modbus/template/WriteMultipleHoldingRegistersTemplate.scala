@@ -8,9 +8,9 @@ package modbus.template
 
 import scala.math.pow
 
-class WriteMultipleHoldingRegistersTemplate(specification: Template.BlockSpecification,
-                                            registers: List[Modbus.Register],
-                                            endianness: String) extends Template {
+case class WriteMultipleHoldingRegistersTemplate(specification: Template.BlockSpecification,
+                                                 registers: List[Modbus.Register],
+                                                 endianness: String) extends Template {
 
   // Returns a a PDU of holding register values that can be packaged into a request.
   override def encode(request: Map[String, Double]): List[Int] = {
@@ -33,7 +33,8 @@ class WriteMultipleHoldingRegistersTemplate(specification: Template.BlockSpecifi
       decomposeDoubleIter(BigDecimal(unscale(value, register)).toBigInt, List.empty)
     }
 
-    //TODO: I'm brain dead. What are we doing with the List[Int] package that is being created? It needs to find its way into the RequestWriteMultipleHoldingRegisters class object.
+    // The template should keep a list in memory, and a map a string to a location in that list.
+    List.empty
   }
 
   override def numberOfRegisters: Int = specification.numberOfRegisters

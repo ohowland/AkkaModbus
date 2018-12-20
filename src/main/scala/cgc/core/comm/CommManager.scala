@@ -76,8 +76,6 @@ class CommManager(config: Config, requestingActor: ActorRef) extends Actor with 
 
     case WriteControl(data) => {
 
-      writeControlTemplates.
-
       val requestId = util.Random.nextInt()
       context.actorOf(modbus.poll.Poll.props(
         requestId,
